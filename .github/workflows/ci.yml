@@ -8,50 +8,54 @@ on:
 
 jobs:
 
-  # ---------------- DJANGO ----------------
+  # ---------------- DJANGO (Backend) ----------------
   django:
     name: Django API
     runs-on: ubuntu-latest
 
     defaults:
       run:
-        working-directory: backend
+        working-directory: src/backend
 
     steps:
-      - name: Checkout código
+      - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Install System Dependencies
+        # Required for mysqlclient (Python) on Ubuntu
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libmysqlclient-dev pkg-config
 
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
 
-      - name: Instalar dependências
+      - name: Install dependencies
         run: |
+          pip install --upgrade pip
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt
           fi
 
       - name: Django Check
-        run: |
-          python manage.py check || echo "Django ainda não configurado"
+        # We use an environment variable to prevent connection errors during the check
+        run: python manage.py check
+        env:
+          DB_HOST: localhost
 
-      - name: Django Tests
-        run: |
-          python manage.py test || echo "Sem testes Django"
-
-
-  # ---------------- MICROSERVIÇO ----------------
+  # ---------------- MICROSERVICE ----------------
   python-service:
     name: Python Microservice
     runs-on: ubuntu-latest
 
     defaults:
       run:
-        working-directory: service
+        working-directory: src/service
 
     steps:
-      - name: Checkout código
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Setup Python
@@ -59,74 +63,63 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Instalar dependências
+      - name: Install dependencies
         run: |
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt
           fi
 
-      - name: Testes Microserviço
-        run: |
-          python -m unittest discover || echo "Sem testes no microserviço"
+      - name: Microservice Tests
+        run: python -m unittest discover
 
-
-  # ---------------- .NET ----------------
+  # ---------------- .NET (Frontend) ----------------
   dotnet:
     name: .NET Frontend
     runs-on: ubuntu-latest
 
     defaults:
       run:
-        working-directory: frontend
+        working-directory: src/frontend
 
     steps:
-      - name: Checkout código
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: "7.0"
+          # Updated to match project version (10.0 or 8.0)
+          dotnet-version: "8.0.x" 
 
       - name: Restore
-        run: dotnet restore || echo "Projeto .NET ainda não configurado"
+        run: dotnet restore
 
       - name: Build
-        run: dotnet build --no-restore || echo "Build não disponível"
+        run: dotnet build --no-restore
 
-      - name: Test
-        run: dotnet test --no-build || echo "Sem testes .NET"
-
-
-  # ---------------- DOCKER ----------------
+  # ---------------- DOCKER (Orchestration) ----------------
+  # This job only runs if the previous ones pass
   docker:
-    name: Docker Build & Run
+    name: Docker Build & Integration
+    needs: [django, python-service, dotnet]
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout código
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build containers
+      - name: Create Dummy .env
+        # Docker Compose needs variables to exist even in CI
         run: |
-          docker-compose build || echo "docker-compose ainda não configurado"
+          cp .env.example .env
 
-      - name: Run containers
+      - name: Build and Run containers
         run: |
-          docker-compose up -d || echo "Containers não iniciados"
+          docker compose build
+          docker compose up -d
 
-      - name: Verificar containers ativos
-        run: |
-          docker ps
-
-      - name: Testar endpoint (opcional)
-        run: |
-          sleep 10
-          curl http://localhost || echo "Aplicação ainda não responde"
+      - name: Verify containers
+        run: docker ps
 
       - name: Shutdown containers
-        run: |
-          docker-compose down || echo "Nada para desligar"
+        run: docker compose down

@@ -1,0 +1,32 @@
+# --- Gerais ---
+.env
+*.log
+.DS_Store
+
+# --- Python (Django & Flask) ---
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+db.sqlite3
+.pytest_cache/
+
+# --- .NET (Frontend) ---
+bin/
+obj/
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
+.vscode/
+
+# --- Docker ---
+.docker/
+# Se quiseres ignorar os dados da BD localmente:
+# mysql_data/
+
+# --- Node/Frontend Assets (caso uses futuramente) ---
+node_modules/
+dist/

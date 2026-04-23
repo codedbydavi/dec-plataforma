@@ -1,0 +1,71 @@
+services:
+  # Nginx acting as a Reverse Proxy on port 443 (and 80 for redirection)
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - frontend
+    networks:
+      - internal
+
+  # Container: .NET MVC (Web Application)
+  frontend:
+    build:
+      context: ./src/frontend
+    # No external ports exposed; accessed only internally via Nginx
+    depends_on:
+      - backend
+    networks:
+      - internal
+
+  # Container: Django API (REST API)
+  backend:
+    build:
+      context: ./src/backend
+    # Uses variables from the global .env
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - MICROSERVICE_URL=http://service:5000
+    depends_on:
+      - db
+      - service
+    networks:
+      - internal
+
+  # Container: Python Microservice (Financial Engine)
+  service:
+    build:
+      context: ./src/service
+    # Microservice now also has access to DB credentials
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+    networks:
+      - internal
+
+  # Container: MySQL (Database)
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - internal
+
+# Internal Docker Network to protect container communication
+networks:
+  internal:
+    driver: bridge

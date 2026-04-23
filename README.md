@@ -1,42 +1,43 @@
-# 💰 DEC – Dinheiro em Casa
+# 💰 DEC – Dinheiro em Casa (Money at Home)
 
-## 📌 Descrição
+## 📌 Description
 
-O **DEC – Dinheiro em Casa** é uma plataforma digital de literacia financeira, desenvolvida com o objetivo de simular cenários de economia doméstica e auxiliar os utilizadores na tomada de decisões financeiras informadas.
+**DEC – Dinheiro em Casa** is a digital financial literacy platform, developed with the goal of simulating domestic economy scenarios and assisting users in making informed financial decisions.
 
-A aplicação permite a criação de famílias virtuais, registo de rendimentos e despesas, definição de objetivos de poupança e execução de simulações financeiras, promovendo uma aprendizagem prática e interativa.
-
----
-
-## 🎯 Objetivos
-
-* Promover a literacia financeira em alunos do ensino secundário
-* Simular cenários reais de gestão doméstica
-* Analisar o impacto de decisões financeiras ao longo do tempo
-* Aplicar boas práticas de engenharia de software num projeto full-stack
+The application allows for the creation of virtual families, recording income and expenses, defining savings goals, and performing financial simulations, promoting practical and interactive learning.
 
 ---
 
-## 🏗️ Arquitetura do Sistema
+## 🎯 Objectives
 
-O projeto segue uma arquitetura distribuída baseada em microserviços:
+* Promote financial literacy among secondary school students
+* Simulate real domestic management scenarios
+* Analyze the impact of financial decisions over time
+* Apply software engineering best practices in a full-stack project
+
+---
+
+## 🏗️ System Architecture
+
+The project follows a distributed architecture based on microservices:
 
 * **Frontend:** ASP.NET Core MVC
 * **Backend:** Django REST API
-* **Microserviço:** Python (cálculo financeiro)
-* **Base de Dados:** MySQL
+* **Microservice:** Python (financial calculation)
+* **Database:** MySQL
 * **Reverse Proxy:** Nginx
-* **Containerização:** Docker & Docker Compose
+* **Containerization:** Docker & Docker Compose
 
 ---
 
-## 📁 Estrutura do Repositório (Monorepo)
+## 📁 Repository Structure (Monorepo)
 
 ```
 /
-├── backend/        # API Django
-├── frontend/       # Aplicação ASP.NET MVC
-├── service/        # Microserviço Python
+├── src/
+│   ├── backend/    # Django API
+│   ├── frontend/   # ASP.NET MVC Application
+│   └── service/    # Python Microservice
 ├── docker-compose.yml
 └── .github/
     └── workflows/
@@ -45,7 +46,7 @@ O projeto segue uma arquitetura distribuída baseada em microserviços:
 
 ---
 
-## ⚙️ Tecnologias Utilizadas
+## ⚙️ Technologies Used
 
 * ASP.NET Core
 * Django & Django REST Framework
@@ -58,9 +59,9 @@ O projeto segue uma arquitetura distribuída baseada em microserviços:
 
 ---
 
-## 🚀 Como executar o projeto
+## 🚀 How to Run the Project
 
-### 🔧 Pré-requisitos
+### 🔧 Prerequisites
 
 * Docker
 * Docker Compose
@@ -68,7 +69,7 @@ O projeto segue uma arquitetura distribuída baseada em microserviços:
 
 ---
 
-### ▶️ Executar com Docker
+### ▶️ Run with Docker
 
 ```bash
 git clone <repo-url>
@@ -77,7 +78,7 @@ cd DEC
 docker-compose up --build
 ```
 
-A aplicação ficará disponível em:
+The application will be available at:
 
 ```
 http://localhost
@@ -85,25 +86,25 @@ http://localhost
 
 ---
 
-## 🔄 Integração Contínua (CI)
+## 🔄 Continuous Integration (CI)
 
-O projeto utiliza **GitHub Actions** para automatizar:
+The project uses **GitHub Actions** to automate:
 
-* Build do frontend (.NET)
-* Validação da API Django
-* Execução de testes
-* Build e execução dos containers Docker
+* Frontend build (.NET)
+* Django API validation
+* Test execution
+* Docker container build and execution
 
-A pipeline está configurada para correr automaticamente em:
+The pipeline is configured to run automatically on:
 
-* Push para `main` e `dev`
+* Push to `main` and `dev`
 * Pull Requests
 
 ---
 
-## 🧪 Testes
+## 🧪 Testing
 
-Os testes são executados automaticamente na pipeline CI:
+Tests are executed automatically in the CI pipeline:
 
 * Django → `manage.py test`
 * Python → `unittest`
@@ -111,60 +112,58 @@ Os testes são executados automaticamente na pipeline CI:
 
 ---
 
-## 📊 Metodologia
+## 📊 Methodology
 
-O desenvolvimento do projeto segue uma abordagem **Agile (Scrum)**:
+The project development follows an **Agile (Scrum)** approach:
 
-* Organização por Sprints
-* Gestão de tarefas com GitHub Projects
-* User Stories para definição de requisitos
-* Sprint Reviews para validação contínua
+* Organized by Sprints
+* Task management with GitHub Projects
+* User Stories for requirements definition
+* Sprint Reviews for continuous validation
 
 ---
 
-## 👥 Equipa
+## 👥 Team
 
 * **Davi Vasconcelos** – Frontend & Backend
-* **Diogo Silva** – Backend, Infraestrutura & DevOps
-* **João Maia** – QA, Documentação & Modelação
+* **Diogo Silva** – Backend, Infrastructure & DevOps
+* **João Maia** – QA, Documentation & Modeling
 
 ---
 
-## 📚 Funcionalidades Principais
+## 📚 Key Features
 
-* Criação de cenários familiares
-* Registo de rendimentos e despesas
-* Simulação financeira (juros, poupança, crédito)
-* Dashboards e análise de dados
-* Gestão de turmas e desafios educativos
-* Sistema de autenticação de utilizadores
-
----
-
-## 🔐 Segurança
-
-* Comunicação via HTTPS (Nginx)
-* Gestão de autenticação e autorização (Django)
-* Isolamento de serviços via Docker
+* Creation of family scenarios
+* Recording of income and expenses
+* Financial simulation (interest, savings, credit)
+* Dashboards and data analysis
+* Management of classes and educational challenges
+* User authentication system
 
 ---
 
-## 📈 Estado do Projeto
+## 🔐 Security
 
-🚧 Em desenvolvimento (Sprint A)
-
-A arquitetura base, modelação do sistema e pipeline CI encontram-se implementadas. As funcionalidades serão desenvolvidas nas próximas sprints.
-
----
-
-## 📄 Licença
-
-Este projeto foi desenvolvido para fins académicos no âmbito do curso de Engenharia Informática do ISTEC Porto.
+* Communication via HTTPS (Nginx)
+* Authentication and authorization management (Django)
+* Service isolation via Docker
 
 ---
 
-## 📌 Notas Finais
+## 📈 Project Status
 
-O projeto encontra-se em evolução contínua, sendo expectável a adição de novas funcionalidades, testes automatizados e melhorias na arquitetura ao longo do desenvolvimento.
+🚧 Under development (Sprint A)
+
+The base architecture, system modeling, and CI pipeline are implemented. Features will be developed in the upcoming sprints.
 
 ---
+
+## 📄 License
+
+This project was developed for academic purposes as part of the Computer Engineering course at ISTEC Porto.
+
+---
+
+## 📌 Final Notes
+
+The project is in continuous evolution, with new features, automated tests, and architectural improvements expected throughout development.
