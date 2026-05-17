@@ -15,6 +15,34 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
+            name='ClassStatus',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('status', models.CharField(max_length=50, unique=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Gender',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(max_length=50, unique=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Role',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('role', models.CharField(max_length=50, unique=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='UserStatus',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('status', models.CharField(max_length=50, unique=True)),
+            ],
+        ),
+        migrations.CreateModel(
             name='CustomUser',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -28,9 +56,15 @@ class Migration(migrations.Migration):
                 ('is_staff', models.BooleanField(default=False, help_text='Designates whether the user can log into this admin site.', verbose_name='staff status')),
                 ('is_active', models.BooleanField(default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.', verbose_name='active')),
                 ('date_joined', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date joined')),
+                ('name', models.CharField(blank=True, max_length=255)),
+                ('birth_date', models.DateField(blank=True, null=True)),
+                ('img_url', models.URLField(blank=True, max_length=500, null=True)),
                 ('role', models.CharField(choices=[('ADMIN', 'Admin'), ('TEACHER', 'Professor'), ('STUDENT', 'Aluno')], db_index=True, default='STUDENT', max_length=10)),
+                ('gender', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='api.gender')),
                 ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.group', verbose_name='groups')),
+                ('role_entity', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='api.role')),
                 ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.permission', verbose_name='user permissions')),
+                ('user_status', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='api.userstatus')),
             ],
             options={
                 'verbose_name': 'user',
@@ -42,20 +76,69 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Simulacao',
+            name='Scenario',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('titulo', models.CharField(max_length=100)),
-                ('rendimento_mensal', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('despesas_mensais', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('poupanca_estimada', models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True)),
+                ('family_name', models.CharField(max_length=100)),
+                ('initial_balance', models.DecimalField(decimal_places=2, default=0.0, max_digits=12)),
                 ('data_criacao', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='simulacoes', to='api.customuser')),
+                ('student', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='scenarios', to='api.customuser')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Objective',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('description', models.CharField(max_length=255)),
+                ('target_value', models.DecimalField(decimal_places=2, max_digits=12)),
+                ('term_months', models.IntegerField()),
+                ('scenario', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='objectives', to='api.scenario')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Entry',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('type', models.CharField(choices=[('INCOME', 'Receita'), ('EXPENSE', 'Despesa')], max_length=10)),
+                ('category', models.CharField(max_length=100)),
+                ('amount', models.DecimalField(decimal_places=2, max_digits=12)),
+                ('month', models.IntegerField()),
+                ('recurrence', models.BooleanField(default=False)),
+                ('scenario', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='entries', to='api.scenario')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='SimulationHistory',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('execution_date', models.DateTimeField(auto_now_add=True)),
+                ('json_results', models.JSONField()),
+                ('scenario', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='histories', to='api.scenario')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Turma',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('nome', models.CharField(max_length=100)),
+                ('codigo_adesao', models.CharField(db_index=True, max_length=10, unique=True)),
+                ('data_criacao', models.DateTimeField(auto_now_add=True)),
+                ('class_status', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='api.classstatus')),
+                ('professor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='turmas_criadas', to='api.customuser')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Inscricao',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('data_adesao', models.DateTimeField(auto_now_add=True)),
+                ('aluno', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='inscricoes', to='api.customuser')),
+                ('turma', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='alunos', to='api.turma')),
             ],
             options={
-                'verbose_name': 'Simulação',
-                'verbose_name_plural': 'Simulações',
-                'indexes': [models.Index(fields=['user', 'data_criacao'], name='api_simulac_user_id_4490c0_idx')],
+                'verbose_name': 'Inscrição',
+                'verbose_name_plural': 'Inscrições',
+                'unique_together': {('aluno', 'turma')},
             },
         ),
     ]

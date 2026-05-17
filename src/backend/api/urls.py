@@ -1,12 +1,23 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
-from .views import SimulacaoViewSet, CustomTokenObtainPairView
+from .views import (
+    CustomTokenObtainPairView,
+    TurmaViewSet,
+    InscricaoViewSet,
+    ScenarioViewSet,
+    EntryViewSet,
+    ObjectiveViewSet,
+    SimulationHistoryViewSet
+)
 
 router = DefaultRouter()
-router.register(r'simulacoes', SimulacaoViewSet, basename='simulacao')
 router.register(r'turmas', TurmaViewSet, basename='turma')
 router.register(r'inscricoes', InscricaoViewSet, basename='inscricao')
+router.register(r'scenarios', ScenarioViewSet, basename='scenario')
+router.register(r'entries', EntryViewSet, basename='entry')
+router.register(r'objectives', ObjectiveViewSet, basename='objective')
+router.register(r'histories', SimulationHistoryViewSet, basename='history')
 
 urlpatterns = [
     path('', include(router.urls)),
