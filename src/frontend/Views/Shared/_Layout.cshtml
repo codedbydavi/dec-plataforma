@@ -2,66 +2,75 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - DEC Platform</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - DEC</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Frontend.styles.css" asp-append-version="true" />
+    <style>
+        /* Force full height and remove scroll */
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Main content handles its own overflow if needed, but we aim for zero scroll */
+        }
+
+        .navbar { z-index: 1030; }
+        .footer { z-index: 1030; }
+
+        @@media (max-width: 768px) {
+            .navbar-brand { font-size: 1.2rem; }
+        }
+    </style>
 </head>
-<body class="d-flex flex-column min-vh-100 bg-light overflow-hidden-mobile">
+<body class="bg-light">
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm py-2">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-2 shadow-sm">
             <div class="container">
-                <a class="navbar-brand d-flex align-items-center fw-bold" asp-area="" asp-controller="Home" asp-action="Index">
+                <a class="navbar-brand fw-bold d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
                     <i class="bi bi-wallet2 text-primary me-2"></i> DEC
                 </a>
-                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1 ms-lg-3">
-                        <li class="nav-item">
-                            <a class="nav-link px-3" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        @if (User.Identity?.IsAuthenticated == true)
-                        {
-                            @if (User.IsInRole("ADMIN") || User.IsInRole("TEACHER"))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link px-3 fw-semibold text-info" asp-area="" asp-controller="Professor" asp-action="Dashboard">Management</a>
-                                </li>
+                <div class="navbar-collapse collapse">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item"><a class="nav-link px-3" asp-controller="Home" asp-action="Index">Home</a></li>
+                        @if (User.Identity?.IsAuthenticated == true) {
+                            @if (User.IsInRole("ADMIN") || User.IsInRole("TEACHER")) {
+                                <li class="nav-item"><a class="nav-link px-3 text-info" asp-controller="Professor" asp-action="Dashboard">Management</a></li>
                             }
                         }
                     </ul>
                     <ul class="navbar-nav align-items-center">
-                        @if (User.Identity?.IsAuthenticated == true)
-                        {
+                        @if (User.Identity?.IsAuthenticated == true) {
                             <li class="nav-item dropdown bg-secondary bg-opacity-25 rounded-pill px-2">
-                                <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" id="userDrop" data-bs-toggle="dropdown">
                                     <span class="badge bg-primary me-2">@User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value</span>
-                                    <span class="d-none d-md-inline">@User.Identity.Name</span>
+                                    <span>@User.Identity.Name</span>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" aria-labelledby="userDropdown">
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
                                     <li><a class="dropdown-item py-2" href="#"><i class="bi bi-person me-2"></i> Profile</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <form asp-controller="Auth" asp-action="Logout" method="post" class="px-3 py-1">
-                                            <button type="submit" class="btn btn-sm btn-danger w-100 rounded-pill mt-1">Logout</button>
+                                            <button type="submit" class="btn btn-sm btn-danger w-100 rounded-pill">Logout</button>
                                         </form>
                                     </li>
                                 </ul>
                             </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="btn btn-outline-light btn-sm rounded-pill px-3 me-2" asp-controller="Auth" asp-action="Login">Login</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm" asp-controller="Auth" asp-action="Register">Register</a>
-                            </li>
+                        } else {
+                            <li class="nav-item"><a class="btn btn-outline-light btn-sm rounded-pill px-3 me-2" asp-controller="Auth" asp-action="Login">Login</a></li>
+                            <li class="nav-item"><a class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm" asp-controller="Auth" asp-action="Register">Register</a></li>
                         }
                     </ul>
                 </div>
@@ -69,32 +78,25 @@
         </nav>
     </header>
 
-    <main role="main" class="flex-grow-1 d-flex flex-column overflow-auto">
+    <main role="main">
         @RenderBody()
     </main>
 
-    <footer class="footer mt-auto py-3 bg-dark text-white-50 border-top border-secondary border-opacity-25">
+    <footer class="footer py-2 bg-dark text-white-50 border-top border-secondary border-opacity-25">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
-                    <span class="text-white fw-bold d-inline-flex align-items-center">
-                        <i class="bi bi-wallet2 text-primary me-2"></i> DEC - Money at Home
-                    </span>
-                    <small class="ms-2">| Financial Literacy Platform</small>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center small text-center text-md-start">
+                <div>
+                    <span class="text-white fw-bold">DEC</span>
+                    <span class="ms-1 opacity-75">| Money at Home</span>
                 </div>
-                <div class="col-md-6">
-                    <ul class="nav justify-content-center justify-content-md-end small">
-                        <li class="nav-item">
-                            <a asp-controller="Home" asp-action="Privacy" class="nav-link px-2 text-white-50">Privacy Policy</a>
-                        </li>
-                        <li class="nav-item">
-                            <span class="nav-link px-2 text-white-50">| ISTEC Porto - Computer Science</span>
-                        </li>
-                    </ul>
+                <div class="mt-1 mt-md-0">
+                    <a asp-controller="Home" asp-action="Privacy" class="text-white-50 text-decoration-none me-2">Privacy Policy</a>
+                    <span class="opacity-50">| ISTEC Porto - Institutions</span>
                 </div>
             </div>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

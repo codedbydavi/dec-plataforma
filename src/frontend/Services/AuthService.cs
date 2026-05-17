@@ -1,4 +1,5 @@
 using Frontend.Models.DTOs;
+using Frontend.Models;
 
 namespace Frontend.Services
 {
