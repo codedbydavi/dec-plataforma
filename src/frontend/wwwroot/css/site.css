@@ -19,6 +19,38 @@ html {
 
 body {
   margin-bottom: 60px;
+  background-color: #f8f9fa;
+}
+
+/* Login Page Styles */
+.login-bg {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  border: none;
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+}
+
+.login-card:hover {
+  transform: translateY(-5px);
+}
+
+.btn-primary-gradient {
+  background: linear-gradient(to right, #667eea, #764ba2);
+  border: none;
+  color: white;
+  font-weight: 600;
+}
+
+.btn-primary-gradient:hover {
+  background: linear-gradient(to right, #5a6fd6, #694493);
+  color: white;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {

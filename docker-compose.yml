@@ -16,7 +16,11 @@ services:
   frontend:
     build:
       context: ./src/frontend
-    # No external ports exposed; accessed only internally via Nginx
+    volumes:
+      - ./src/frontend:/src
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ApiSettings__BaseUrl=http://backend:8000/api/
     depends_on:
       - backend
     networks:
@@ -26,13 +30,16 @@ services:
   backend:
     build:
       context: ./src/backend
-    # Uses variables from the global .env
+    volumes:
+      - ./src/backend:/app
     environment:
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DEBUG=${DEBUG}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
+      - DB_HOST=db
+      - DB_PORT=3306
       - MICROSERVICE_URL=http://service:5000
     depends_on:
       - db
@@ -44,13 +51,14 @@ services:
   service:
     build:
       context: ./src/service
-    # Microservice now also has access to DB credentials
+    volumes:
+      - ./src/service:/app
     environment:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
+      - DB_HOST=db
+      - DB_PORT=3306
     networks:
       - internal
 
