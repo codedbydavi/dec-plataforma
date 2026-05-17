@@ -2,13 +2,13 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import (
-    CustomUser, Turma, Inscricao, Scenario, Entry, Objective, SimulationHistory
+    CustomUser, ClassGroup, Enrollment, Scenario, Entry, Objective, SimulationHistory
 )
 from .serializers import (
     CustomTokenObtainPairSerializer, 
     UserSerializer, 
-    TurmaSerializer, 
-    InscricaoSerializer,
+    ClassGroupSerializer, 
+    EnrollmentSerializer,
     ScenarioSerializer,
     EntrySerializer,
     ObjectiveSerializer,
@@ -19,8 +19,8 @@ from .permissions import IsAdmin, IsTeacher, IsStudent
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
-class TurmaViewSet(viewsets.ModelViewSet):
-    serializer_class = TurmaSerializer
+class ClassGroupViewSet(viewsets.ModelViewSet):
+    serializer_class = ClassGroupSerializer
     
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
@@ -30,33 +30,31 @@ class TurmaViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if not user.is_authenticated:
-            return Turma.objects.none()
+            return ClassGroup.objects.none()
         if user.role == 'ADMIN':
-            return Turma.objects.all()
+            return ClassGroup.objects.all()
         if user.role == 'TEACHER':
-            return Turma.objects.filter(professor=user)
-        return Turma.objects.filter(alunos__aluno=user)
+            return ClassGroup.objects.filter(teacher=user)
+        return ClassGroup.objects.filter(students__student=user)
 
     def perform_create(self, serializer):
-        serializer.save(professor=self.request.user)
+        serializer.save(teacher=self.request.user)
 
-class InscricaoViewSet(viewsets.ModelViewSet):
-    serializer_class = InscricaoSerializer
+class EnrollmentViewSet(viewsets.ModelViewSet):
+    serializer_class = EnrollmentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Inscricao.objects.filter(aluno=self.request.user)
+        return Enrollment.objects.filter(student=self.request.user)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        turma = serializer.context['turma']
-        if Inscricao.objects.filter(aluno=request.user, turma=turma).exists():
-            return Response({"detail": "Já estás inscrito nesta turma."}, status=status.HTTP_400_BAD_REQUEST)
-        inscricao = Inscricao.objects.create(aluno=request.user, turma=turma)
-        return Response(InscricaoSerializer(inscricao).data, status=status.HTTP_201_CREATED)
-
-# --- Novas Views alinhadas com o Diagrama ER ---
+        class_group = serializer.context['class_group']
+        if Enrollment.objects.filter(student=request.user, class_group=class_group).exists():
+            return Response({"detail": "You are already enrolled in this class."}, status=status.HTTP_400_BAD_REQUEST)
+        enrollment = Enrollment.objects.create(student=request.user, class_group=class_group)
+        return Response(EnrollmentSerializer(enrollment).data, status=status.HTTP_201_CREATED)
 
 class ScenarioViewSet(viewsets.ModelViewSet):
     serializer_class = ScenarioSerializer

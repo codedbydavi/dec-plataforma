@@ -3,8 +3,8 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 from .views import (
     CustomTokenObtainPairView,
-    TurmaViewSet,
-    InscricaoViewSet,
+    ClassGroupViewSet,
+    EnrollmentViewSet,
     ScenarioViewSet,
     EntryViewSet,
     ObjectiveViewSet,
@@ -12,8 +12,8 @@ from .views import (
 )
 
 router = DefaultRouter()
-router.register(r'turmas', TurmaViewSet, basename='turma')
-router.register(r'inscricoes', InscricaoViewSet, basename='inscricao')
+router.register(r'classes', ClassGroupViewSet, basename='class')
+router.register(r'enrollments', EnrollmentViewSet, basename='enrollment')
 router.register(r'scenarios', ScenarioViewSet, basename='scenario')
 router.register(r'entries', EntryViewSet, basename='entry')
 router.register(r'objectives', ObjectiveViewSet, basename='objective')

@@ -1,7 +1,7 @@
 @model Frontend.Models.DTOs.TurmaDetalhesDto
 
 @{
-    ViewData["Title"] = $"Turma: {Model.Nome}";
+    ViewData["Title"] = $"Class: {Model.Nome}";
 }
 
 <div class="container mt-4">
@@ -17,11 +17,11 @@
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <h2 class="card-title">@Model.Nome</h2>
-                    <p class="text-muted">Gestão de alunos e progresso da turma.</p>
+                    <p class="text-muted">Manage students and class progress.</p>
                 </div>
                 <div class="col-md-4 text-end">
                     <div class="p-3 bg-light border rounded text-center">
-                        <small class="text-uppercase d-block text-muted mb-1">Código de Adesão</small>
+                        <small class="text-uppercase d-block text-muted mb-1">Join Code</small>
                         <h3 class="mb-0 text-primary fw-bold">@Model.Codigo_Adesao</h3>
                     </div>
                 </div>
@@ -29,15 +29,15 @@
         </div>
     </div>
 
-    <h3>Alunos Inscritos (@Model.Alunos.Count)</h3>
+    <h3>Enrolled Students (@Model.Alunos.Count)</h3>
     <div class="table-responsive bg-white rounded shadow-sm">
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
                 <tr>
-                    <th>Nome</th>
-                    <th>Utilizador</th>
+                    <th>Name</th>
+                    <th>Username</th>
                     <th>Email</th>
-                    <th class="text-end">Ações</th>
+                    <th class="text-end">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -45,7 +45,7 @@
                 {
                     <tr>
                         <td colspan="4" class="text-center py-4 text-muted">
-                            Nenhum aluno aderiu a esta turma através do código.
+                            No students have joined this class yet using the code.
                         </td>
                     </tr>
                 }
@@ -58,7 +58,7 @@
                             <td>@aluno.Username</td>
                             <td>@aluno.Email</td>
                             <td class="text-end">
-                                <button class="btn btn-sm btn-outline-info">Ver Progresso</button>
+                                <button class="btn btn-sm btn-outline-info">View Progress</button>
                                 <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
                             </td>
                         </tr>

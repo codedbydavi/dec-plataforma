@@ -4,13 +4,13 @@ namespace Frontend.Models
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "O nome de utilizador é obrigatório")]
-        [Display(Name = "Utilizador")]
+        [Required(ErrorMessage = "Username is required")]
+        [Display(Name = "Username")]
         public string Username { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "A palavra-passe é obrigatória")]
+        [Required(ErrorMessage = "Password is required")]
         [DataType(DataType.Password)]
-        [Display(Name = "Palavra-passe")]
+        [Display(Name = "Password")]
         public string Password { get; set; } = string.Empty;
 
         public string? ReturnUrl { get; set; }

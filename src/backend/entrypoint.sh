@@ -3,17 +3,17 @@
 # exit immediately if a command exits with a non-zero status
 set -e
 
-echo "Aguardando o banco de dados iniciar..."
+echo "Waiting for database to start..."
 
-# Lógica simples para esperar o MySQL estar pronto antes de rodar migrações
-# Tenta conectar ao DB até ter sucesso
+# Simple logic to wait for MySQL to be ready before running migrations
+# Try connecting to the DB until successful
 until python manage.py check --database default > /dev/null 2>&1; do
-  echo "MySQL ainda não está pronto. A aguardar..."
+  echo "MySQL is not ready yet. Waiting..."
   sleep 2
 done
 
-echo "Banco de dados pronto! A aplicar migrações..."
+echo "Database ready! Applying migrations..."
 python manage.py migrate --noinput
 
-echo "Migrações aplicadas. A iniciar o servidor Django..."
+echo "Migrations applied. Starting Django server..."
 exec python manage.py runserver 0.0.0.0:8000

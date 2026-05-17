@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import (
-    CustomUser, Turma, Inscricao, Scenario, Entry, Objective, SimulationHistory
+    CustomUser, ClassGroup, Enrollment, Scenario, Entry, Objective, SimulationHistory
 )
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -23,33 +23,33 @@ class UserSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ('id', 'username', 'email', 'role', 'name', 'gender', 'birth_date', 'img_url')
 
-class TurmaSerializer(serializers.ModelSerializer):
-    professor_name = serializers.ReadOnlyField(source='professor.username')
-    aluno_count = serializers.SerializerMethodField()
+class ClassGroupSerializer(serializers.ModelSerializer):
+    teacher_name = serializers.ReadOnlyField(source='teacher.username')
+    student_count = serializers.SerializerMethodField()
 
     class Meta:
-        model = Turma
-        fields = ('id', 'nome', 'professor', 'professor_name', 'codigo_adesao', 'aluno_count', 'data_criacao', 'class_status')
-        read_only_fields = ('professor', 'codigo_adesao')
+        model = ClassGroup
+        fields = ('id', 'name', 'teacher', 'teacher_name', 'join_code', 'student_count', 'created_at', 'class_status')
+        read_only_fields = ('teacher', 'join_code')
 
-    def get_aluno_count(self, obj):
-        return obj.alunos.count()
+    def get_student_count(self, obj):
+        return obj.students.count()
 
-class InscricaoSerializer(serializers.ModelSerializer):
-    turma_nome = serializers.ReadOnlyField(source='turma.nome')
-    codigo_adesao = serializers.CharField(write_only=True)
+class EnrollmentSerializer(serializers.ModelSerializer):
+    class_name = serializers.ReadOnlyField(source='class_group.name')
+    join_code = serializers.CharField(write_only=True)
 
     class Meta:
-        model = Inscricao
-        fields = ('id', 'turma', 'turma_nome', 'codigo_adesao', 'data_adesao')
-        read_only_fields = ('turma', 'data_adesao')
+        model = Enrollment
+        fields = ('id', 'class_group', 'class_name', 'join_code', 'enrolled_at')
+        read_only_fields = ('class_group', 'enrolled_at')
 
-    def validate_codigo_adesao(self, value):
+    def validate_join_code(self, value):
         try:
-            turma = Turma.objects.get(codigo_adesao=value)
-            self.context['turma'] = turma
-        except Turma.DoesNotExist:
-            raise serializers.ValidationError("Código de adesão inválido.")
+            class_group = ClassGroup.objects.get(join_code=value)
+            self.context['class_group'] = class_group
+        except ClassGroup.DoesNotExist:
+            raise serializers.ValidationError("Invalid join code.")
         return value
 
 class EntrySerializer(serializers.ModelSerializer):
@@ -74,5 +74,5 @@ class ScenarioSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Scenario
-        fields = ('id', 'student', 'family_name', 'initial_balance', 'data_criacao', 'entries', 'objectives', 'histories')
+        fields = ('id', 'student', 'family_name', 'initial_balance', 'created_at', 'entries', 'objectives', 'histories')
         read_only_fields = ('student',)
