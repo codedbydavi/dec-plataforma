@@ -9,11 +9,11 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Frontend.styles.css" asp-append-version="true" />
 </head>
-<body class="d-flex flex-column min-vh-100 bg-light">
+<body class="d-flex flex-column min-vh-100 bg-light overflow-hidden-mobile">
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm py-3">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm py-2">
             <div class="container">
-                <a class="navbar-brand d-flex align-items-center fw-bold fs-3" asp-area="" asp-controller="Home" asp-action="Index">
+                <a class="navbar-brand d-flex align-items-center fw-bold" asp-area="" asp-controller="Home" asp-action="Index">
                     <i class="bi bi-wallet2 text-primary me-2"></i> DEC
                 </a>
                 <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -21,19 +21,16 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1 ms-lg-4">
+                    <ul class="navbar-nav flex-grow-1 ms-lg-3">
                         <li class="nav-item">
                             <a class="nav-link px-3" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         @if (User.Identity?.IsAuthenticated == true)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link px-3" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                            </li>
                             @if (User.IsInRole("ADMIN") || User.IsInRole("TEACHER"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link px-3 fw-semibold text-info" asp-area="" asp-controller="Professor" asp-action="Dashboard">Class Management</a>
+                                    <a class="nav-link px-3 fw-semibold text-info" asp-area="" asp-controller="Professor" asp-action="Dashboard">Management</a>
                                 </li>
                             }
                         }
@@ -41,7 +38,7 @@
                     <ul class="navbar-nav align-items-center">
                         @if (User.Identity?.IsAuthenticated == true)
                         {
-                            <li class="nav-item dropdown bg-secondary bg-opacity-25 rounded-pill px-2 py-1">
+                            <li class="nav-item dropdown bg-secondary bg-opacity-25 rounded-pill px-2">
                                 <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <span class="badge bg-primary me-2">@User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value</span>
                                     <span class="d-none d-md-inline">@User.Identity.Name</span>
@@ -60,10 +57,10 @@
                         else
                         {
                             <li class="nav-item">
-                                <a class="btn btn-outline-light rounded-pill px-4 me-2" asp-controller="Auth" asp-action="Login">Login</a>
+                                <a class="btn btn-outline-light btn-sm rounded-pill px-3 me-2" asp-controller="Auth" asp-action="Login">Login</a>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-primary rounded-pill px-4 shadow-sm" href="#">Register</a>
+                                <a class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm" asp-controller="Auth" asp-action="Register">Register</a>
                             </li>
                         }
                     </ul>
@@ -72,35 +69,29 @@
         </nav>
     </header>
 
-    <main role="main" class="flex-shrink-0">
+    <main role="main" class="flex-grow-1 d-flex flex-column overflow-auto">
         @RenderBody()
     </main>
 
-    <footer class="footer mt-auto py-5 bg-dark text-white-50 border-top border-secondary border-opacity-25">
+    <footer class="footer mt-auto py-3 bg-dark text-white-50 border-top border-secondary border-opacity-25">
         <div class="container">
-            <div class="row">
-                <div class="col-md-6 mb-4 mb-md-0">
-                    <h5 class="text-white fw-bold d-flex align-items-center mb-3">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start mb-2 mb-md-0">
+                    <span class="text-white fw-bold d-inline-flex align-items-center">
                         <i class="bi bi-wallet2 text-primary me-2"></i> DEC - Money at Home
-                    </h5>
-                    <p class="small">A leading platform for domestic economy simulation and financial literacy education for secondary school students.</p>
+                    </span>
+                    <small class="ms-2">| Financial Literacy Platform</small>
                 </div>
-                <div class="col-6 col-md-3">
-                    <h6 class="text-white fw-bold mb-3">Resources</h6>
-                    <ul class="list-unstyled small">
-                        <li><a href="/api/docs/" class="text-white-50 text-decoration-none">API Documentation</a></li>
-                        <li><a asp-controller="Home" asp-action="Privacy" class="text-white-50 text-decoration-none">Privacy Policy</a></li>
+                <div class="col-md-6">
+                    <ul class="nav justify-content-center justify-content-md-end small">
+                        <li class="nav-item">
+                            <a asp-controller="Home" asp-action="Privacy" class="nav-link px-2 text-white-50">Privacy Policy</a>
+                        </li>
+                        <li class="nav-item">
+                            <span class="nav-link px-2 text-white-50">| ISTEC Porto - Computer Science</span>
+                        </li>
                     </ul>
                 </div>
-                <div class="col-6 col-md-3">
-                    <h6 class="text-white fw-bold mb-3">Institution</h6>
-                    <p class="small mb-0">ISTEC Porto</p>
-                    <p class="small">Computer Science Course</p>
-                </div>
-            </div>
-            <hr class="my-4 border-secondary opacity-25">
-            <div class="text-center small">
-                &copy; 2026 - DEC Platform - All Rights Reserved
             </div>
         </div>
     </footer>

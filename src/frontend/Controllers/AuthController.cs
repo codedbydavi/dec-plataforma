@@ -73,6 +73,34 @@ namespace Frontend.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public IActionResult Register()
+        {
+            if (User.Identity?.IsAuthenticated == true)
+                return RedirectToAction("Index", "Home");
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var success = await _authService.RegisterAsync(model);
+
+            if (success)
+            {
+                TempData["SuccessMessage"] = "Registration successful! You can now log in.";
+                return RedirectToAction("Login");
+            }
+
+            ModelState.AddModelError(string.Empty, "Registration failed. Username might already exist.");
+            return View(model);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Logout()
         {

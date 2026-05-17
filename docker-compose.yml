@@ -1,5 +1,5 @@
 services:
-  # Nginx acting as a Reverse Proxy on port 443 (and 80 for redirection)
+  # Nginx acting as a Reverse Proxy
   nginx:
     image: nginx:latest
     ports:
@@ -16,10 +16,13 @@ services:
   frontend:
     build:
       context: ./src/frontend
+      dockerfile: Dockerfile.dev
     volumes:
-      - ./src/frontend:/src
+      - ./src/frontend:/app
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
       - ApiSettings__BaseUrl=http://backend:8000/api/
     depends_on:
       - backend
@@ -75,7 +78,7 @@ services:
     networks:
       - internal
 
-# Internal Docker Network to protect container communication
+# Internal Docker Network
 networks:
   internal:
     driver: bridge

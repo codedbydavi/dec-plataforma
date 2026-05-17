@@ -23,6 +23,23 @@ class UserSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ('id', 'username', 'email', 'role', 'name', 'gender', 'birth_date', 'img_url')
 
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email', 'password', 'name')
+
+    def create(self, validated_data):
+        user = CustomUser.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data.get('email', ''),
+            password=validated_data['password'],
+            name=validated_data.get('name', ''),
+            role='STUDENT'  # Default role for self-registration
+        )
+        return user
+
 class ClassGroupSerializer(serializers.ModelSerializer):
     teacher_name = serializers.ReadOnlyField(source='teacher.username')
     student_count = serializers.SerializerMethodField()

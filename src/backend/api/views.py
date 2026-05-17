@@ -7,6 +7,7 @@ from .models import (
 from .serializers import (
     CustomTokenObtainPairSerializer, 
     UserSerializer, 
+    UserRegistrationSerializer,
     ClassGroupSerializer, 
     EnrollmentSerializer,
     ScenarioSerializer,
@@ -18,6 +19,10 @@ from .permissions import IsAdmin, IsTeacher, IsStudent
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+
+class UserRegistrationView(viewsets.GenericViewSet, viewsets.mixins.CreateModelMixin):
+    serializer_class = UserRegistrationSerializer
+    permission_classes = [permissions.AllowAny]
 
 class ClassGroupViewSet(viewsets.ModelViewSet):
     serializer_class = ClassGroupSerializer

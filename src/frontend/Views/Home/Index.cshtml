@@ -2,70 +2,71 @@
     ViewData["Title"] = "Welcome to DEC";
 }
 
-<div class="hero-section text-white py-5 mb-5 shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 0 0 2rem 2rem;">
-    <div class="container py-5 text-center">
-        <h1 class="display-3 fw-bold mb-3">Master Your Money</h1>
-        <p class="lead fs-4 mb-4 opacity-75">Empowering students with real-world financial literacy through simulation.</p>
-        @if (User.Identity?.IsAuthenticated != true)
-        {
-            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mt-4">
-                <a asp-controller="Auth" asp-action="Login" class="btn btn-light btn-lg px-5 py-3 fw-bold text-primary rounded-pill shadow-sm">Get Started <i class="bi bi-rocket-takeoff ms-2"></i></a>
-            </div>
-        }
-        else
-        {
-            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mt-4">
-                <a asp-controller="Professor" asp-action="Dashboard" class="btn btn-light btn-lg px-5 py-3 fw-bold text-primary rounded-pill shadow-sm">Go to Dashboard <i class="bi bi-speedometer2 ms-2"></i></a>
-            </div>
-        }
-    </div>
-</div>
-
-<div class="container my-5">
-    <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
-        <div class="feature col text-center px-4">
-            <div class="feature-icon d-inline-flex align-items-center justify-content-center bg-primary bg-gradient text-white fs-2 mb-3 rounded-3 shadow" style="width: 4rem; height: 4rem;">
-                <i class="bi bi-bank"></i>
-            </div>
-            <h3 class="fs-4 fw-bold text-dark">Family Scenarios</h3>
-            <p class="text-muted">Create virtual family profiles, manage budgets, and track monthly income and expenses in a safe environment.</p>
-        </div>
-        <div class="feature col text-center px-4">
-            <div class="feature-icon d-inline-flex align-items-center justify-content-center bg-success bg-gradient text-white fs-2 mb-3 rounded-3 shadow" style="width: 4rem; height: 4rem;">
-                <i class="bi bi-graph-up-arrow"></i>
-            </div>
-            <h3 class="fs-4 fw-bold text-dark">Real Simulations</h3>
-            <p class="text-muted">Run complex financial simulations using our advanced calculation engine to see the impact of your decisions.</p>
-        </div>
-        <div class="feature col text-center px-4">
-            <div class="feature-icon d-inline-flex align-items-center justify-content-center bg-info bg-gradient text-white fs-2 mb-3 rounded-3 shadow" style="width: 4rem; height: 4rem;">
-                <i class="bi bi-mortarboard"></i>
-            </div>
-            <h3 class="fs-4 fw-bold text-dark">Educational Goals</h3>
-            <p class="text-muted">Join classes, complete challenges, and set savings objectives to build a solid foundation for your future.</p>
+<div class="flex-grow-1 d-flex flex-column">
+    <!-- Hero Section: Compact and Responsive -->
+    <div class="hero-section text-white flex-grow-1 d-flex align-items-center shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 40vh;">
+        <div class="container py-4 text-center">
+            <h1 class="display-4 fw-bold mb-2">Master Your Money</h1>
+            <p class="lead mb-4 opacity-75">Empowering students with real-world financial literacy through simulation.</p>
+            @if (User.Identity?.IsAuthenticated != true)
+            {
+                <div class="d-flex justify-content-center gap-3">
+                    <a asp-controller="Auth" asp-action="Login" class="btn btn-light btn-lg px-4 py-2 fw-bold text-primary rounded-pill shadow-sm">Get Started</a>
+                </div>
+            }
+            else
+            {
+                <div class="d-flex justify-content-center gap-3">
+                    <a asp-controller="Professor" asp-action="Dashboard" class="btn btn-light btn-lg px-4 py-2 fw-bold text-primary rounded-pill shadow-sm">Dashboard</a>
+                </div>
+            }
         </div>
     </div>
-</div>
 
-<div class="bg-light py-5">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-7">
-                <h2 class="fw-bold text-dark mb-3">Designed for the Next Generation</h2>
-                <p class="text-muted fs-5">DEC - Money at Home provides a hands-on experience for secondary school students to learn about domestic economy, saving habits, and financial planning.</p>
-                <ul class="list-unstyled mt-4">
-                    <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i> Professional JWT Security</li>
-                    <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i> Microservices Architecture</li>
-                    <li class="mb-2"><i class="bi bi-check-circle-fill text-primary me-2"></i> Real-time Financial Calculations</li>
-                </ul>
+    <!-- Features Section: Scalable Grid -->
+    <div class="container py-4">
+        <div class="row g-4 row-cols-1 row-cols-md-3">
+            <div class="col text-center">
+                <div class="feature-icon d-inline-flex align-items-center justify-content-center bg-primary bg-gradient text-white fs-3 mb-2 rounded-circle shadow" style="width: 3.5rem; height: 3.5rem;">
+                    <i class="bi bi-bank"></i>
+                </div>
+                <h3 class="h5 fw-bold text-dark">Family Scenarios</h3>
+                <p class="small text-muted mb-0">Manage budgets and track monthly income and expenses.</p>
             </div>
-            <div class="col-lg-5 text-center">
-                <div class="p-5 bg-white shadow rounded-4 mt-4 mt-lg-0">
-                    <i class="bi bi-shield-lock-fill text-primary display-1 mb-3"></i>
-                    <h4 class="fw-bold">Secure & Private</h4>
-                    <p class="small text-muted">Your data is protected with industry-standard encryption and centralized security management.</p>
+            <div class="col text-center">
+                <div class="feature-icon d-inline-flex align-items-center justify-content-center bg-success bg-gradient text-white fs-3 mb-2 rounded-circle shadow" style="width: 3.5rem; height: 3.5rem;">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+                <h3 class="h5 fw-bold text-dark">Real Simulations</h3>
+                <p class="small text-muted mb-0">Run complex simulations using our advanced calculation engine.</p>
+            </div>
+            <div class="col text-center">
+                <div class="feature-icon d-inline-flex align-items-center justify-content-center bg-info bg-gradient text-white fs-3 mb-2 rounded-circle shadow" style="width: 3.5rem; height: 3.5rem;">
+                    <i class="bi bi-mortarboard"></i>
+                </div>
+                <h3 class="h5 fw-bold text-dark">Educational Goals</h3>
+                <p class="small text-muted mb-0">Join classes and complete challenges to build your future.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Promo: Clean & Focused -->
+    <div class="bg-white py-4 mt-auto border-top">
+        <div class="container">
+            <div class="row align-items-center justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h4 class="fw-bold text-dark mb-2">Designed for the Next Generation</h4>
+                    <p class="text-muted small mb-0">DEC provides a hands-on experience for secondary school students to learn about financial planning and secure saving habits.</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* Ensure no scroll on the main landing container for desktop */
+    @@media (min-width: 992px) {
+        body { overflow: hidden; }
+        main { height: calc(100vh - 120px); } /* Approx header + footer height */
+    }
+</style>

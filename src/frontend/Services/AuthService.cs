@@ -5,6 +5,7 @@ namespace Frontend.Services
     public interface IAuthService
     {
         Task<TokenResponseDto?> LoginAsync(LoginDto loginDto);
+        Task<bool> RegisterAsync(RegisterViewModel registerModel);
     }
 
     public class AuthService : IAuthService
@@ -27,6 +28,20 @@ namespace Frontend.Services
             }
 
             return null;
+        }
+
+        public async Task<bool> RegisterAsync(RegisterViewModel registerModel)
+        {
+            var client = _httpClientFactory.CreateClient("DecApi");
+            var response = await client.PostAsJsonAsync("register/", new 
+            {
+                username = registerModel.Username,
+                email = registerModel.Email,
+                password = registerModel.Password,
+                name = registerModel.Name
+            });
+
+            return response.IsSuccessStatusCode;
         }
     }
 }

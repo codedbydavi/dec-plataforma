@@ -20,6 +20,14 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
+            <!-- Back Button -->
+            <div class="mb-4">
+                <a asp-controller="Home" asp-action="Index" class="text-white text-decoration-none d-inline-flex align-items-center opacity-75 hover-opacity-100 transition-all">
+                    <i class="bi bi-arrow-left-circle fs-4 me-2"></i>
+                    <span>Back to Home</span>
+                </a>
+            </div>
+
             <div class="card login-card shadow-lg p-4 p-sm-5">
                 <div class="text-center mb-4">
                     <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-gradient text-white rounded-circle mb-3" style="width: 60px; height: 60px;">
@@ -35,13 +43,17 @@
 
                     <div class="form-floating mb-3">
                         <input asp-for="Username" class="form-control border-0 bg-light" placeholder="Username" id="floatingInput" />
-                        <label asp-for="Username" for="floatingInput">Username</label>
+                        <label asp-for="Username" for="floatingInput">
+                            <i class="bi bi-person me-2"></i> Username
+                        </label>
                         <span asp-validation-for="Username" class="text-danger small"></span>
                     </div>
 
                     <div class="form-floating mb-4">
                         <input asp-for="Password" class="form-control border-0 bg-light" placeholder="Password" id="floatingPassword" />
-                        <label asp-for="Password" for="floatingPassword">Password</label>
+                        <label asp-for="Password" for="floatingPassword">
+                            <i class="bi bi-lock me-2"></i> Password
+                        </label>
                         <span asp-validation-for="Password" class="text-danger small"></span>
                     </div>
 
@@ -51,8 +63,15 @@
                         </button>
                     </div>
 
-                    <div class="text-center small">
+                    <div class="text-center small mb-3">
                         <span class="text-muted">Forgot password?</span> <a href="#" class="text-decoration-none">Contact Admin</a>
+                    </div>
+
+                    <hr class="my-4 opacity-25">
+
+                    <div class="text-center">
+                        <p class="mb-0 text-muted">Don't have an account?</p>
+                        <a asp-action="Register" class="fw-bold text-primary text-decoration-none">Create an Account</a>
                     </div>
                 </form>
             </div>
@@ -64,6 +83,11 @@
         </div>
     </div>
 </div>
+
+<style>
+    .transition-all { transition: all 0.2s ease-in-out; }
+    .hover-opacity-100:hover { opacity: 1 !important; transform: translateX(-3px); }
+</style>
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
