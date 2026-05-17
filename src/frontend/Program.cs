@@ -28,6 +28,7 @@ builder.Services.AddHttpClient("DecApi", client =>
 using Frontend.Services;
 // Registrar serviços customizados (Clean Architecture)
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEducationService, EducationService>();
 
 var app = builder.Build();
 
