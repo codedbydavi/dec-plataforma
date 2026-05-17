@@ -5,6 +5,8 @@ from .views import SimulacaoViewSet, CustomTokenObtainPairView
 
 router = DefaultRouter()
 router.register(r'simulacoes', SimulacaoViewSet, basename='simulacao')
+router.register(r'turmas', TurmaViewSet, basename='turma')
+router.register(r'inscricoes', InscricaoViewSet, basename='inscricao')
 
 urlpatterns = [
     path('', include(router.urls)),

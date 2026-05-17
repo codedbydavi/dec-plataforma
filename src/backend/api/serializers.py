@@ -17,8 +17,37 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data['username'] = self.user.username
         return data
 
-class UserSerializer(serializers.ModelSerializer):
+class TurmaSerializer(serializers.ModelSerializer):
+    professor_name = serializers.ReadOnlyField(source='professor.username')
+    aluno_count = serializers.SerializerMethodField()
+
     class Meta:
+        model = Turma
+        fields = ('id', 'nome', 'professor', 'professor_name', 'codigo_adesao', 'aluno_count', 'data_criacao')
+        read_only_fields = ('professor', 'codigo_adesao')
+
+    def get_aluno_count(self, obj):
+        return obj.alunos.count()
+
+class InscricaoSerializer(serializers.ModelSerializer):
+    turma_nome = serializers.ReadOnlyField(source='turma.nome')
+    codigo_adesao = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = Inscricao
+        fields = ('id', 'turma', 'turma_nome', 'codigo_adesao', 'data_adesao')
+        read_only_fields = ('turma', 'data_adesao')
+
+    def validate_codigo_adesao(self, value):
+        try:
+            turma = Turma.objects.get(codigo_adesao=value)
+            self.context['turma'] = turma
+        except Turma.DoesNotExist:
+            raise serializers.ValidationError("Código de adesão inválido.")
+        return value
+
+class UserSerializer(serializers.ModelSerializer):
+...    class Meta:
         model = CustomUser
         fields = ('id', 'username', 'email', 'role')
 
