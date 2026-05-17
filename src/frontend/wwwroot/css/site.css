@@ -35,6 +35,12 @@ body {
   border: none;
   border-radius: 1rem;
   transition: all 0.3s ease;
+  width: 100%;
+  max-width: 450px; /* Fixed width for both */
+  min-height: 600px; /* Ensure same height */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .login-card:hover {
@@ -51,6 +57,29 @@ body {
 .btn-primary-gradient:hover {
   background: linear-gradient(to right, #5a6fd6, #694493);
   color: white;
+}
+
+/* Page Transitions */
+.page-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.page-fade-out {
+  animation: fadeOut 0.4s ease-in forwards;
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.98); }
+}
+
+.transition-link {
+  transition: all 0.3s ease;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
