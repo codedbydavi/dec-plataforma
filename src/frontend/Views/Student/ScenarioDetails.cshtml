@@ -1,0 +1,231 @@
+@model Frontend.Models.DTOs.ScenarioDto
+
+@{
+    ViewData["Title"] = $"Scenario: {Model.Family_Name} Family";
+}
+
+<div class="container mt-4 page-fade-in">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.Family_Name Family Scenario</li>
+      </ol>
+    </nav>
+
+    <!-- Header Section -->
+    <div class="card shadow-sm mb-4 border-primary border-top border-4">
+        <div class="card-body d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="card-title fw-bold text-primary mb-0">@Model.Family_Name Family</h2>
+                <p class="text-muted mb-0">Scenario created on @Model.Created_At.ToString("MMM dd, yyyy")</p>
+            </div>
+            <div class="text-end">
+                <h6 class="text-muted text-uppercase mb-1">Initial Balance</h6>
+                <h3 class="fw-bold mb-0">@Model.Initial_Balance.ToString("C")</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Financial Entries Section -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-list-columns-reverse text-primary me-2"></i>Financial Entries</h5>
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addEntryModal">
+                        <i class="bi bi-plus-circle me-1"></i> Add Entry
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    @if (!Model.Entries.Any())
+                    {
+                        <div class="text-center p-5 text-muted">
+                            <i class="bi bi-journal-text fs-1 mb-3 d-block opacity-50"></i>
+                            <p>No financial entries yet. Add your first income or expense.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Category</th>
+                                        <th>Amount</th>
+                                        <th>Month</th>
+                                        <th>Recurring</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var entry in Model.Entries.OrderBy(e => e.Month).ThenBy(e => e.Type))
+                                    {
+                                        <tr>
+                                            <td>
+                                                @if (entry.Type == "INCOME")
+                                                {
+                                                    <span class="badge bg-success">Income</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">Expense</span>
+                                                }
+                                            </td>
+                                            <td>@entry.Category</td>
+                                            <td class="fw-semibold">@entry.Amount.ToString("C")</td>
+                                            <td>Month @entry.Month</td>
+                                            <td>
+                                                @if (entry.Recurrence)
+                                                {
+                                                    <i class="bi bi-arrow-repeat text-info" title="Recurring"></i>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Objectives & Simulation Section -->
+        <div class="col-lg-4 mb-4">
+            <!-- Objectives -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-bullseye text-success me-2"></i>Savings Goals</h5>
+                    <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#addObjectiveModal">
+                        <i class="bi bi-plus-circle"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    @if (!Model.Objectives.Any())
+                    {
+                        <p class="text-muted small text-center my-3">No savings goals defined.</p>
+                    }
+                    else
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var obj in Model.Objectives)
+                            {
+                                <li class="list-group-item px-0">
+                                    <div class="d-flex justify-content-between w-100">
+                                        <h6 class="mb-1">@obj.Description</h6>
+                                        <span class="text-success fw-bold">@obj.Target_Value.ToString("C")</span>
+                                    </div>
+                                    <small class="text-muted">Target in @obj.Term_Months months</small>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+
+            <!-- Simulation Control -->
+            <div class="card shadow-sm border-0 bg-dark text-white text-center">
+                <div class="card-body py-4">
+                    <i class="bi bi-calculator display-4 mb-3 d-block text-warning"></i>
+                    <h4 class="fw-bold">Financial Engine</h4>
+                    <p class="small text-white-50 mb-4">Run the simulation to see if your goals are achievable.</p>
+                    <button class="btn btn-warning fw-bold btn-lg w-100 rounded-pill shadow">
+                        Run Simulation <i class="bi bi-play-fill"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Entry Modal -->
+<div class="modal fade" id="addEntryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="AddEntry" method="post">
+                <input type="hidden" name="ScenarioId" value="@Model.Id" />
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Financial Entry</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Type</label>
+                        <select name="Type" class="form-select" required>
+                            <option value="INCOME">Income</option>
+                            <option value="EXPENSE">Expense</option>
+                        </select>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input name="Category" type="text" class="form-control" id="entryCategory" placeholder="Category" required />
+                        <label for="entryCategory">Category (e.g., Salary, Rent)</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input name="Amount" type="number" step="0.01" class="form-control" id="entryAmount" placeholder="Amount" required />
+                        <label for="entryAmount">Amount ($)</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input name="Month" type="number" min="1" max="12" class="form-control" id="entryMonth" placeholder="Month" required />
+                        <label for="entryMonth">Month (1-12)</label>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" name="Recurrence" value="true" id="entryRecurrence">
+                        <label class="form-check-label" for="entryRecurrence">Recurring monthly</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Objective Modal -->
+<div class="modal fade" id="addObjectiveModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="AddObjective" method="post">
+                <input type="hidden" name="ScenarioId" value="@Model.Id" />
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Savings Goal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-floating mb-3">
+                        <input name="Description" type="text" class="form-control" id="objDesc" placeholder="Description" required />
+                        <label for="objDesc">Description (e.g., Buy a Car)</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input name="TargetValue" type="number" step="0.01" class="form-control" id="objTarget" placeholder="Target Value" required />
+                        <label for="objTarget">Target Amount ($)</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input name="TermMonths" type="number" min="1" class="form-control" id="objMonths" placeholder="Months" required />
+                        <label for="objMonths">Term (Months)</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save Goal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

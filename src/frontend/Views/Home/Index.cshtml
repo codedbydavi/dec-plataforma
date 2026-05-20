@@ -36,9 +36,15 @@
             }
             else
             {
-                <a asp-controller="Professor" asp-action="Dashboard" class="btn btn-light btn-lg px-5 py-3 fw-bold text-primary rounded-pill shadow-lg hover-scale transition-btn">
-                    Go to Dashboard <i class="bi bi-speedometer2 ms-2"></i>
-                </a>
+                @if (User.IsInRole("ADMIN") || User.IsInRole("TEACHER")) {
+                    <a asp-controller="Professor" asp-action="Dashboard" class="btn btn-light btn-lg px-5 py-3 fw-bold text-primary rounded-pill shadow-lg hover-scale transition-btn">
+                        Go to Dashboard <i class="bi bi-speedometer2 ms-2"></i>
+                    </a>
+                } else {
+                    <a asp-controller="Student" asp-action="Dashboard" class="btn btn-light btn-lg px-5 py-3 fw-bold text-primary rounded-pill shadow-lg hover-scale transition-btn">
+                        My Dashboard <i class="bi bi-person-workspace ms-2"></i>
+                    </a>
+                }
                 <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
                     <button type="submit" class="btn btn-outline-light btn-lg px-5 py-3 fw-bold rounded-pill hover-scale">Logout</button>
                 </form>

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Frontend.Services;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,11 +24,14 @@ builder.Services.AddTransient<AuthHeaderHandler>();
 builder.Services.AddHttpClient("DecApi", client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"] ?? "http://localhost:8000/api/");
+    client.DefaultRequestVersion = HttpVersion.Version11;
+    client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionExact;
 }).AddHttpMessageHandler<AuthHeaderHandler>();
 
-// Register Domain Services (Clean Architecture)
+// Register Domain Services for Dependency Injection
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEducationService, EducationService>();
+builder.Services.AddScoped<ISimulationService, SimulationService>();
 
 var app = builder.Build();
 
@@ -47,7 +51,7 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+    pattern: "{controller=Student}/{action=Dashboard}/{id?}")
     .WithStaticAssets();
 
 app.Run();

@@ -89,15 +89,15 @@ namespace Frontend.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var success = await _authService.RegisterAsync(model);
+            var result = await _authService.RegisterAsync(model);
 
-            if (success)
+            if (result.Success)
             {
                 TempData["SuccessMessage"] = "Registration successful! You can now log in.";
                 return RedirectToAction("Login");
             }
 
-            ModelState.AddModelError(string.Empty, "Registration failed. Username might already exist.");
+            ModelState.AddModelError(string.Empty, $"Registration failed: {result.Error}");
             return View(model);
         }
 

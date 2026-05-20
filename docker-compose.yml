@@ -68,6 +68,8 @@ services:
   # Container: MySQL (Database)
   db:
     image: mysql:8.0
+    ports:
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     environment:

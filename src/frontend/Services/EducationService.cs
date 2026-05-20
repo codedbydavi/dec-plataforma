@@ -4,8 +4,10 @@ namespace Frontend.Services
 {
     public interface IEducationService
     {
-        Task<List<TurmaDto>> GetMinhasTurmasAsync();
-        Task<TurmaDetalhesDto?> GetTurmaDetalhesAsync(int id);
+        Task<List<ClassGroupDto>> GetMyClassesAsync();
+        Task<ClassDetailsDto?> GetClassDetailsAsync(int id);
+        Task<bool> CreateClassAsync(string name);
+        Task<bool> JoinClassAsync(string joinCode);
     }
 
     public class EducationService : IEducationService
@@ -17,30 +19,44 @@ namespace Frontend.Services
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<List<TurmaDto>> GetMinhasTurmasAsync()
+        public async Task<List<ClassGroupDto>> GetMyClassesAsync()
         {
             var client = _httpClientFactory.CreateClient("DecApi");
-            var response = await client.GetAsync("turmas/");
+            var response = await client.GetAsync("classes/");
             
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadFromJsonAsync<List<TurmaDto>>() ?? new List<TurmaDto>();
+                return await response.Content.ReadFromJsonAsync<List<ClassGroupDto>>() ?? new List<ClassGroupDto>();
             }
             
-            return new List<TurmaDto>();
+            return new List<ClassGroupDto>();
         }
 
-        public async Task<TurmaDetalhesDto?> GetTurmaDetalhesAsync(int id)
+        public async Task<ClassDetailsDto?> GetClassDetailsAsync(int id)
         {
             var client = _httpClientFactory.CreateClient("DecApi");
-            var response = await client.GetAsync($"turmas/{id}/");
+            var response = await client.GetAsync($"classes/{id}/");
             
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadFromJsonAsync<TurmaDetalhesDto>();
+                return await response.Content.ReadFromJsonAsync<ClassDetailsDto>();
             }
             
             return null;
+        }
+
+        public async Task<bool> CreateClassAsync(string name)
+        {
+            var client = _httpClientFactory.CreateClient("DecApi");
+            var response = await client.PostAsJsonAsync("classes/", new { name });
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> JoinClassAsync(string joinCode)
+        {
+            var client = _httpClientFactory.CreateClient("DecApi");
+            var response = await client.PostAsJsonAsync("enrollments/", new { join_code = joinCode });
+            return response.IsSuccessStatusCode;
         }
     }
 }

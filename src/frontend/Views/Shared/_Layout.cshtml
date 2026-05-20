@@ -49,6 +49,9 @@
                             @if (User.IsInRole("ADMIN") || User.IsInRole("TEACHER")) {
                                 <li class="nav-item"><a class="nav-link px-3 text-info" asp-controller="Professor" asp-action="Dashboard">Management</a></li>
                             }
+                            @if (User.IsInRole("STUDENT")) {
+                                <li class="nav-item"><a class="nav-link px-3 text-info" asp-controller="Student" asp-action="Dashboard">My Dashboard</a></li>
+                            }
                         }
                     </ul>
                     <ul class="navbar-nav align-items-center">
