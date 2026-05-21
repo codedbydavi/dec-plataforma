@@ -44,7 +44,7 @@
                                     <div>
                                         <strong>@classGroup.Name</strong>
                                         <br/>
-                                        <small class="text-muted">Teacher: @classGroup.Teacher_Name</small>
+                                        <small class="text-muted">Teacher: @classGroup.Teacher?.FullName</small>
                                     </div>
                                     <span class="badge bg-secondary rounded-pill">Enrolled</span>
                                 </li>
@@ -75,8 +75,8 @@
                                 <div class="col-12 mb-3">
                                     <div class="card border-info">
                                         <div class="card-body">
-                                            <h6 class="card-title">@scenario.Family_Name Family</h6>
-                                            <p class="card-text mb-1"><small class="text-muted">Initial Balance: $@scenario.Initial_Balance</small></p>
+                                            <h6 class="card-title">@scenario.FamilyName Family</h6>
+                                            <p class="card-text mb-1"><small class="text-muted">Initial Balance: $@scenario.InitialBalance</small></p>
                                             <a asp-action="ScenarioDetails" asp-route-id="@scenario.Id" class="btn btn-sm btn-outline-info w-100">Manage Financials</a>
                                         </div>
                                     </div>
@@ -101,8 +101,8 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-floating mb-3">
-                        <input name="JoinCode" type="text" class="form-control" id="joinCodeInput" placeholder="DEC-XXXXXX" required />
-                        <label for="joinCodeInput">Class Code (e.g., DEC-XXXXXX)</label>
+                        <input name="JoinCode" type="text" class="form-control" id="joinCodeInput" placeholder="Join Code" required />
+                        <label for="joinCodeInput">Class Code (e.g., 123456)</label>
                     </div>
                 </div>
                 <div class="modal-footer">

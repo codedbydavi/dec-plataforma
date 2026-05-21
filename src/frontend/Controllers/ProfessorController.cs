@@ -1,31 +1,51 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Frontend.Services;
+using Microsoft.EntityFrameworkCore;
+using Frontend.Data;
+using Frontend.Models.Entities;
+using System.Security.Claims;
+using System.Linq;
+using System.Threading.Tasks;
+using System;
 
 namespace Frontend.Controllers
 {
-    [Authorize(Roles = "TEACHER,ADMIN")]
+    [Authorize]
     public class ProfessorController : Controller
     {
-        private readonly IEducationService _educationService;
+        private readonly ApplicationDbContext _context;
 
-        public ProfessorController(IEducationService educationService)
+        public ProfessorController(ApplicationDbContext context)
         {
-            _educationService = educationService;
+            _context = context;
         }
 
         public async Task<IActionResult> Dashboard()
         {
-            var turmas = await _educationService.GetMyClassesAsync();
-            return View(turmas);
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
+
+            var classes = await _context.Classrooms
+                .Where(c => c.TeacherId == userId)
+                .OrderByDescending(c => c.CreatedAt)
+                .ToListAsync();
+
+            return View(classes);
         }
 
         public async Task<IActionResult> ClassDetails(int id)
         {
-            var turma = await _educationService.GetClassDetailsAsync(id);
-            if (turma == null) return NotFound();
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
 
-            return View(turma);
+            var classroom = await _context.Classrooms
+                .Include(c => c.Enrollments)
+                .ThenInclude(e => e.Student)
+                .FirstOrDefaultAsync(c => c.Id == id && c.TeacherId == userId);
+
+            if (classroom == null) return NotFound();
+
+            return View(classroom);
         }
 
         [HttpPost]
@@ -38,18 +58,21 @@ namespace Frontend.Controllers
                 return RedirectToAction("Dashboard");
             }
 
-            var success = await _educationService.CreateClassAsync(name);
-            if (success)
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
+            
+            var newClass = new Classroom
             {
-                TempData["SuccessMessage"] = "Class created successfully!";
-            }
-            else
-            {
-                TempData["ErrorMessage"] = "Failed to create class.";
-            }
+                Name = name,
+                TeacherId = userId,
+                MemberCode = new Random().Next(100000, 999999)
+            };
 
+            _context.Classrooms.Add(newClass);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Class created successfully!";
             return RedirectToAction("Dashboard");
         }
     }
 }
-

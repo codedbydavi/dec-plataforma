@@ -1,4 +1,4 @@
-@model Frontend.Models.RegisterViewModel
+@model Frontend.Models.ViewModels.RegisterViewModel
 
 @{
     ViewData["Title"] = "Register";
@@ -38,11 +38,11 @@
             <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
 
             <div class="form-floating mb-2">
-                <input asp-for="Name" class="form-control border-0 bg-light" placeholder="Full Name" id="regName" />
-                <label asp-for="Name" for="regName">
-                    <i class="bi bi-card-heading me-2"></i> Full Name
+                <input asp-for="FullName" class="form-control border-0 bg-light" placeholder="Full FullName" id="regFullName" />
+                <label asp-for="FullName" for="regFullName">
+                    <i class="bi bi-card-heading me-2"></i> Full FullName
                 </label>
-                <span asp-validation-for="Name" class="text-danger small"></span>
+                <span asp-validation-for="FullName" class="text-danger small"></span>
             </div>
 
             <div class="form-floating mb-2">

@@ -1,4 +1,4 @@
-@model IEnumerable<Frontend.Models.DTOs.ClassGroupDto>
+@model IEnumerable<Frontend.Models.Entities.Classroom>
 
 @{
     ViewData["Title"] = "Professor Dashboard";
@@ -27,7 +27,7 @@
 
     @if (!Model.Any())
     {
-        <div class="alert alert-info">
+        <div class="alert alert-info shadow-sm">
             You haven't created any classes yet. Start by creating one to invite your students.
         </div>
     }
@@ -40,12 +40,12 @@
                     <div class="card shadow-sm h-100 border-primary border-top border-4">
                         <div class="card-body">
                             <h5 class="card-title fw-bold text-dark">@classGroup.Name</h5>
-                            <h6 class="card-subtitle mb-3 text-muted">Join Code: <span class="badge bg-primary text-white fs-6">@classGroup.Join_Code</span></h6>
+                            <h6 class="card-subtitle mb-3 text-muted">Join Code: <span class="badge bg-primary text-white fs-6">@classGroup.MemberCode</span></h6>
                             <p class="card-text mb-1">
-                                <i class="bi bi-people-fill text-secondary me-2"></i> @classGroup.Student_Count Enrolled Students
+                                <i class="bi bi-people-fill text-secondary me-2"></i> @classGroup.Enrollments.Count Enrolled Students
                             </p>
                             <p class="card-text text-muted small">
-                                <i class="bi bi-calendar-event text-secondary me-2"></i> Created on: @classGroup.Created_At.ToString("MM/dd/yyyy")
+                                <i class="bi bi-calendar-event text-secondary me-2"></i> Created on: @classGroup.CreatedAt.ToString("MM/dd/yyyy")
                             </p>
                         </div>
                         <div class="card-footer bg-transparent border-0 pt-0">

@@ -1,20 +1,21 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using Frontend.Models;
-using Frontend.Models.DTOs;
-using Frontend.Services;
+using Frontend.Models.Entities;
+using Frontend.Models.ViewModels;
 
 namespace Frontend.Controllers
 {
     public class AuthController : Controller
     {
-        private readonly IAuthService _authService;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public AuthController(IAuthService authService)
+        public AuthController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager)
         {
-            _authService = authService;
+            _signInManager = signInManager;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -33,38 +34,22 @@ namespace Frontend.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var loginDto = new LoginDto
+            var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, isPersistent: true, lockoutOnFailure: false);
+
+            if (result.Succeeded)
             {
-                Username = model.Username,
-                Password = model.Password
-            };
-
-            var result = await _authService.LoginAsync(loginDto);
-
-            if (result != null)
-            {
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, result.Username),
-                    new Claim(ClaimTypes.Role, result.Role),
-                    new Claim("JWToken", result.Access)
-                };
-
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-                var authProperties = new AuthenticationProperties
-                {
-                    IsPersistent = true,
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddHours(1)
-                };
-
-                await HttpContext.SignInAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    new ClaimsPrincipal(claimsIdentity),
-                    authProperties);
-
                 if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
                     return Redirect(model.ReturnUrl);
+
+                var user = await _userManager.FindByNameAsync(model.Username);
+                if (user != null)
+                {
+                    var roles = await _userManager.GetRolesAsync(user);
+                    if (roles.Contains("Professor"))
+                        return RedirectToAction("Dashboard", "Professor");
+                    if (roles.Contains("Student"))
+                        return RedirectToAction("Dashboard", "Student");
+                }
 
                 return RedirectToAction("Index", "Home");
             }
@@ -89,22 +74,38 @@ namespace Frontend.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var result = await _authService.RegisterAsync(model);
+            ApplicationUser user = model.Role == "Professor" ? new Professor() : new Student();
+            
+            user.UserName = model.Username;
+            user.Email = model.Email;
+            user.FullName = model.FullName;
+            user.UserStatusId = 1; // Default: Active
+            user.RoleId = model.Role == "Professor" ? 2 : 1; // Default Role mapping for business logic
+            user.GenderId = 1; // Default: Not Specified
 
-            if (result.Success)
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (result.Succeeded)
             {
+                // Assign Identity Role
+                await _userManager.AddToRoleAsync(user, model.Role);
+
                 TempData["SuccessMessage"] = "Registration successful! You can now log in.";
                 return RedirectToAction("Login");
             }
 
-            ModelState.AddModelError(string.Empty, $"Registration failed: {result.Error}");
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
             return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
 

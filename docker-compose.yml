@@ -12,7 +12,7 @@ services:
     networks:
       - internal
 
-  # Container: .NET MVC (Web Application)
+  # Container: .NET MVC (Educational Platform - CORE)
   frontend:
     build:
       context: ./src/frontend
@@ -23,14 +23,15 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
       - DOTNET_USE_POLLING_FILE_WATCHER=1
-      - ApiSettings__BaseUrl=http://backend:8000/api/
+      - ConnectionStrings__DefaultConnection=Server=db;Database=${MYSQL_DATABASE};User=${MYSQL_USER};Password=${MYSQL_PASSWORD};
+      - FinancialEngine__BaseUrl=http://calculation-engine:8000/api/
     depends_on:
-      - backend
+      - db
     networks:
       - internal
 
-  # Container: Django API (REST API)
-  backend:
+  # Container: Django (Financial Calculation Engine)
+  calculation-engine:
     build:
       context: ./src/backend
     volumes:
@@ -38,30 +39,7 @@ services:
     environment:
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
       - DEBUG=${DEBUG}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - DB_HOST=db
-      - DB_PORT=3306
-      - MICROSERVICE_URL=http://service:5000
-    depends_on:
-      - db
-      - service
-    networks:
-      - internal
-
-  # Container: Python Microservice (Financial Engine)
-  service:
-    build:
-      context: ./src/service
-    volumes:
-      - ./src/service:/app
-    environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - DB_HOST=db
-      - DB_PORT=3306
+      - ALLOWED_HOSTS=calculation-engine,localhost
     networks:
       - internal
 

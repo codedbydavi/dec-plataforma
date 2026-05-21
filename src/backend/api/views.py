@@ -1,95 +1,63 @@
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, status
 from rest_framework.response import Response
-from rest_framework_simplejwt.views import TokenObtainPairView
-from .models import (
-    CustomUser, ClassGroup, Enrollment, Scenario, Entry, Objective, SimulationHistory
-)
-from .serializers import (
-    CustomTokenObtainPairSerializer, 
-    UserSerializer, 
-    UserRegistrationSerializer,
-    ClassGroupSerializer, 
-    EnrollmentSerializer,
-    ScenarioSerializer,
-    EntrySerializer,
-    ObjectiveSerializer,
-    SimulationHistorySerializer
-)
-from .permissions import IsAdmin, IsTeacher, IsStudent
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny # Will be secured later
+from .serializers import FinancialDataSerializer, CalculationLogSerializer
+from .models import CalculationLog
+import decimal
 
-class CustomTokenObtainPairView(TokenObtainPairView):
-    serializer_class = CustomTokenObtainPairSerializer
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def calculate_financials(request):
+    """
+    Main calculation engine endpoint.
+    Receives raw financial data and returns computed indicators.
+    """
+    serializer = FinancialDataSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class UserRegistrationView(viewsets.GenericViewSet, viewsets.mixins.CreateModelMixin):
-    serializer_class = UserRegistrationSerializer
-    permission_classes = [permissions.AllowAny]
-
-class ClassGroupViewSet(viewsets.ModelViewSet):
-    serializer_class = ClassGroupSerializer
+    data = serializer.validated_data
+    initial_balance = data['initial_balance']
+    entries = data['entries']
     
-    def get_permissions(self):
-        if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            return [(IsTeacher | IsAdmin)()]
-        return [permissions.IsAuthenticated()]
+    # Simple logic to simulate calculations (effort rate, savings projection)
+    total_income = decimal.Decimal(0)
+    total_expenses = decimal.Decimal(0)
+    
+    for entry in entries:
+        amount = decimal.Decimal(str(entry.get('amount', 0)))
+        if entry.get('type') == 'INCOME':
+            total_income += amount
+        else:
+            total_expenses += amount
+            
+    effort_rate = (total_expenses / total_income * 100) if total_income > 0 else 100
+    monthly_savings = total_income - total_expenses
+    projection_12_months = initial_balance + (monthly_savings * 12)
 
-    def get_queryset(self):
-        user = self.request.user
-        if not user.is_authenticated:
-            return ClassGroup.objects.none()
-        if user.role == 'ADMIN':
-            return ClassGroup.objects.all()
-        if user.role == 'TEACHER':
-            return ClassGroup.objects.filter(teacher=user)
-        return ClassGroup.objects.filter(students__student=user)
+    results = {
+        "summary": {
+            "total_monthly_income": float(total_income),
+            "total_monthly_expenses": float(total_expenses),
+            "monthly_balance": float(monthly_savings),
+            "effort_rate_percentage": float(effort_rate)
+        },
+        "projections": {
+            "balance_after_12_months": float(projection_12_months),
+            "is_sustainable": effort_rate < 50
+        }
+    }
 
-    def perform_create(self, serializer):
-        serializer.save(teacher=self.request.user)
+    # Log the calculation
+    CalculationLog.objects.create(
+        request_data=request.data,
+        response_data=results
+    )
 
-class EnrollmentViewSet(viewsets.ModelViewSet):
-    serializer_class = EnrollmentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    return Response(results)
 
-    def get_queryset(self):
-        return Enrollment.objects.filter(student=self.request.user)
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        class_group = serializer.context['class_group']
-        if Enrollment.objects.filter(student=request.user, class_group=class_group).exists():
-            return Response({"detail": "You are already enrolled in this class."}, status=status.HTTP_400_BAD_REQUEST)
-        enrollment = Enrollment.objects.create(student=request.user, class_group=class_group)
-        return Response(EnrollmentSerializer(enrollment).data, status=status.HTTP_201_CREATED)
-
-class ScenarioViewSet(viewsets.ModelViewSet):
-    serializer_class = ScenarioSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        if self.request.user.role == 'ADMIN':
-            return Scenario.objects.all()
-        return Scenario.objects.filter(student=self.request.user)
-
-    def perform_create(self, serializer):
-        serializer.save(student=self.request.user)
-
-class EntryViewSet(viewsets.ModelViewSet):
-    serializer_class = EntrySerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        return Entry.objects.filter(scenario__student=self.request.user)
-
-class ObjectiveViewSet(viewsets.ModelViewSet):
-    serializer_class = ObjectiveSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        return Objective.objects.filter(scenario__student=self.request.user)
-
-class SimulationHistoryViewSet(viewsets.ModelViewSet):
-    serializer_class = SimulationHistorySerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        return SimulationHistory.objects.filter(scenario__student=self.request.user)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def health_check(request):
+    return Response({"status": "healthy", "service": "Calculation Engine"})
