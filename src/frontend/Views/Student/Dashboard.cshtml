@@ -1,3 +1,4 @@
+@model Frontend.Models.ViewModels.StudentDashboardViewModel
 @{
     ViewData["Title"] = "Student Dashboard";
 }
@@ -6,86 +7,115 @@
     @if (TempData["SuccessMessage"] != null)
     {
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["SuccessMessage"]
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
     @if (TempData["ErrorMessage"] != null)
     {
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            @TempData["ErrorMessage"]
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>My Dashboard</h1>
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h1 class="fw-bold text-dark">My Dashboard</h1>
+            <p class="text-muted">Welcome back! Here are your active classes and scenarios.</p>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#joinClassModal">
+                <i class="bi bi-person-plus-fill me-2"></i>Join Class
+            </button>
+        </div>
     </div>
 
     <div class="row">
-        <!-- Classes Section -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">My Classes</h5>
-                    <button class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#joinClassModal">Join Class</button>
-                </div>
-                <div class="card-body">
-                    @if (ViewBag.Classes == null || ((IEnumerable<dynamic>)ViewBag.Classes).Count() == 0)
+        <!-- Classes & Challenges Section -->
+        <div class="col-md-7 mb-4">
+            <h3 class="mb-3">My Classes</h3>
+            <div class="card shadow-sm mb-4 border-0">
+                <div class="card-body p-0">
+                    @if (!Model.Classes.Any())
                     {
-                        <p class="text-muted">You haven't joined any classes yet.</p>
+                        <div class="text-center py-5">
+                            <i class="bi bi-backpack2 fs-1 text-muted opacity-25"></i>
+                            <p class="text-muted mt-2">You haven't joined any classes yet.</p>
+                        </div>
                     }
                     else
                     {
                         <ul class="list-group list-group-flush">
-                            @foreach (var classGroup in ViewBag.Classes)
+                            @foreach (var classGroup in Model.Classes)
                             {
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <li class="list-group-item py-3 px-4 d-flex justify-content-between align-items-center">
                                     <div>
-                                        <strong>@classGroup.Name</strong>
-                                        <br/>
-                                        <small class="text-muted">Teacher: @classGroup.Teacher?.FullName</small>
+                                        <h5 class="mb-0 fw-bold">@classGroup.Name</h5>
+                                        <small class="text-muted"><i class="bi bi-person-workspace me-1"></i> Prof. @classGroup.Teacher?.FullName</small>
                                     </div>
-                                    <span class="badge bg-secondary rounded-pill">Enrolled</span>
+                                    <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">Enrolled</span>
                                 </li>
                             }
                         </ul>
                     }
                 </div>
             </div>
+
+            <h3 class="mb-3">Active Challenges</h3>
+            <div class="list-group shadow-sm border-0">
+                @if (!Model.Challenges.Any())
+                {
+                    <div class="card card-body text-center py-4 border-0 shadow-sm">
+                        <p class="text-muted mb-0 small">No challenges assigned yet.</p>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var challenge in Model.Challenges)
+                    {
+                        <a href="@challenge.AccessLink" target="_blank" class="list-group-item list-group-item-action py-3 px-4 border-0 border-start border-4 border-info mb-2 rounded shadow-sm">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <h6 class="mb-1 fw-bold text-info"><i class="bi bi-trophy-fill me-2"></i>@challenge.Name</h6>
+                                <i class="bi bi-box-arrow-up-right small"></i>
+                            </div>
+                            <small class="text-muted">Start this pedagogical activity.</small>
+                        </a>
+                    }
+                }
+            </div>
         </div>
 
         <!-- Scenarios Section -->
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">My Scenarios</h5>
-                    <button class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#createScenarioModal">New Scenario</button>
-                </div>
-                <div class="card-body">
-                    @if (ViewBag.Scenarios == null || ((IEnumerable<dynamic>)ViewBag.Scenarios).Count() == 0)
-                    {
-                        <p class="text-muted">You haven't created any scenarios yet.</p>
-                    }
-                    else
-                    {
-                        <div class="row">
-                            @foreach (var scenario in ViewBag.Scenarios)
-                            {
-                                <div class="col-12 mb-3">
-                                    <div class="card border-info">
-                                        <div class="card-body">
-                                            <h6 class="card-title">@scenario.FamilyName Family</h6>
-                                            <p class="card-text mb-1"><small class="text-muted">Initial Balance: $@scenario.InitialBalance</small></p>
-                                            <a asp-action="ScenarioDetails" asp-route-id="@scenario.Id" class="btn btn-sm btn-outline-info w-100">Manage Financials</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    }
-                </div>
+        <div class="col-md-5 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="mb-0">Financial Scenarios</h3>
+                <button class="btn btn-sm btn-success shadow-sm" data-bs-toggle="modal" data-bs-target="#createScenarioModal">
+                    <i class="bi bi-plus-lg"></i>
+                </button>
             </div>
+            
+            @if (!Model.Scenarios.Any())
+            {
+                <div class="card card-body text-center py-5 border-0 shadow-sm">
+                    <i class="bi bi-calculator fs-1 text-muted opacity-25 mb-3"></i>
+                    <p class="text-muted">No scenarios created yet.</p>
+                    <button class="btn btn-sm btn-outline-success mx-auto" data-bs-toggle="modal" data-bs-target="#createScenarioModal">Create Your First</button>
+                </div>
+            }
+            else
+            {
+                @foreach (var scenario in Model.Scenarios)
+                {
+                    <div class="card shadow-sm border-0 border-top border-4 border-success mb-3">
+                        <div class="card-body">
+                            <h5 class="fw-bold">@scenario.FamilyName Family</h5>
+                            <p class="mb-3 text-muted small">Initial Balance: <span class="text-dark fw-bold">@scenario.InitialBalance.ToString("C")</span></p>
+                            <a asp-action="ScenarioDetails" asp-route-id="@scenario.Id" class="btn btn-outline-success w-100 rounded-pill">Manage Financials</a>
+                        </div>
+                    </div>
+                }
+            }
         </div>
     </div>
 </div>
@@ -93,21 +123,21 @@
 <!-- Join Class Modal -->
 <div class="modal fade" id="joinClassModal" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content border-0 shadow">
             <form asp-action="JoinClass" method="post">
-                <div class="modal-header">
-                    <h5 class="modal-title">Join a Class</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold">Join a Class</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <div class="form-floating mb-3">
-                        <input name="JoinCode" type="text" class="form-control" id="joinCodeInput" placeholder="Join Code" required />
-                        <label for="joinCodeInput">Class Code (e.g., 123456)</label>
+                        <input asp-for="JoinClass.JoinCode" class="form-control" placeholder="Join Code" required />
+                        <label asp-for="JoinClass.JoinCode">Class Code (e.g., 123456)</label>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Join Class</button>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 shadow">Join Class</button>
                 </div>
             </form>
         </div>
@@ -117,25 +147,25 @@
 <!-- Create Scenario Modal -->
 <div class="modal fade" id="createScenarioModal" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content border-0 shadow">
             <form asp-action="CreateScenario" method="post">
-                <div class="modal-header">
-                    <h5 class="modal-title">Create New Scenario</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title fw-bold">Create New Scenario</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <div class="form-floating mb-3">
-                        <input name="FamilyName" type="text" class="form-control" id="familyNameInput" placeholder="Family Name" required />
-                        <label for="familyNameInput">Family Name</label>
+                        <input asp-for="CreateScenario.FamilyName" class="form-control" placeholder="Family Name" required />
+                        <label asp-for="CreateScenario.FamilyName">Family Name</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input name="InitialBalance" type="number" step="0.01" class="form-control" id="initialBalanceInput" placeholder="Initial Balance" required />
-                        <label for="initialBalanceInput">Initial Balance ($)</label>
+                        <input asp-for="CreateScenario.InitialBalance" type="number" step="0.01" class="form-control" placeholder="Initial Balance" required />
+                        <label asp-for="CreateScenario.InitialBalance">Initial Balance ($)</label>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-success">Create Scenario</button>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success rounded-pill px-4 shadow">Create Scenario</button>
                 </div>
             </form>
         </div>

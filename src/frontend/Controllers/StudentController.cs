@@ -1,30 +1,43 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Frontend.Data;
-using Frontend.Models;
 using Frontend.Models.Entities;
 using Frontend.Models.ViewModels;
+using Frontend.Models.DTOs;
+using Frontend.Services;
 using System.Security.Claims;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace Frontend.Controllers
 {
     [Authorize]
     public class StudentController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ISimulationService _simulationService;
+        private readonly ILogger<StudentController> _logger;
+        private readonly Data.ApplicationDbContext _context; 
 
-        public StudentController(ApplicationDbContext context)
+        public StudentController(
+            ISimulationService simulationService, 
+            ILogger<StudentController> logger,
+            Data.ApplicationDbContext context)
         {
+            _simulationService = simulationService;
+            _logger = logger;
             _context = context;
+        }
+
+        private int GetUserId()
+        {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            int.TryParse(userIdStr, out int userId);
+            return userId;
         }
 
         public async Task<IActionResult> Dashboard()
         {
-            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
+            int userId = GetUserId();
+            if (userId == 0) return Unauthorized();
             
             var enrollments = await _context.Enrollments
                 .Include(e => e.ClassGroup)
@@ -32,65 +45,26 @@ namespace Frontend.Controllers
                 .Where(e => e.StudentId == userId)
                 .ToListAsync();
 
-            var scenarios = await _context.Scenarios
-                .Where(s => s.StudentId == userId)
-                .OrderByDescending(s => s.CreatedAt)
+            var scenarios = await _simulationService.GetMyScenariosAsync(userId);
+
+            // Load challenges from all classes the student is enrolled in
+            var classIds = enrollments.Select(e => e.ClassGroupId).ToList();
+            var challenges = await _context.ChallengeAssignments
+                .Include(a => a.Challenge)
+                .Where(a => classIds.Contains(a.ClassroomId))
+                .Select(a => a.Challenge)
+                .Where(c => c != null)
+                .Cast<Challenge>()
                 .ToListAsync();
 
-            ViewBag.Classes = enrollments.Select(e => e.ClassGroup).ToList();
-            ViewBag.Scenarios = scenarios;
-
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> JoinClass(JoinClassViewModel model)
-        {
-            if (!ModelState.IsValid)
+            var viewModel = new StudentDashboardViewModel
             {
-                TempData["ErrorMessage"] = "Invalid join code format.";
-                return RedirectToAction("Dashboard");
-            }
-
-            if (!int.TryParse(model.JoinCode, out int memberCode))
-            {
-                TempData["ErrorMessage"] = "Join code must be a number.";
-                return RedirectToAction("Dashboard");
-            }
-
-            var classroom = await _context.Classrooms
-                .FirstOrDefaultAsync(c => c.MemberCode == memberCode);
-
-            if (classroom == null)
-            {
-                TempData["ErrorMessage"] = "Class not found.";
-                return RedirectToAction("Dashboard");
-            }
-
-            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
-            
-            var alreadyEnrolled = await _context.Enrollments
-                .AnyAsync(e => e.StudentId == userId && e.ClassGroupId == classroom.Id);
-
-            if (alreadyEnrolled)
-            {
-                TempData["ErrorMessage"] = "You are already enrolled in this class.";
-                return RedirectToAction("Dashboard");
-            }
-
-            var enrollment = new Enrollment
-            {
-                StudentId = userId,
-                ClassGroupId = classroom.Id
+                Classes = enrollments.Select(e => e.ClassGroup).Where(c => c != null).Cast<Classroom>().ToList(),
+                Scenarios = scenarios,
+                Challenges = challenges
             };
 
-            _context.Enrollments.Add(enrollment);
-            await _context.SaveChangesAsync();
-
-            TempData["SuccessMessage"] = "Successfully joined the class!";
-            return RedirectToAction("Dashboard");
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -103,18 +77,8 @@ namespace Frontend.Controllers
                 return RedirectToAction("Dashboard");
             }
 
-            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
-            
-            var scenario = new Scenario
-            {
-                StudentId = userId,
-                FamilyName = model.FamilyName,
-                InitialBalance = model.InitialBalance
-            };
-
-            _context.Scenarios.Add(scenario);
-            await _context.SaveChangesAsync();
+            int userId = GetUserId();
+            await _simulationService.CreateScenarioAsync(userId, model.FamilyName, (float)model.InitialBalance);
 
             TempData["SuccessMessage"] = "Scenario created successfully!";
             return RedirectToAction("Dashboard");
@@ -122,21 +86,33 @@ namespace Frontend.Controllers
 
         public async Task<IActionResult> ScenarioDetails(int id)
         {
-            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
-
-            var scenario = await _context.Scenarios
-                .Include(s => s.Entries)
-                .ThenInclude(e => e.EntryType)
-                .Include(s => s.Entries)
-                .ThenInclude(e => e.Category)
-                .Include(s => s.Objectives)
-                .Include(s => s.Histories)
-                .FirstOrDefaultAsync(s => s.Id == id && s.StudentId == userId);
+            int userId = GetUserId();
+            var scenario = await _simulationService.GetScenarioDetailsAsync(id, userId);
 
             if (scenario == null) return NotFound();
 
-            return View(scenario);
+            var latestHistory = scenario.Histories.OrderByDescending(h => h.ExecutionDate).FirstOrDefault();
+            CalculationResponseDto? lastResult = null;
+            if (latestHistory != null)
+            {
+                try {
+                    lastResult = JsonSerializer.Deserialize<CalculationResponseDto>(latestHistory.ResultsJson);
+                } catch {}
+            }
+
+            var viewModel = new ScenarioDetailsViewModel
+            {
+                Scenario = scenario,
+                EntryTypes = await _context.EntryTypes.ToListAsync(),
+                Categories = await _context.Categories.ToListAsync(),
+                LatestResult = lastResult,
+                LastRunDate = latestHistory?.ExecutionDate,
+                AddEntry = new AddEntryViewModel { ScenarioId = id },
+                AddObjective = new AddObjectiveViewModel { ScenarioId = id },
+                LoanSimulation = new LoanParamsDto()
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -149,31 +125,24 @@ namespace Frontend.Controllers
                 return RedirectToAction("ScenarioDetails", new { id = model.ScenarioId });
             }
 
-            // Logic to decide between Income or Expense based on TypeId or some logic
-            // For now, let's assume we use EntryType lookup to decide
-            var entryType = await _context.EntryTypes.FindAsync(model.TypeId);
-            FinancialEntry entry;
+            int userId = GetUserId();
+            var entryType = _context.EntryTypes.Find(model.TypeId);
+            var typeStr = entryType?.Type ?? "EXPENSE";
+            
+            var success = await _simulationService.AddEntryAsync(
+                model.ScenarioId, 
+                userId, 
+                typeStr, 
+                model.CategoryId, 
+                model.Amount, 
+                model.Month, 
+                model.Recurrence);
 
-            if (entryType?.Type == "INCOME")
-            {
-                entry = new Income();
-            }
+            if (success)
+                TempData["SuccessMessage"] = "Entry added successfully!";
             else
-            {
-                entry = new Expense();
-            }
+                TempData["ErrorMessage"] = "Failed to add entry.";
 
-            entry.ScenarioId = model.ScenarioId;
-            entry.TypeId = model.TypeId;
-            entry.CategoryId = model.CategoryId;
-            entry.Amount = model.Amount;
-            entry.Month = model.Month;
-            entry.Recurrence = model.Recurrence;
-
-            _context.FinancialEntries.Add(entry);
-            await _context.SaveChangesAsync();
-
-            TempData["SuccessMessage"] = "Entry added successfully!";
             return RedirectToAction("ScenarioDetails", new { id = model.ScenarioId });
         }
         
@@ -187,19 +156,62 @@ namespace Frontend.Controllers
                 return RedirectToAction("ScenarioDetails", new { id = model.ScenarioId });
             }
 
-            var objective = new Objective
-            {
-                ScenarioId = model.ScenarioId,
-                Description = model.Description,
-                TargetValue = model.TargetValue,
-                TargetMonths = model.TargetMonths
-            };
+            int userId = GetUserId();
+            var success = await _simulationService.AddObjectiveAsync(
+                model.ScenarioId, 
+                userId, 
+                model.Description, 
+                (float)model.TargetValue, 
+                model.TargetMonths);
 
-            _context.Objectives.Add(objective);
+            if (success)
+                TempData["SuccessMessage"] = "Objective added successfully!";
+            else
+                TempData["ErrorMessage"] = "Failed to add objective.";
+
+            return RedirectToAction("ScenarioDetails", new { id = model.ScenarioId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateScenario(int id, string familyName, float initialBalance)
+        {
+            int userId = GetUserId();
+            var scenario = await _context.Scenarios.FirstOrDefaultAsync(s => s.Id == id && s.StudentId == userId);
+            if (scenario == null) return NotFound();
+
+            scenario.FamilyName = familyName;
+            scenario.InitialBalance = initialBalance;
+
+            _context.Scenarios.Update(scenario);
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "Objective added successfully!";
-            return RedirectToAction("ScenarioDetails", new { id = model.ScenarioId });
+            TempData["SuccessMessage"] = "Scenario updated successfully!";
+            return RedirectToAction("ScenarioDetails", new { id = id });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RunSimulation(int scenarioId, LoanParamsDto? loanSimulation)
+        {
+            int userId = GetUserId();
+            
+            // If loanSimulation is provided with 0 values, treat it as null
+            if (loanSimulation != null && loanSimulation.Principal <= 0)
+            {
+                loanSimulation = null;
+            }
+
+            var result = await _simulationService.RunSimulationAsync(scenarioId, userId, loanSimulation);
+
+            if (result != null)
+            {
+                TempData["SuccessMessage"] = "Simulation completed successfully!";
+                return RedirectToAction("ScenarioDetails", new { id = scenarioId });
+            }
+
+            TempData["ErrorMessage"] = "Failed to run simulation. Please check your data and try again.";
+            return RedirectToAction("ScenarioDetails", new { id = scenarioId });
         }
     }
 }

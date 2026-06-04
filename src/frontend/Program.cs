@@ -49,7 +49,7 @@ builder.Services.AddHttpClient("FinancialEngine", client =>
 
 // Domain Services
 // builder.Services.AddScoped<IEducationService, EducationService>(); // Will be refactored to use DbContext
-// builder.Services.AddScoped<ISimulationService, SimulationService>(); // Will be refactored
+builder.Services.AddScoped<ISimulationService, SimulationService>(); 
 
 var app = builder.Build();
 

@@ -24,6 +24,7 @@ namespace Frontend.Data
         public DbSet<Objective> Objectives => Set<Objective>();
         public DbSet<Enrollment> Enrollments => Set<Enrollment>();
         public DbSet<SimulationHistory> SimulationHistories => Set<SimulationHistory>();
+        public DbSet<ChallengeAssignment> ChallengeAssignments => Set<ChallengeAssignment>();
 
         // Lookup Entities
         public DbSet<RoleLookup> RoleLookups => Set<RoleLookup>();
@@ -97,6 +98,14 @@ namespace Frontend.Data
                 entity.Property(e => e.MonthsToGoal).HasColumnName("Months_to_Goal");
                 entity.Property(e => e.EffortRate).HasColumnName("Effort_Rate");
                 entity.Property(e => e.ResultsJson).HasColumnName("json_Results");
+                entity.Property(e => e.Score).HasColumnName("Score");
+                entity.Property(e => e.Feedback).HasColumnName("Feedback");
+            });
+
+            builder.Entity<ChallengeAssignment>(entity => {
+                entity.ToTable("Class_Challenges");
+                entity.Property(e => e.ClassroomId).HasColumnName("Class_id");
+                entity.Property(e => e.ChallengeId).HasColumnName("Challenge_id");
             });
 
             // Lookups

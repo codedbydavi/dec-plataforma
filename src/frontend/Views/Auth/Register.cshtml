@@ -77,6 +77,17 @@
                 <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
             </div>
 
+            <div class="form-floating mb-3">
+                <select asp-for="Role" class="form-select border-0 bg-light" id="regRole">
+                    <option value="Student">Student</option>
+                    <option value="Professor">Professor</option>
+                </select>
+                <label asp-for="Role" for="regRole">
+                    <i class="bi bi-briefcase me-2"></i> Join as
+                </label>
+                <span asp-validation-for="Role" class="text-danger small"></span>
+            </div>
+
             <div class="d-grid mb-3">
                 <button type="submit" class="btn btn-success py-3 rounded-3 shadow-sm fw-bold border-0" style="background: linear-gradient(to right, #11998e, #38ef7d);">
                     Create Account <i class="bi bi-check2-circle ms-2"></i>

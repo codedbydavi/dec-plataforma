@@ -5,21 +5,19 @@
 
 ### Architecture & Stack
 - **Frontend:** ASP.NET Core 10.0 MVC (Centralized Security & UI)
-- **Backend:** Django 6.0 REST API (JWT Authentication)
-- **Microservice:** Python Flask (Financial Calculation Engine)
+- **Backend/Calculation Engine:** Django 6.0 REST API (Financial Calculation Engine)
 - **Database:** MySQL 8.0 (Schema v1.0 alingned with ERD)
 - **Infrastructure:** Docker, Docker Compose, Nginx as a Reverse Proxy
 - **CI/CD:** GitHub Actions
 
 ## Quick Access
 - **Portal:** `http://localhost`
-- **Swagger Docs:** `http://localhost/api/docs/`
+- **Django Engine API:** `http://localhost/api/calculate/`
 - **Django Admin:** `http://localhost/admin/`
 
 ## Directory Structure
 - `src/frontend/`: ASP.NET Core MVC application (.NET 10.0).
-- `src/backend/`: Django project with DRF, SimpleJWT, and auto-migrations.
-- `src/service/`: Python microservice with Clean Architecture (app/ factory pattern).
+- `src/backend/`: Django project acting as the Financial Calculation Engine.
 - `docker-compose.yml`: Root orchestration with database persistence (volumes).
 - `nginx/conf.d/default.conf`: Unified gateway routing.
 
@@ -37,6 +35,6 @@ docker-compose up --build
 ```
 
 ## Pending/TODO
-- [ ] Implement financial calculation logic in `src/service/app/services.py`.
+- [x] Implement financial calculation logic in `src/backend/api/services.py`.
 - [ ] Create Student Scenario form in Frontend (US_B015).
 - [ ] Implement Simulation History visualization.

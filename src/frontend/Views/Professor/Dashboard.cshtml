@@ -1,81 +1,193 @@
-@model IEnumerable<Frontend.Models.Entities.Classroom>
+@model Frontend.Models.ViewModels.ProfessorDashboardViewModel
 
 @{
     ViewData["Title"] = "Professor Dashboard";
 }
 
 <div class="container mt-4 page-fade-in">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>My Classes</h1>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createClassModal">Create New Class</button>
-    </div>
-
     @if (TempData["SuccessMessage"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="alert alert-success alert-dismissible fade show shadow-sm border-0" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
     @if (TempData["ErrorMessage"] != null)
     {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            @TempData["ErrorMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
-    @if (!Model.Any())
-    {
-        <div class="alert alert-info shadow-sm">
-            You haven't created any classes yet. Start by creating one to invite your students.
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h1 class="fw-bold text-dark">Professor Dashboard</h1>
+            <p class="text-muted">Manage your classes and pedagogical challenges.</p>
         </div>
-    }
-    else
-    {
-        <div class="row">
-            @foreach (var classGroup in Model)
-            {
-                <div class="col-md-4 mb-4">
-                    <div class="card shadow-sm h-100 border-primary border-top border-4">
-                        <div class="card-body">
-                            <h5 class="card-title fw-bold text-dark">@classGroup.Name</h5>
-                            <h6 class="card-subtitle mb-3 text-muted">Join Code: <span class="badge bg-primary text-white fs-6">@classGroup.MemberCode</span></h6>
-                            <p class="card-text mb-1">
-                                <i class="bi bi-people-fill text-secondary me-2"></i> @classGroup.Enrollments.Count Enrolled Students
-                            </p>
-                            <p class="card-text text-muted small">
-                                <i class="bi bi-calendar-event text-secondary me-2"></i> Created on: @classGroup.CreatedAt.ToString("MM/dd/yyyy")
-                            </p>
-                        </div>
-                        <div class="card-footer bg-transparent border-0 pt-0">
-                            <a asp-action="ClassDetails" asp-route-id="@classGroup.Id" class="btn btn-outline-primary btn-sm w-100">View Details / Students</a>
+        <div class="col-auto">
+            <button class="btn btn-primary shadow-sm rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#createClassModal">
+                <i class="bi bi-plus-lg me-2"></i>New Class
+            </button>
+            <button class="btn btn-info shadow-sm text-white rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#createChallengeModal">
+                <i class="bi bi-flag-fill me-2"></i>New Challenge
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Classes List -->
+        <div class="col-lg-8">
+            <h3 class="mb-3 fw-bold"><i class="bi bi-backpack2 me-2 text-primary"></i>My Classes</h3>
+            <div class="row g-4">
+                @if (!Model.Classes.Any())
+                {
+                    <div class="col-12">
+                        <div class="card card-body text-center py-5 border-0 shadow-sm">
+                            <i class="bi bi-mortarboard display-1 text-muted opacity-25 mb-3"></i>
+                            <p class="text-muted">No classes created yet. Start by creating one!</p>
                         </div>
                     </div>
-                </div>
-            }
+                }
+                @foreach (var classGroup in Model.Classes)
+                {
+                    <div class="col-md-6">
+                        <div class="card shadow-sm h-100 border-0 border-top border-4 border-primary">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title fw-bold text-dark mb-0">@classGroup.Name</h5>
+                                    <span class="badge bg-light text-primary border border-primary border-opacity-25 rounded-pill px-3">Active</span>
+                                </div>
+                                <h6 class="card-subtitle mb-4 text-muted small">Join Code: <span class="fw-bold text-dark">@classGroup.MemberCode</span></h6>
+                                
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="avatar-group me-3">
+                                        <i class="bi bi-people-fill fs-4 text-secondary"></i>
+                                    </div>
+                                    <div>
+                                        <p class="mb-0 fw-bold">@classGroup.Enrollments.Count Students</p>
+                                        <small class="text-muted">Enrolled in this class</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white border-0 pb-3 pt-0">
+                                <a asp-action="ClassDetails" asp-route-id="@classGroup.Id" class="btn btn-outline-primary w-100 rounded-pill fw-bold">
+                                    <i class="bi bi-gear-fill me-2"></i>Manage Class
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
-    }
+
+        <!-- Challenges List -->
+        <div class="col-lg-4">
+            <h3 class="mb-3 fw-bold"><i class="bi bi-trophy me-2 text-info"></i>Global Challenges</h3>
+            <div class="list-group list-group-flush shadow-sm rounded border overflow-hidden">
+                @if (!Model.GlobalChallenges.Any())
+                {
+                    <div class="list-group-item text-center py-5 text-muted">
+                        <small>No challenges created yet.</small>
+                    </div>
+                }
+                @foreach (var challenge in Model.GlobalChallenges)
+                {
+                    <div class="list-group-item list-group-item-action py-3 border-start border-4 border-info">
+                        <div class="d-flex w-100 justify-content-between align-items-center mb-2">
+                            <h6 class="mb-0 fw-bold text-dark">@challenge.Name</h6>
+                            <button class="btn btn-sm btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#assignModal@(challenge.Id)" title="Assign to Class">
+                                <i class="bi bi-plus-circle-fill fs-5"></i>
+                            </button>
+                        </div>
+                        <p class="mb-2 small text-muted text-truncate">
+                            <i class="bi bi-link-45deg me-1"></i> <a href="@challenge.AccessLink" target="_blank">View Resource</a>
+                        </p>
+                        <small class="text-muted">Created: @challenge.CreatedAt.ToString("MM/dd/yyyy")</small>
+                    </div>
+
+                    <!-- Assign Modal for each challenge -->
+                    <div class="modal fade" id="assignModal@(challenge.Id)" tabindex="-1">
+                        <div class="modal-dialog modal-sm">
+                            <div class="modal-content border-0 shadow">
+                                <form asp-action="AssignChallenge" method="post">
+                                    <input type="hidden" name="ChallengeId" value="@challenge.Id" />
+                                    <div class="modal-header bg-dark text-white py-2">
+                                        <h6 class="modal-title">Assign Challenge</h6>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body p-3">
+                                        <p class="small text-muted mb-3">Select a class for: <strong>@challenge.Name</strong></p>
+                                        <select name="ClassroomId" class="form-select form-select-sm mb-3" required>
+                                            <option value="">-- Choose Class --</option>
+                                            @foreach (var c in Model.Classes)
+                                            {
+                                                <option value="@c.Id">@c.Name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="modal-footer border-0 p-2">
+                                        <button type="submit" class="btn btn-primary btn-sm w-100 rounded-pill">Assign Now</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Create Class Modal -->
 <div class="modal fade" id="createClassModal" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content border-0 shadow">
             <form asp-action="CreateClass" method="post">
-                <div class="modal-header">
-                    <h5 class="modal-title">Create New Class</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold">Create a New Class</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body p-4 text-dark">
                     <div class="form-floating mb-3">
-                        <input name="name" type="text" class="form-control" id="classNameInput" placeholder="Class Name" required />
-                        <label for="classNameInput">Class Name (e.g., 10th Grade Math)</label>
+                        <input name="name" type="text" class="form-control" id="className" placeholder="Class Name" required />
+                        <label for="className">Class Name (e.g., Mathematics 101)</label>
+                    </div>
+                    <div class="alert alert-warning small border-0">
+                        <i class="bi bi-info-circle-fill me-2"></i> A unique 6-digit join code will be automatically generated.
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create Class</button>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 shadow">Create Class</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Create Challenge Modal -->
+<div class="modal fade" id="createChallengeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <form asp-action="CreateChallenge" method="post">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title fw-bold">Create Pedagogical Challenge</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 text-dark">
+                    <div class="form-floating mb-3">
+                        <input asp-for="CreateChallenge.Name" class="form-control" placeholder="Challenge Name" required />
+                        <label asp-for="CreateChallenge.Name">Challenge Title</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="CreateChallenge.AccessLink" type="url" class="form-control" placeholder="Access Link" required />
+                        <label asp-for="CreateChallenge.AccessLink">Resource URL (e.g. YouTube, PDF, Form)</label>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-info text-white rounded-pill px-4 shadow">Save Challenge</button>
                 </div>
             </form>
         </div>

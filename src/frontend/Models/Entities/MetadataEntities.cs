@@ -24,7 +24,22 @@ namespace Frontend.Models.Entities
         public float EffortRate { get; set; }
         public string ResultsJson { get; set; } = "{}";
 
+        // Evaluation fields (US_C015)
+        public float? Score { get; set; }
+        public string? Feedback { get; set; }
+
         public virtual Scenario? Scenario { get; set; }
+    }
+
+    public class ChallengeAssignment
+    {
+        public int Id { get; set; }
+        public int ChallengeId { get; set; }
+        public int ClassroomId { get; set; }
+        public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
+
+        public virtual Challenge? Challenge { get; set; }
+        public virtual Classroom? Classroom { get; set; }
     }
 
     // Lookup Entities (MER alignment)
