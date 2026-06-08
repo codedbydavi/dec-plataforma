@@ -19,6 +19,6 @@ namespace Frontend.Models.ViewModels
         [Required]
         public string Month { get; set; } = string.Empty;
 
-        public string Recurrence { get; set; } = "Monthly";
+        public bool Recurrence { get; set; }
     }
 }

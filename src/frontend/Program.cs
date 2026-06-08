@@ -45,6 +45,11 @@ builder.Services.AddHttpClient("FinancialEngine", client =>
     client.BaseAddress = new Uri(builder.Configuration["FinancialEngine:BaseUrl"] ?? "http://calculation-engine:8000/api/");
     client.DefaultRequestVersion = HttpVersion.Version11;
     client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionExact;
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    // Ensure we don't use chunked encoding which Django's runserver struggles with
+    UseProxy = false,
+    AllowAutoRedirect = false
 });
 
 // Domain Services

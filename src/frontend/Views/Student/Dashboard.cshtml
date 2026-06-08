@@ -131,8 +131,8 @@
                 </div>
                 <div class="modal-body p-4">
                     <div class="form-floating mb-3">
-                        <input asp-for="JoinClass.JoinCode" class="form-control" placeholder="Join Code" required />
-                        <label asp-for="JoinClass.JoinCode">Class Code (e.g., 123456)</label>
+                        <input name="JoinCode" class="form-control" placeholder="Join Code" required />
+                        <label>Class Code (e.g., 123456)</label>
                     </div>
                 </div>
                 <div class="modal-footer border-0">
@@ -155,12 +155,12 @@
                 </div>
                 <div class="modal-body p-4">
                     <div class="form-floating mb-3">
-                        <input asp-for="CreateScenario.FamilyName" class="form-control" placeholder="Family Name" required />
-                        <label asp-for="CreateScenario.FamilyName">Family Name</label>
+                        <input name="FamilyName" class="form-control" placeholder="Family Name" required />
+                        <label>Family Name</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input asp-for="CreateScenario.InitialBalance" type="number" step="0.01" class="form-control" placeholder="Initial Balance" required />
-                        <label asp-for="CreateScenario.InitialBalance">Initial Balance ($)</label>
+                        <input name="InitialBalance" type="number" step="0.01" class="form-control" placeholder="Initial Balance" required />
+                        <label>Initial Balance ($)</label>
                     </div>
                 </div>
                 <div class="modal-footer border-0">

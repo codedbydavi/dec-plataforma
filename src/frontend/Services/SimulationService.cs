@@ -151,7 +151,12 @@ namespace Frontend.Services
             try
             {
                 var client = _httpClientFactory.CreateClient("FinancialEngine");
-                var response = await client.PostAsJsonAsync("calculate/", request);
+                
+                // Manually serialize and use StringContent to force Content-Length instead of chunked encoding
+                var json = JsonSerializer.Serialize(request);
+                var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+                
+                var response = await client.PostAsync("calculate/", content);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -171,6 +176,11 @@ namespace Frontend.Services
                         await _context.SaveChangesAsync();
                     }
                     return result;
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    _logger.LogError("Financial Engine returned error {StatusCode}: {Error}", response.StatusCode, errorContent);
                 }
             }
             catch (Exception ex)

@@ -73,7 +73,11 @@ namespace Frontend.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["ErrorMessage"] = "Invalid scenario data.";
+                var errors = string.Join(" | ", ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage));
+                _logger.LogWarning("Invalid scenario data: {Errors}", errors);
+                TempData["ErrorMessage"] = "Invalid scenario data: " + errors;
                 return RedirectToAction("Dashboard");
             }
 
@@ -121,7 +125,11 @@ namespace Frontend.Controllers
         {
             if (!ModelState.IsValid)
             {
-                TempData["ErrorMessage"] = "Invalid entry data.";
+                var errors = string.Join(" | ", ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage));
+                _logger.LogWarning("Invalid entry data for Scenario {ScenarioId}: {Errors}", model.ScenarioId, errors);
+                TempData["ErrorMessage"] = "Invalid entry data: " + errors;
                 return RedirectToAction("ScenarioDetails", new { id = model.ScenarioId });
             }
 
@@ -136,7 +144,7 @@ namespace Frontend.Controllers
                 model.CategoryId, 
                 model.Amount, 
                 model.Month, 
-                model.Recurrence);
+                model.Recurrence ? "True" : "False");
 
             if (success)
                 TempData["SuccessMessage"] = "Entry added successfully!";
