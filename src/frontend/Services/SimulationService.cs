@@ -11,9 +11,10 @@ namespace Frontend.Services
         Task<List<Scenario>> GetMyScenariosAsync(int studentId);
         Task<Scenario?> GetScenarioDetailsAsync(int scenarioId, int studentId);
         Task<Scenario> CreateScenarioAsync(int studentId, string familyName, float initialBalance);
+        Task<bool> DeleteScenarioAsync(int scenarioId, int studentId);
         Task<bool> AddEntryAsync(int scenarioId, int studentId, string type, int categoryId, float amount, string month, string recurrence);
         Task<bool> AddObjectiveAsync(int scenarioId, int studentId, string description, float targetValue, int termMonths);
-        Task<CalculationResponseDto?> RunSimulationAsync(int scenarioId, int studentId, LoanParamsDto? loanParams = null);
+        Task<CalculationResponseDto?> RunSimulationAsync(int scenarioId, int studentId, LoanParamsDto? loanParams = null, SavingsParamsDto? savingsParams = null, CashFlowParamsDto? cashFlowParams = null);
         Task<List<SimulationHistory>> GetSimulationHistoryAsync(int scenarioId, int studentId);
     }
 
@@ -36,6 +37,8 @@ namespace Frontend.Services
         public async Task<List<Scenario>> GetMyScenariosAsync(int studentId)
         {
             return await _context.Scenarios
+                .Include(s => s.Entries)
+                .Include(s => s.Histories)
                 .Where(s => s.StudentId == studentId)
                 .OrderByDescending(s => s.CreatedAt)
                 .ToListAsync();
@@ -65,6 +68,17 @@ namespace Frontend.Services
             return scenario;
         }
 
+        public async Task<bool> DeleteScenarioAsync(int scenarioId, int studentId)
+        {
+            var scenario = await _context.Scenarios
+                .FirstOrDefaultAsync(s => s.Id == scenarioId && s.StudentId == studentId);
+                
+            if (scenario == null) return false;
+
+            _context.Scenarios.Remove(scenario);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
         public async Task<bool> AddEntryAsync(int scenarioId, int studentId, string type, int categoryId, float amount, string month, string recurrence)
         {
             var scenarioExists = await _context.Scenarios.AnyAsync(s => s.Id == scenarioId && s.StudentId == studentId);
@@ -74,7 +88,7 @@ namespace Frontend.Services
             if (entryType == null) return false;
 
             FinancialEntry entry;
-            if (type.ToUpper() == "INCOME")
+            if (type.ToUpper() == "INCOME" || type.ToUpper() == "RENDIMENTO")
             {
                 entry = new Income { 
                     ScenarioId = scenarioId, 
@@ -119,7 +133,7 @@ namespace Frontend.Services
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<CalculationResponseDto?> RunSimulationAsync(int scenarioId, int studentId, LoanParamsDto? loanParams = null)
+        public async Task<CalculationResponseDto?> RunSimulationAsync(int scenarioId, int studentId, LoanParamsDto? loanParams = null, SavingsParamsDto? savingsParams = null, CashFlowParamsDto? cashFlowParams = null)
         {
             var scenario = await _context.Scenarios
                 .Include(s => s.Entries)
@@ -145,14 +159,15 @@ namespace Frontend.Services
                     TargetValue = (decimal)o.TargetValue,
                     TermMonths = o.TargetMonths
                 }).ToList(),
-                LoanParams = loanParams
+                LoanParams = loanParams,
+                SavingsParams = savingsParams,
+                CashFlowParams = cashFlowParams
             };
 
             try
             {
                 var client = _httpClientFactory.CreateClient("FinancialEngine");
                 
-                // Manually serialize and use StringContent to force Content-Length instead of chunked encoding
                 var json = JsonSerializer.Serialize(request);
                 var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
                 

@@ -47,6 +47,16 @@ namespace Frontend.Controllers
             return View(viewModel);
         }
 
+        public async Task<IActionResult> Challenges()
+        {
+            int userId = GetUserId();
+            var challenges = await _context.Challenges
+                .OrderByDescending(c => c.Id)
+                .ToListAsync();
+
+            return View(challenges);
+        }
+
         public async Task<IActionResult> ClassDetails(int id)
         {
             int userId = GetUserId();

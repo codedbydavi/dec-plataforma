@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --font-size: 16px;
+  --background: #ffffff;
+  --foreground: #1d1d1b;
+  --card: #ffffff;
+  --card-foreground: #1d1d1b;
+  --popover: #ffffff;
+  --popover-foreground: #1d1d1b;
+  --primary: #0C73B7;
+  --primary-foreground: #ffffff;
+  --secondary: #2da7df;
+  --secondary-foreground: #ffffff;
+  --muted: #ececf0;
+  --muted-foreground: #717182;
+  --accent: #2da7df;
+  --accent-foreground: #ffffff;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 0, 0, 0.1);
+  --input: transparent;
+  --input-background: #f3f3f5;
+  --switch-background: #cbced4;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: #0C73B7;
+  --chart-1: #0C73B7;
+  --chart-2: #2da7df;
+  --chart-3: #1d1d1b;
+  --chart-4: #4db8e8;
+  --chart-5: #085a8f;
+  --radius: 0.625rem;
+  --sidebar: #f8f9fa;
+  --sidebar-foreground: #1d1d1b;
+  --sidebar-primary: #0C73B7;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e9f5fb;
+  --sidebar-accent-foreground: #0C73B7;
+  --sidebar-border: rgba(0, 0, 0, 0.1);
+  --sidebar-ring: #0C73B7;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #fcfcfc;
+  --card: #0a0a0a;
+  --card-foreground: #fcfcfc;
+  --popover: #0a0a0a;
+  --popover-foreground: #fcfcfc;
+  --primary: #fcfcfc;
+  --primary-foreground: #141414;
+  --secondary: #212121;
+  --secondary-foreground: #fcfcfc;
+  --muted: #212121;
+  --muted-foreground: #b3b3b3;
+  --accent: #212121;
+  --accent-foreground: #fcfcfc;
+  --destructive: #5e111a;
+  --destructive-foreground: #a63a43;
+  --border: #212121;
+  --input: #212121;
+  --ring: #3b3b3b;
+  --chart-1: #1e3a8a;
+  --chart-2: #065f46;
+  --chart-3: #92400e;
+  --chart-4: #6b21a8;
+  --chart-5: #991b1b;
+  --sidebar: #141414;
+  --sidebar-foreground: #fcfcfc;
+  --sidebar-primary: #1e3a8a;
+  --sidebar-primary-foreground: #fcfcfc;
+  --sidebar-accent: #212121;
+  --sidebar-accent-foreground: #fcfcfc;
+  --sidebar-border: #212121;
+  --sidebar-ring: #3b3b3b;
+}
+
+html {
+    font-size: var(--font-size);
+    font-family: 'Montserrat', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Roboto', sans-serif;
+}

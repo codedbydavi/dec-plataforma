@@ -23,6 +23,18 @@ class LoanParamsSerializer(serializers.Serializer):
     annual_interest_rate = serializers.DecimalField(max_digits=5, decimal_places=2)
     term_months = serializers.IntegerField(min_value=1)
 
+class SavingsParamsSerializer(serializers.Serializer):
+    monthly_contribution = serializers.DecimalField(max_digits=12, decimal_places=2)
+    annual_interest_rate = serializers.DecimalField(max_digits=5, decimal_places=2)
+    term_months = serializers.IntegerField(min_value=1)
+
+class CashFlowParamsSerializer(serializers.Serializer):
+    monthly_income = serializers.DecimalField(max_digits=12, decimal_places=2)
+    fixed_expenses = serializers.DecimalField(max_digits=12, decimal_places=2)
+    variable_expenses = serializers.DecimalField(max_digits=12, decimal_places=2)
+    inflation_rate = serializers.DecimalField(max_digits=5, decimal_places=2)
+    term_months = serializers.IntegerField(min_value=1)
+
 class FinancialDataSerializer(serializers.Serializer):
     """
     Input serializer for financial calculations.
@@ -31,3 +43,5 @@ class FinancialDataSerializer(serializers.Serializer):
     entries = EntrySerializer(many=True)
     objectives = ObjectiveSerializer(many=True, required=False, default=[])
     loan_params = LoanParamsSerializer(required=False, allow_null=True)
+    savings_params = SavingsParamsSerializer(required=False, allow_null=True)
+    cash_flow_params = CashFlowParamsSerializer(required=False, allow_null=True)

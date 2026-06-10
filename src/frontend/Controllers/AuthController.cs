@@ -11,11 +11,13 @@ namespace Frontend.Controllers
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole<int>> _roleManager;
 
-        public AuthController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager)
+        public AuthController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<int>> roleManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
@@ -45,6 +47,8 @@ namespace Frontend.Controllers
                 if (user != null)
                 {
                     var roles = await _userManager.GetRolesAsync(user);
+                    if (roles.Contains("Admin"))
+                        return RedirectToAction("Dashboard", "Admin");
                     if (roles.Contains("Professor"))
                         return RedirectToAction("Dashboard", "Professor");
                     if (roles.Contains("Student"))
@@ -74,19 +78,39 @@ namespace Frontend.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            ApplicationUser user = model.Role == "Professor" ? new Professor() : new Student();
+            ApplicationUser user;
+            if (model.Role == "Admin")
+            {
+                user = new ApplicationUser();
+                user.RoleId = 3;
+            }
+            else if (model.Role == "Professor")
+            {
+                user = new Professor();
+                user.RoleId = 2;
+            }
+            else
+            {
+                user = new Student();
+                user.RoleId = 1;
+            }
             
             user.UserName = model.Username;
             user.Email = model.Email;
             user.FullName = model.FullName;
             user.UserStatusId = 1; // Default: Active
-            user.RoleId = model.Role == "Professor" ? 2 : 1; // Default Role mapping for business logic
             user.GenderId = 1; // Default: Not Specified
 
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
             {
+                // Ensure role exists
+                if (!await _roleManager.RoleExistsAsync(model.Role))
+                {
+                    await _roleManager.CreateAsync(new IdentityRole<int>(model.Role));
+                }
+
                 // Assign Identity Role
                 await _userManager.AddToRoleAsync(user, model.Role);
 

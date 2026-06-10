@@ -11,6 +11,7 @@ namespace Frontend.Models.Entities
         private int _id;
         private string _name = string.Empty;
         private int _statusId;
+        private string _description = string.Empty;
 
         public int Id
         {
@@ -22,6 +23,12 @@ namespace Frontend.Models.Entities
         {
             get => _name;
             set => _name = string.IsNullOrWhiteSpace(value) ? string.Empty : value.Trim();
+        }
+
+        public string Description
+        {
+            get => _description;
+            set => _description = string.IsNullOrWhiteSpace(value) ? string.Empty : value.Trim();
         }
 
         public int StatusId

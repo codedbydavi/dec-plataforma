@@ -16,6 +16,12 @@ namespace Frontend.Models.DTOs
 
         [JsonPropertyName("loan_params")]
         public LoanParamsDto? LoanParams { get; set; }
+
+        [JsonPropertyName("savings_params")]
+        public SavingsParamsDto? SavingsParams { get; set; }
+
+        [JsonPropertyName("cash_flow_params")]
+        public CashFlowParamsDto? CashFlowParams { get; set; }
     }
 
     public class LoanParamsDto
@@ -25,6 +31,36 @@ namespace Frontend.Models.DTOs
 
         [JsonPropertyName("annual_interest_rate")]
         public decimal AnnualInterestRate { get; set; }
+
+        [JsonPropertyName("term_months")]
+        public int TermMonths { get; set; }
+    }
+
+    public class SavingsParamsDto
+    {
+        [JsonPropertyName("monthly_contribution")]
+        public decimal MonthlyContribution { get; set; }
+
+        [JsonPropertyName("annual_interest_rate")]
+        public decimal AnnualInterestRate { get; set; }
+
+        [JsonPropertyName("term_months")]
+        public int TermMonths { get; set; }
+    }
+
+    public class CashFlowParamsDto
+    {
+        [JsonPropertyName("monthly_income")]
+        public decimal MonthlyIncome { get; set; }
+
+        [JsonPropertyName("fixed_expenses")]
+        public decimal FixedExpenses { get; set; }
+
+        [JsonPropertyName("variable_expenses")]
+        public decimal VariableExpenses { get; set; }
+
+        [JsonPropertyName("inflation_rate")]
+        public decimal InflationRate { get; set; }
 
         [JsonPropertyName("term_months")]
         public int TermMonths { get; set; }
@@ -73,6 +109,12 @@ namespace Frontend.Models.DTOs
 
         [JsonPropertyName("credit_simulation")]
         public CreditSimulationDto? CreditSimulation { get; set; }
+
+        [JsonPropertyName("savings_simulation")]
+        public SavingsSimulationDto? SavingsSimulation { get; set; }
+
+        [JsonPropertyName("cash_flow_simulation")]
+        public CashFlowSimulationDto? CashFlowSimulation { get; set; }
     }
 
     public class CreditSimulationDto
@@ -85,6 +127,78 @@ namespace Frontend.Models.DTOs
 
         [JsonPropertyName("total_interest")]
         public float TotalInterest { get; set; }
+
+        [JsonPropertyName("schedule")]
+        public List<LoanScheduleItemDto> Schedule { get; set; } = new();
+    }
+
+    public class LoanScheduleItemDto
+    {
+        [JsonPropertyName("month")]
+        public int Month { get; set; }
+
+        [JsonPropertyName("payment")]
+        public float Payment { get; set; }
+
+        [JsonPropertyName("principal")]
+        public float Principal { get; set; }
+
+        [JsonPropertyName("interest")]
+        public float Interest { get; set; }
+
+        [JsonPropertyName("balance")]
+        public float Balance { get; set; }
+    }
+
+    public class SavingsSimulationDto
+    {
+        [JsonPropertyName("final_amount")]
+        public float FinalAmount { get; set; }
+
+        [JsonPropertyName("schedule")]
+        public List<SavingsScheduleItemDto> Schedule { get; set; } = new();
+    }
+
+    public class SavingsScheduleItemDto
+    {
+        [JsonPropertyName("month")]
+        public int Month { get; set; }
+
+        [JsonPropertyName("balance")]
+        public float Balance { get; set; }
+
+        [JsonPropertyName("interest")]
+        public float Interest { get; set; }
+
+        [JsonPropertyName("total")]
+        public float Total { get; set; }
+    }
+
+    public class CashFlowSimulationDto
+    {
+        [JsonPropertyName("cumulative_savings")]
+        public float CumulativeSavings { get; set; }
+
+        [JsonPropertyName("schedule")]
+        public List<CashFlowScheduleItemDto> Schedule { get; set; } = new();
+    }
+
+    public class CashFlowScheduleItemDto
+    {
+        [JsonPropertyName("month")]
+        public int Month { get; set; }
+
+        [JsonPropertyName("income")]
+        public float Income { get; set; }
+
+        [JsonPropertyName("expenses")]
+        public float Expenses { get; set; }
+
+        [JsonPropertyName("net_cash_flow")]
+        public float NetCashFlow { get; set; }
+
+        [JsonPropertyName("cumulative_savings")]
+        public float CumulativeSavings { get; set; }
     }
 
     public class CalculationSummaryDto

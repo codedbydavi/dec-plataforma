@@ -1,0 +1,236 @@
+@{
+    ViewData["Title"] = "Simulações Financeiras";
+    var familia = ViewBag.Familia as DEC.Models.Familia;
+}
+
+<div class="container">
+    <div class="flex justify-between align-center mb-3">
+        <h1>Simulações Financeiras - @familia.Nome</h1>
+        <a class="btn btn-secondary" asp-controller="Familia" asp-action="Details" asp-route-id="@familia.Id">Voltar</a>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-bottom: 1.5rem; color: var(--istec-blue);">Simulador de Juros Compostos</h3>
+        <p style="margin-bottom: 1.5rem; color: #666;">Simule o crescimento de uma poupança ao longo do tempo com contribuições mensais.</p>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label class="form-label">Valor Inicial (€)</label>
+                <input type="number" id="jc_valorInicial" class="form-control" value="1000" min="0" step="100" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Taxa de Juro Anual (%)</label>
+                <input type="number" id="jc_taxaJuros" class="form-control" value="5" min="0" step="0.1" />
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label class="form-label">Período (meses)</label>
+                <input type="number" id="jc_periodo" class="form-control" value="60" min="1" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Contribuição Mensal (€)</label>
+                <input type="number" id="jc_contribuicao" class="form-control" value="100" min="0" step="10" />
+            </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="calcularJurosCompostos()">Calcular</button>
+
+        <div id="jc_resultado" style="display: none; margin-top: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
+            <h4 style="margin-bottom: 1rem;">Resultado</h4>
+            <div class="grid-3">
+                <div>
+                    <small style="color: #666;">Valor Investido</small>
+                    <p id="jc_investido" style="font-size: 1.5rem; font-weight: bold; color: var(--istec-blue); margin: 0;"></p>
+                </div>
+                <div>
+                    <small style="color: #666;">Juros Ganhos</small>
+                    <p id="jc_juros" style="font-size: 1.5rem; font-weight: bold; color: #28a745; margin: 0;"></p>
+                </div>
+                <div>
+                    <small style="color: #666;">Valor Final</small>
+                    <p id="jc_final" style="font-size: 1.5rem; font-weight: bold; color: var(--istec-blue); margin: 0;"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-bottom: 1.5rem; color: var(--istec-blue);">Simulador de Amortização de Crédito</h3>
+        <p style="margin-bottom: 1.5rem; color: #666;">Calcule a prestação mensal e o custo total de um empréstimo.</p>
+
+        <div class="grid-3">
+            <div class="form-group">
+                <label class="form-label">Valor do Empréstimo (€)</label>
+                <input type="number" id="am_valorEmprestimo" class="form-control" value="150000" min="0" step="1000" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Taxa de Juro Anual (%)</label>
+                <input type="number" id="am_taxaJuros" class="form-control" value="3.5" min="0" step="0.1" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Prazo (meses)</label>
+                <input type="number" id="am_periodo" class="form-control" value="360" min="1" />
+            </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="calcularAmortizacao()">Calcular</button>
+
+        <div id="am_resultado" style="display: none; margin-top: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
+            <h4 style="margin-bottom: 1rem;">Resultado</h4>
+            <div class="grid-3">
+                <div>
+                    <small style="color: #666;">Prestação Mensal</small>
+                    <p id="am_prestacao" style="font-size: 1.5rem; font-weight: bold; color: var(--istec-blue); margin: 0;"></p>
+                </div>
+                <div>
+                    <small style="color: #666;">Total de Juros</small>
+                    <p id="am_juros" style="font-size: 1.5rem; font-weight: bold; color: #dc3545; margin: 0;"></p>
+                </div>
+                <div>
+                    <small style="color: #666;">Total a Pagar</small>
+                    <p id="am_total" style="font-size: 1.5rem; font-weight: bold; color: var(--istec-blue); margin: 0;"></p>
+                </div>
+            </div>
+
+            <div id="am_plano" style="margin-top: 1.5rem;">
+                <h5 style="margin-bottom: 1rem;">Primeiros 12 Meses</h5>
+                <table class="table" style="font-size: 0.875rem;">
+                    <thead>
+                        <tr>
+                            <th>Mês</th>
+                            <th>Prestação</th>
+                            <th>Juros</th>
+                            <th>Amortização</th>
+                            <th>Saldo Devedor</th>
+                        </tr>
+                    </thead>
+                    <tbody id="am_planoBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-bottom: 1.5rem; color: var(--istec-blue);">Projeção com Inflação</h3>
+        <p style="margin-bottom: 1.5rem; color: #666;">Calcule o valor real do dinheiro ao longo do tempo considerando a inflação.</p>
+
+        <div class="grid-3">
+            <div class="form-group">
+                <label class="form-label">Valor Atual (€)</label>
+                <input type="number" id="inf_valorAtual" class="form-control" value="10000" min="0" step="100" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Taxa de Inflação Anual (%)</label>
+                <input type="number" id="inf_taxaInflacao" class="form-control" value="2.5" min="0" step="0.1" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Período (anos)</label>
+                <input type="number" id="inf_anos" class="form-control" value="10" min="1" />
+            </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="calcularInflacao()">Calcular</button>
+
+        <div id="inf_resultado" style="display: none; margin-top: 2rem; padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
+            <h4 style="margin-bottom: 1rem;">Resultado</h4>
+            <div class="grid-2">
+                <div>
+                    <small style="color: #666;">Valor Real Futuro</small>
+                    <p id="inf_valorFuturo" style="font-size: 1.5rem; font-weight: bold; color: var(--istec-blue); margin: 0;"></p>
+                </div>
+                <div>
+                    <small style="color: #666;">Perda de Poder de Compra</small>
+                    <p id="inf_perda" style="font-size: 1.5rem; font-weight: bold; color: #dc3545; margin: 0;"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function formatCurrency(value) {
+        return new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(value);
+    }
+
+    function calcularJurosCompostos() {
+        const valorInicial = parseFloat(document.getElementById('jc_valorInicial').value);
+        const taxaJuros = parseFloat(document.getElementById('jc_taxaJuros').value);
+        const periodo = parseInt(document.getElementById('jc_periodo').value);
+        const contribuicao = parseFloat(document.getElementById('jc_contribuicao').value);
+
+        fetch('/Simulacao/CalcularJurosCompostos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `familiaId=@familia.Id&valorInicial=${valorInicial}&taxaJuros=${taxaJuros}&periodo=${periodo}&contribuicaoMensal=${contribuicao}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            const totalInvestido = valorInicial + (contribuicao * periodo);
+            const totalJuros = data.valorFinal - totalInvestido;
+
+            document.getElementById('jc_investido').textContent = formatCurrency(totalInvestido);
+            document.getElementById('jc_juros').textContent = formatCurrency(totalJuros);
+            document.getElementById('jc_final').textContent = formatCurrency(data.valorFinal);
+            document.getElementById('jc_resultado').style.display = 'block';
+        });
+    }
+
+    function calcularAmortizacao() {
+        const valorEmprestimo = parseFloat(document.getElementById('am_valorEmprestimo').value);
+        const taxaJuros = parseFloat(document.getElementById('am_taxaJuros').value);
+        const periodo = parseInt(document.getElementById('am_periodo').value);
+
+        fetch('/Simulacao/CalcularAmortizacao', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `familiaId=@familia.Id&valorEmprestimo=${valorEmprestimo}&taxaJuros=${taxaJuros}&periodo=${periodo}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('am_prestacao').textContent = formatCurrency(data.prestacaoMensal);
+            document.getElementById('am_juros').textContent = formatCurrency(data.totalJuros);
+            document.getElementById('am_total').textContent = formatCurrency(data.totalPago);
+
+            let planoHtml = '';
+            data.planoAmortizacao.forEach(mes => {
+                planoHtml += `<tr>
+                    <td>${mes.mes}</td>
+                    <td>${formatCurrency(mes.prestacao)}</td>
+                    <td>${formatCurrency(mes.juros)}</td>
+                    <td>${formatCurrency(mes.amortizacao)}</td>
+                    <td>${formatCurrency(mes.saldoDevedor)}</td>
+                </tr>`;
+            });
+            document.getElementById('am_planoBody').innerHTML = planoHtml;
+            document.getElementById('am_resultado').style.display = 'block';
+        });
+    }
+
+    function calcularInflacao() {
+        const valorAtual = parseFloat(document.getElementById('inf_valorAtual').value);
+        const taxaInflacao = parseFloat(document.getElementById('inf_taxaInflacao').value);
+        const anos = parseInt(document.getElementById('inf_anos').value);
+
+        fetch('/Simulacao/ProjetarInflacao', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `familiaId=@familia.Id&valorAtual=${valorAtual}&taxaInflacao=${taxaInflacao}&anos=${anos}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            const perda = valorAtual - data.valorFuturo;
+            document.getElementById('inf_valorFuturo').textContent = formatCurrency(data.valorFuturo);
+            document.getElementById('inf_perda').textContent = formatCurrency(perda);
+            document.getElementById('inf_resultado').style.display = 'block';
+        });
+    }
+</script>

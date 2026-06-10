@@ -1,0 +1,134 @@
+@model IEnumerable<Frontend.Models.Entities.Challenge>
+
+@{
+    ViewData["Title"] = "Desafios Financeiros";
+}
+
+<div class="max-w-6xl mx-auto p-6">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-3xl mb-2 font-bold">Desafios Financeiros</h1>
+            <p class="text-gray-500">
+                Completa desafios e ganha badges
+            </p>
+        </div>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-4 mb-8">
+        <div class="bg-white rounded-xl border p-6 shadow-sm">
+            <p class="text-sm text-gray-500 mb-2">Desafios Ativos</p>
+            <div class="text-3xl font-bold flex items-center gap-2">
+                <i data-lucide="clock" class="w-6 h-6 text-primary"></i>
+                @Model.Count()
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl border p-6 shadow-sm">
+            <p class="text-sm text-gray-500 mb-2">Desafios Concluídos</p>
+            <div class="text-3xl font-bold flex items-center gap-2">
+                <i data-lucide="check-circle-2" class="w-6 h-6 text-green-500"></i>
+                0
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl border p-6 shadow-sm">
+            <p class="text-sm text-gray-500 mb-2">Badges Conquistadas</p>
+            <div class="text-3xl font-bold flex items-center gap-2">
+                <i data-lucide="trophy" class="w-6 h-6 text-yellow-500"></i>
+                0
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="mb-6 border-b border-gray-200">
+        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="myTab" role="tablist">
+            <li class="mr-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 border-primary text-primary rounded-t-lg active" id="active-tab" data-tabs-target="#active" type="button" role="tab">
+                    Desafios Ativos (@Model.Count())
+                </button>
+            </li>
+            <li class="mr-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 rounded-t-lg" id="completed-tab" data-tabs-target="#completed" type="button" role="tab">
+                    Concluídos (0)
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <div id="myTabContent">
+        <!-- Active Challenges -->
+        <div class="p-4 rounded-lg space-y-4" id="active" role="tabpanel">
+            @if (!Model.Any())
+            {
+                <div class="bg-white rounded-xl border p-12 text-center shadow-sm">
+                    <i data-lucide="target" class="w-16 h-16 mx-auto mb-4 text-gray-400"></i>
+                    <p class="text-gray-500">Nenhum desafio ativo no momento</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var challenge in Model)
+                {
+                    <div class="bg-white rounded-xl border p-6 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <h3 class="text-lg font-bold flex items-center gap-2 mb-2">
+                                    <i data-lucide="target" class="w-5 h-5 text-primary"></i>
+                                    @challenge.Name
+                                </h3>
+                                <p class="text-gray-500 mb-4">@challenge.Description</p>
+                                
+                                <div class="flex items-center gap-4 text-sm text-gray-500">
+                                    <div class="flex items-center gap-1">
+                                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                                        Prazo: Sem limite
+                                    </div>
+                                    <a href="@challenge.AccessLink" target="_blank" class="text-primary hover:underline flex items-center gap-1">
+                                        <i data-lucide="external-link" class="w-4 h-4"></i>
+                                        Aceder ao material
+                                    </a>
+                                </div>
+                            </div>
+                            <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded flex items-center ml-4">
+                                <i data-lucide="award" class="w-3 h-3 mr-1"></i>
+                                100 pts
+                            </span>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- Completed Challenges -->
+        <div class="hidden p-4 rounded-lg space-y-4" id="completed" role="tabpanel">
+            <div class="bg-white rounded-xl border p-12 text-center shadow-sm">
+                <i data-lucide="trophy" class="w-16 h-16 mx-auto mb-4 text-gray-400"></i>
+                <p class="text-gray-500">Nenhum desafio concluído ainda</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const tabs = document.querySelectorAll('[data-tabs-target]');
+        const tabContents = document.querySelectorAll('[role="tabpanel"]');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = document.querySelector(tab.dataset.tabsTarget);
+                
+                tabContents.forEach(tc => tc.classList.add('hidden'));
+                tabs.forEach(t => {
+                    t.classList.remove('border-primary', 'text-primary');
+                    t.classList.add('border-transparent');
+                });
+                
+                target.classList.remove('hidden');
+                tab.classList.remove('border-transparent');
+                tab.classList.add('border-primary', 'text-primary');
+            });
+        });
+    </script>
+}

@@ -1,91 +1,77 @@
 @model Frontend.Models.ViewModels.LoginViewModel
 
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Entrar";
     Layout = null;
 }
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - DEC</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <title>@ViewData["Title"] - DEC – Dinheiro em Casa</title>
+    <link rel="stylesheet" href="~/css/theme.css" asp-append-version="true" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--primary)',
+                        secondary: 'var(--secondary)',
+                        muted: 'var(--muted)',
+                        'muted-foreground': 'var(--muted-foreground)',
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="login-bg page-fade-in">
+<body class="font-sans">
+    <div class="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary flex items-center justify-center p-6 text-[#1d1d1b]">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div class="p-8">
+                <div class="text-center mb-8">
+                    <img src="/images/15b23ae75b11299058584f1907ef93163ec08d27.png" alt="ISTEC" class="h-12 mx-auto mb-4" />
+                    <h2 class="text-2xl font-bold">Entrar</h2>
+                    <p class="text-gray-500">
+                        Acede à plataforma DEC – Dinheiro em Casa
+                    </p>
+                </div>
 
-<div class="container d-flex flex-column align-items-center">
-    <div class="mb-4 align-self-start ms-lg-5" style="max-width: 450px; width: 100%; margin: 0 auto;">
-        <a asp-controller="Home" asp-action="Index" class="text-white text-decoration-none d-inline-flex align-items-center opacity-75 hover-opacity-100 transition-all">
-            <i class="bi bi-arrow-left-circle fs-4 me-2"></i>
-            <span>Back to Home</span>
-        </a>
-    </div>
+                <form asp-action="Login" method="post" class="space-y-4">
+                    <input type="hidden" asp-for="ReturnUrl" />
+                    <div asp-validation-summary="ModelOnly" class="text-red-600 text-sm mb-4"></div>
 
-    <div class="card login-card shadow-lg p-4 p-sm-5">
-        <div class="text-center mb-4">
-            <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-gradient text-white rounded-circle mb-3" style="width: 60px; height: 60px;">
-                <i class="bi bi-wallet2 fs-2"></i>
+                    <div class="space-y-2">
+                        <label asp-for="Username" class="text-sm font-medium leading-none">Email ou Nome de Utilizador</label>
+                        <input asp-for="Username" class="flex h-10 w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="exemplo@istec.pt" required />
+                        <span asp-validation-for="Username" class="text-red-600 text-xs"></span>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label asp-for="Password" class="text-sm font-medium leading-none">Password</label>
+                        <input asp-for="Password" type="password" class="flex h-10 w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="••••••••" required />
+                        <span asp-validation-for="Password" class="text-red-600 text-xs"></span>
+                    </div>
+
+                    <button type="submit" class="w-full bg-primary text-white py-3 rounded-md font-medium hover:bg-primary/90 transition-colors mt-6">
+                        Entrar
+                    </button>
+
+                    <div class="text-sm text-center mt-4">
+                        Não tens conta? 
+                        <a asp-action="Register" class="text-primary hover:underline font-semibold">
+                            Registar
+                        </a>
+                    </div>
+                </form>
             </div>
-            <h2 class="fw-bold text-dark">Welcome Back</h2>
-            <p class="text-muted small">Enter your credentials to access DEC</p>
         </div>
-
-        <form asp-action="Login" method="post" class="flex-grow-1 d-flex flex-column justify-content-center">
-            <input type="hidden" asp-for="ReturnUrl" />
-            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
-
-            <div class="form-floating mb-3">
-                <input asp-for="Username" class="form-control border-0 bg-light" placeholder="Username" id="floatingInput" />
-                <label asp-for="Username" for="floatingInput">
-                    <i class="bi bi-person me-2"></i> Username
-                </label>
-                <span asp-validation-for="Username" class="text-danger small"></span>
-            </div>
-
-            <div class="form-floating mb-4">
-                <input asp-for="Password" class="form-control border-0 bg-light" placeholder="Password" id="floatingPassword" />
-                <label asp-for="Password" for="floatingPassword">
-                    <i class="bi bi-lock me-2"></i> Password
-                </label>
-                <span asp-validation-for="Password" class="text-danger small"></span>
-            </div>
-
-            <div class="d-grid mb-3">
-                <button type="submit" class="btn btn-primary-gradient py-3 rounded-3 shadow-sm">
-                    Login <i class="bi bi-arrow-right ms-2"></i>
-                </button>
-            </div>
-
-            <div class="text-center small mb-3">
-                <span class="text-muted">Forgot password?</span> <a href="#" class="text-decoration-none">Contact Admin</a>
-            </div>
-
-            <hr class="my-4 opacity-25">
-
-            <div class="text-center">
-                <p class="mb-0 text-muted small">Don't have an account?</p>
-                <a asp-action="Register" class="fw-bold text-primary text-decoration-none">Create an Account</a>
-            </div>
-        </form>
     </div>
     
-    <div class="text-center mt-4">
-        <p class="text-white-50 small mb-0">&copy; 2026 DEC - Money at Home</p>
-    </div>
-</div>
-
-<style>
-    .transition-all { transition: all 0.2s ease-in-out; }
-    .hover-opacity-100:hover { opacity: 1 !important; transform: translateX(-3px); }
-</style>
-
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 </body>
 </html>

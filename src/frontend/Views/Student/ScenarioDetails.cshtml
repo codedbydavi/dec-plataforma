@@ -3,547 +3,521 @@
 @using Frontend.Models.DTOs
 
 @{
-    ViewData["Title"] = $"Scenario: {Model.Scenario.FamilyName} Family";
+    ViewData["Title"] = $"Cenário: {Model.Scenario.FamilyName}";
     var scenario = Model.Scenario;
     var lastResult = Model.LatestResult;
 }
 
-<div class="container-fluid px-4 mt-4 page-fade-in" style="height: calc(100vh - 120px); overflow-y: auto;">
+<div class="max-w-7xl mx-auto p-6">
     @if (TempData["SuccessMessage"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <span class="block sm:inline">@TempData["SuccessMessage"]</span>
         </div>
     }
     @if (TempData["ErrorMessage"] != null)
     {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <span class="block sm:inline">@TempData["ErrorMessage"]</span>
         </div>
     }
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a asp-action="Dashboard">Dashboard</a></li>
-                <li class="breadcrumb-item active" aria-current="page">@scenario.FamilyName Family Scenario</li>
-            </ol>
-        </nav>
-        <div class="btn-group shadow-sm">
-            <button class="btn btn-outline-primary active" id="btnTables" onclick="showTab('tables')"><i class="bi bi-table me-2"></i>Data</button>
-            <button class="btn btn-outline-primary" id="btnCharts" onclick="showTab('charts')"><i class="bi bi-pie-chart me-2"></i>Dashboard</button>
-        </div>
-    </div>
-
     <!-- Header Section -->
-    <div class="card shadow-sm mb-4 border-primary border-top border-4">
-        <div class="card-body d-flex justify-content-between align-items-center py-2">
-            <div>
-                <h3 class="card-title fw-bold text-primary mb-0">@scenario.FamilyName Family</h3>
-                <p class="text-muted mb-0 small">Scenario ID: #@scenario.Id | Created: @scenario.CreatedAt.ToString("g")</p>
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <nav class="flex text-sm text-gray-500 mb-2">
+                <a asp-action="Dashboard" class="hover:text-primary transition-colors">Dashboard</a>
+                <span class="mx-2">/</span>
+                <span class="text-gray-900 font-medium">@scenario.FamilyName</span>
+            </nav>
+            <h1 class="text-3xl font-bold flex items-center gap-2">
+                <i data-lucide="home" class="w-6 h-6 text-primary"></i> @scenario.FamilyName
+            </h1>
+            <p class="text-sm text-gray-500 mt-1">Criado a @scenario.CreatedAt.ToString("dd/MM/yyyy")</p>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="text-right">
+                <p class="text-sm text-gray-500">Saldo Inicial</p>
+                <p class="text-2xl font-bold text-gray-900">@scenario.InitialBalance.ToString("C")</p>
             </div>
-            <div class="text-end d-flex align-items-center">
-                <div class="me-4">
-                    <h6 class="text-muted text-uppercase mb-0 small">Initial Balance</h6>
-                    <h2 class="fw-bold mb-0">@scenario.InitialBalance.ToString("C")</h2>
-                </div>
-                <button class="btn btn-sm btn-outline-secondary rounded-circle" data-bs-toggle="modal" data-bs-target="#editScenarioModal" title="Edit Scenario">
-                    <i class="bi bi-pencil"></i>
-                </button>
-            </div>
+            <button data-modal-target="editScenarioModal" class="p-2 border rounded-md hover:bg-gray-50 text-gray-600 transition-colors" title="Editar Cenário">
+                <i data-lucide="pencil" class="w-5 h-5"></i>
+            </button>
         </div>
     </div>
 
-    <!-- Results Overview (Always Visible if lastResult exists) -->
+    <!-- Active Simulations Alerts -->
     @if (lastResult != null)
     {
-        <div class="row g-3 mb-4">
-            <div class="col-md-3">
-                <div class="card shadow-sm border-0 bg-primary text-white text-center">
-                    <div class="card-body py-2">
-                        <small class="text-white-50 text-uppercase d-block mb-0">Monthly Balance</small>
-                        <h4 class="fw-bold mb-0">@lastResult.Summary.MonthlyBalance.ToString("C")</h4>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card shadow-sm border-0 @(lastResult.Summary.EffortRatePercentage > 40 ? "bg-danger" : "bg-success") text-white text-center">
-                    <div class="card-body py-2">
-                        <small class="text-white-50 text-uppercase d-block mb-0">Effort Rate</small>
-                        <h4 class="fw-bold mb-0">@lastResult.Summary.EffortRatePercentage.ToString("F1")%</h4>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card shadow-sm border-0 bg-info text-white text-center">
-                    <div class="card-body py-2">
-                        <small class="text-white-50 text-uppercase d-block mb-0">12-Month Projection</small>
-                        <h4 class="fw-bold mb-0">@lastResult.Projections.BalanceAfter12Months.ToString("C")</h4>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card shadow-sm border-0 @(lastResult.Projections.IsSustainable ? "bg-success" : "bg-warning") text-white text-center">
-                    <div class="card-body py-2">
-                        <small class="text-white-50 text-uppercase d-block mb-0">Sustainability</small>
-                        <h4 class="fw-bold mb-0">@(lastResult.Projections.IsSustainable ? "Sustainable" : "At Risk")</h4>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         @if (lastResult.CreditSimulation != null)
         {
-            <div class="alert alert-info border-0 shadow-sm mb-4 py-2 d-flex align-items-center">
-                <i class="bi bi-bank fs-5 me-3"></i>
-                <div class="small">
-                    <strong>Credit Simulation Active:</strong> Monthly: <span class="fw-bold text-primary">@lastResult.CreditSimulation.MonthlyInstallment.ToString("C")</span> | 
-                    Total Cost: <span class="fw-bold">@lastResult.CreditSimulation.TotalCost.ToString("C")</span> 
-                    (Interest: @lastResult.CreditSimulation.TotalInterest.ToString("C"))
+            <div class="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-md mb-4 flex items-center gap-3">
+                <i data-lucide="banknote" class="w-5 h-5 text-blue-600"></i>
+                <div class="text-sm">
+                    <strong>Simulação de Crédito Ativa:</strong> Prestação Mensal: <span class="font-bold">@lastResult.CreditSimulation.MonthlyInstallment.ToString("C")</span> | 
+                    Custo Total: <span class="font-bold">@lastResult.CreditSimulation.TotalCost.ToString("C")</span> 
+                    (Juros: @lastResult.CreditSimulation.TotalInterest.ToString("C"))
                 </div>
             </div>
         }
-    }
 
-    <!-- Tab: Tables -->
-    <div id="tabTables">
-        <div class="row">
-            <div class="col-lg-8 mb-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center py-2 border-bottom">
-                        <h5 class="mb-0 fw-bold"><i class="bi bi-list-columns-reverse text-primary me-2"></i>Financial Entries</h5>
-                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addEntryModal">
-                            <i class="bi bi-plus-circle me-1"></i> Add
-                        </button>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                            @if (!scenario.Entries.Any())
-                            {
-                                <div class="text-center p-5 text-muted">
-                                    <i class="bi bi-journal-text fs-1 mb-3 d-block opacity-50"></i>
-                                    <p>No financial entries yet.</p>
-                                </div>
-                            }
-                            else
-                            {
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="table-light sticky-top">
-                                        <tr>
-                                            <th>Type</th>
-                                            <th>Category</th>
-                                            <th>Amount</th>
-                                            <th>Month</th>
-                                            <th>Recurring</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var entry in scenario.Entries.OrderBy(e => e.Month))
-                                        {
-                                            <tr>
-                                                <td>
-                                                    @if (entry is Frontend.Models.Entities.Income)
-                                                    { <span class="badge bg-success">Income</span> }
-                                                    else
-                                                    { <span class="badge bg-danger">Expense</span> }
-                                                </td>
-                                                <td>@(entry.Category?.Name ?? "General")</td>
-                                                <td class="fw-semibold">@entry.Amount.ToString("C")</td>
-                                                <td>@entry.Month</td>
-                                                <td>
-                                                    @if (entry.Recurrence != "None" && entry.Recurrence != "False")
-                                                    { <i class="bi bi-arrow-repeat text-info" title="@entry.Recurrence"></i> }
-                                                    else
-                                                    { <span class="text-muted small">One-off</span> }
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            }
-                        </div>
-                    </div>
+        @if (lastResult.SavingsSimulation != null)
+        {
+            <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-md mb-4 flex items-center gap-3">
+                <i data-lucide="piggy-bank" class="w-5 h-5 text-green-600"></i>
+                <div class="text-sm">
+                    <strong>Projeção de Poupança Ativa:</strong> Valor Final Projetado: <span class="font-bold">@lastResult.SavingsSimulation.FinalAmount.ToString("C")</span>
+                </div>
+            </div>
+        }
+
+        @if (lastResult.CashFlowSimulation != null)
+        {
+            <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-md mb-4 flex items-center gap-3">
+                <i data-lucide="trending-up" class="w-5 h-5 text-yellow-600"></i>
+                <div class="text-sm">
+                    <strong>Fluxo de Caixa (com Inflação):</strong> Poupança Acumulada no Fim do Prazo: <span class="font-bold">@lastResult.CashFlowSimulation.CumulativeSavings.ToString("C")</span>
+                </div>
+            </div>
+        }
+
+        <!-- Key Metrics Cards -->
+        <div class="grid md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-primary text-white rounded-xl p-6 shadow-sm">
+                <p class="text-sm text-white/80 uppercase tracking-wider mb-2">Saldo Mensal Real</p>
+                <div class="text-3xl font-bold">@lastResult.Summary.MonthlyBalance.ToString("C")</div>
+            </div>
+
+            <div class="bg-white rounded-xl border p-6 shadow-sm">
+                <p class="text-sm text-gray-500 uppercase tracking-wider mb-2">Taxa de Esforço</p>
+                <div class="text-3xl font-bold flex items-center gap-2 @(lastResult.Summary.EffortRatePercentage > 40 ? "text-red-600" : "text-green-600")">
+                    @lastResult.Summary.EffortRatePercentage.ToString("F1")%
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-1.5 mt-3">
+                    <div class="@(lastResult.Summary.EffortRatePercentage > 40 ? "bg-red-500" : "bg-green-500") h-1.5 rounded-full" style="width: @Math.Min(lastResult.Summary.EffortRatePercentage, 100)%"></div>
                 </div>
             </div>
 
-            <div class="col-lg-4 mb-4">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center py-2 border-bottom">
-                        <h5 class="mb-0 fw-bold"><i class="bi bi-bullseye text-success me-2"></i>Savings Goals</h5>
-                        <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#addObjectiveModal">
-                            <i class="bi bi-plus-circle"></i>
-                        </button>
-                    </div>
-                    <div class="card-body p-0">
-                        <ul class="list-group list-group-flush" style="max-height: 250px; overflow-y: auto;">
-                            @if (!scenario.Objectives.Any())
-                            {
-                                <li class="list-group-item text-muted small text-center py-3">No goals defined.</li>
-                            }
-                            else
-                            {
-                                @foreach (var obj in scenario.Objectives)
-                                {
-                                    var analysis = lastResult?.ObjectivesAnalysis.FirstOrDefault(a => a.Description == obj.Description);
-                                    <li class="list-group-item px-3 py-2">
-                                        <div class="d-flex justify-content-between w-100">
-                                            <h6 class="mb-0 fw-bold small">@obj.Description</h6>
-                                            <span class="text-success fw-bold small">@obj.TargetValue.ToString("C")</span>
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center mt-1">
-                                            <small class="text-muted">In @obj.TargetMonths mo</small>
-                                            @if (analysis != null)
-                                            {
-                                                <span class="badge @(analysis.IsAttainable ? "bg-success" : "bg-danger")" style="font-size: 0.65rem;">
-                                                    @(analysis.IsAttainable ? $"Reach in {analysis.MonthsToGoal}mo" : "Unreachable")
-                                                </span>
-                                            }
-                                        </div>
-                                    </li>
-                                }
-                            }
-                        </ul>
-                    </div>
-                </div>
+            <div class="bg-white rounded-xl border p-6 shadow-sm">
+                <p class="text-sm text-gray-500 uppercase tracking-wider mb-2">Projeção a 12 Meses</p>
+                <div class="text-3xl font-bold text-gray-900">@lastResult.Projections.BalanceAfter12Months.ToString("C")</div>
+            </div>
 
-                <div class="card shadow-sm border-0 bg-dark text-white text-center">
-                    <div class="card-body py-3">
-                        <i class="bi bi-calculator fs-3 mb-2 d-block text-warning"></i>
-                        <h5 class="fw-bold mb-2">Simulation Engine</h5>
-                        <div class="d-grid gap-2">
-                            <form asp-action="RunSimulation" method="post">
-                                <input type="hidden" name="scenarioId" value="@scenario.Id" />
-                                <button type="submit" class="btn btn-warning fw-bold w-100 rounded-pill shadow-sm">
-                                    Run Simulation <i class="bi bi-play-fill"></i>
-                                </button>
-                            </form>
-                            <button class="btn btn-outline-info fw-bold rounded-pill btn-sm" data-bs-toggle="modal" data-bs-target="#creditSimModal">
-                                Simulate Credit <i class="bi bi-bank"></i>
-                            </button>
-                        </div>
-                    </div>
+            <div class="bg-white rounded-xl border p-6 shadow-sm">
+                <p class="text-sm text-gray-500 uppercase tracking-wider mb-2">Sustentabilidade</p>
+                <div class="text-2xl font-bold flex items-center gap-2 @(lastResult.Projections.IsSustainable ? "text-green-600" : "text-red-600")">
+                    @if(lastResult.Projections.IsSustainable) {
+                        <i data-lucide="check-circle" class="w-6 h-6"></i> <text>Sustentável</text>
+                    } else {
+                        <i data-lucide="alert-triangle" class="w-6 h-6"></i> <text>Em Risco</text>
+                    }
                 </div>
             </div>
         </div>
+    }
 
-        <!-- Simulation History Section -->
-        <div class="row mt-4">
-            <div class="col-12">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-white py-2 border-bottom">
-                        <h5 class="mb-0 fw-bold"><i class="bi bi-history text-secondary me-2"></i>Simulation History</h5>
+    <!-- Tabs Layout -->
+    <div class="mb-6 border-b border-gray-200">
+        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="myTab" role="tablist">
+            <li class="mr-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 border-primary text-primary rounded-t-lg active" id="data-tab" data-tabs-target="#data" type="button" role="tab">
+                    <i data-lucide="list" class="w-4 h-4 inline mr-2"></i> Dados
+                </button>
+            </li>
+            <li class="mr-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 rounded-t-lg" id="dashboard-tab" data-tabs-target="#dashboard" type="button" role="tab">
+                    <i data-lucide="pie-chart" class="w-4 h-4 inline mr-2"></i> Dashboard Gráfico
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <div id="myTabContent">
+        <!-- Data Tab (Entries & Goals) -->
+        <div class="p-4 rounded-lg space-y-6" id="data" role="tabpanel">
+            <div class="grid lg:grid-cols-3 gap-6">
+                <!-- Entries Table -->
+                <div class="lg:col-span-2 bg-white rounded-xl border shadow-sm flex flex-col">
+                    <div class="p-4 border-b flex justify-between items-center bg-gray-50/50 rounded-t-xl">
+                        <h3 class="font-bold text-lg flex items-center gap-2">
+                            <i data-lucide="file-text" class="text-primary w-5 h-5"></i> Lançamentos Financeiros
+                        </h3>
+                        <button data-modal-target="addEntryModal" class="px-3 py-1.5 bg-primary text-white text-sm font-medium rounded hover:bg-primary/90 flex items-center gap-1">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Adicionar
+                        </button>
                     </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-sm table-hover align-middle mb-0">
-                                <thead class="table-light">
+                    <div class="flex-1 overflow-auto max-h-[400px]">
+                        @if (!scenario.Entries.Any())
+                        {
+                            <div class="p-8 text-center text-gray-500">
+                                <i data-lucide="clipboard-list" class="w-12 h-12 mx-auto mb-3 opacity-20"></i>
+                                <p>Nenhum lançamento registado.</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <table class="w-full text-sm text-left">
+                                <thead class="bg-gray-50 text-gray-500 uppercase sticky top-0">
                                     <tr>
-                                        <th>Date</th>
-                                        <th>Final Balance (12m)</th>
-                                        <th>Effort Rate</th>
-                                        <th>Status</th>
-                                        <th>Details</th>
+                                        <th class="px-4 py-3 font-medium">Tipo</th>
+                                        <th class="px-4 py-3 font-medium">Categoria</th>
+                                        <th class="px-4 py-3 font-medium text-right">Valor</th>
+                                        <th class="px-4 py-3 font-medium text-center">Mês</th>
+                                        <th class="px-4 py-3 font-medium text-center">Recorrente</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if (!scenario.Histories.Any())
+                                    @foreach (var entry in scenario.Entries.OrderBy(e => e.Month))
                                     {
-                                        <tr><td colspan="5" class="text-center py-3 text-muted">No history available.</td></tr>
-                                    }
-                                    else
-                                    {
-                                        @foreach (var history in scenario.Histories.OrderByDescending(h => h.ExecutionDate))
-                                        {
-                                            <tr>
-                                                <td class="small">@history.ExecutionDate.ToString("g")</td>
-                                                <td class="fw-bold">@history.FinalBalance.ToString("C")</td>
-                                                <td>
-                                                    <span class="badge @(history.EffortRate > 40 ? "bg-danger" : "bg-success")">
-                                                        @history.EffortRate.ToString("F1")%
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    @if (history.EffortRate <= 40)
-                                                    { <span class="text-success small"><i class="bi bi-check-circle-fill me-1"></i>Sustainable</span> }
-                                                    else
-                                                    { <span class="text-warning small"><i class="bi bi-exclamation-triangle-fill me-1"></i>Risk</span> }
-                                                </td>
-                                                <td>
-                                                    <button class="btn btn-link btn-sm p-0" title="View snapshot"><i class="bi bi-eye"></i></button>
-                                                </td>
-                                            </tr>
-                                        }
+                                        <tr class="border-b last:border-b-0 hover:bg-gray-50">
+                                            <td class="px-4 py-3">
+                                                @if (entry is Frontend.Models.Entities.Income)
+                                                { <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded">Rendimento</span> }
+                                                else
+                                                { <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-0.5 rounded">Despesa</span> }
+                                            </td>
+                                            <td class="px-4 py-3 text-gray-700">@(entry.Category?.Name ?? "Geral")</td>
+                                            <td class="px-4 py-3 font-bold text-right">@entry.Amount.ToString("C")</td>
+                                            <td class="px-4 py-3 text-center text-gray-600">@entry.Month</td>
+                                            <td class="px-4 py-3 text-center">
+                                                @if (entry.Recurrence != "None" && entry.Recurrence != "False")
+                                                { <i data-lucide="repeat" class="w-4 h-4 mx-auto text-primary" title="Sim"></i> }
+                                                else
+                                                { <span class="text-gray-400">—</span> }
+                                            </td>
+                                        </tr>
                                     }
                                 </tbody>
                             </table>
-                        </div>
+                        }
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div id="tabCharts" style="display: none;">
-        @if (lastResult == null)
-        {
-            <div class="card card-body text-center py-5 shadow-sm">
-                <i class="bi bi-graph-up display-4 text-muted opacity-25 mb-3"></i>
-                <h4 class="text-muted">No Simulation Data</h4>
-                <p>Run a simulation to generate the visual dashboard.</p>
-            </div>
-        }
-        else
-        {
-            <div class="row g-4">
-                <div class="col-lg-6">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header bg-white py-2"><h6 class="mb-0 fw-bold">Income vs Expenses</h6></div>
-                        <div class="card-body d-flex align-items-center justify-content-center">
-                            <div style="max-height: 300px; width: 100%;">
-                                <canvas id="chartIncomeExpenses"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header bg-white py-2"><h6 class="mb-0 fw-bold">Balance Projection (12 Months)</h6></div>
-                        <div class="card-body">
-                            <div style="max-height: 300px; width: 100%;">
-                                <canvas id="chartProjection"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-12 pb-4">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-white py-2"><h6 class="mb-0 fw-bold">Effort Rate Analysis</h6></div>
-                        <div class="card-body">
-                            <div style="height: 100px; width: 100%;">
-                                <canvas id="chartEffortRate"></canvas>
-                            </div>
-                            <div class="mt-3 text-center small text-muted">
-                                <i class="bi bi-info-circle me-1"></i> A healthy effort rate is typically below 40%.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-</div>
 
-<!-- Modals -->
-<div class="modal fade" id="addEntryModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form asp-action="AddEntry" method="post">
-                <input type="hidden" name="ScenarioId" value="@Model.Scenario.Id" />
-                <div class="modal-header">
-                    <h5 class="modal-title">Add Financial Entry</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label text-dark">Type</label>
-                        <select name="TypeId" class="form-select" required>
-                            @foreach (var type in Model.EntryTypes)
+                <!-- Goals & Engine Actions -->
+                <div class="space-y-6">
+                    <!-- Goals -->
+                    <div class="bg-white rounded-xl border shadow-sm">
+                        <div class="p-4 border-b flex justify-between items-center bg-gray-50/50 rounded-t-xl">
+                            <h3 class="font-bold text-lg flex items-center gap-2">
+                                <i data-lucide="target" class="text-green-600 w-5 h-5"></i> Objetivos
+                            </h3>
+                            <button data-modal-target="addObjectiveModal" class="px-2 py-1 border border-green-600 text-green-600 rounded hover:bg-green-50">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <div class="p-0 max-h-[250px] overflow-auto">
+                            @if (!scenario.Objectives.Any())
                             {
-                                <option value="@type.Id">@type.Type</option>
+                                <div class="p-6 text-center text-gray-500 text-sm">Nenhum objetivo definido.</div>
                             }
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-dark">Category</label>
-                        <select name="CategoryId" class="form-select" required>
-                            @foreach (var cat in Model.Categories)
+                            else
                             {
-                                <option value="@cat.Id">@cat.Name</option>
+                                <ul class="divide-y">
+                                    @foreach (var obj in scenario.Objectives)
+                                    {
+                                        var analysis = lastResult?.ObjectivesAnalysis.FirstOrDefault(a => a.Description == obj.Description);
+                                        <li class="p-4 hover:bg-gray-50">
+                                            <div class="flex justify-between items-center mb-1">
+                                                <span class="font-bold text-sm text-gray-900">@obj.Description</span>
+                                                <span class="font-bold text-sm text-green-600">@obj.TargetValue.ToString("C")</span>
+                                            </div>
+                                            <div class="flex justify-between items-center text-xs">
+                                                <span class="text-gray-500">Em @obj.TargetMonths meses</span>
+                                                @if (analysis != null)
+                                                {
+                                                    <span class="@(analysis.IsAttainable ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800") px-2 py-0.5 rounded font-medium">
+                                                        @(analysis.IsAttainable ? $"Atinge em {analysis.MonthsToGoal}m" : "Inatingível")
+                                                    </span>
+                                                }
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
                             }
-                        </select>
-                    </div>
-                    <div class="form-floating mb-3 text-dark">
-                        <input name="Amount" type="number" step="0.01" class="form-control" placeholder="Amount" required />
-                        <label>Amount ($)</label>
-                    </div>
-                    <div class="mb-3 text-dark">
-                        <label class="form-label">Month of Entry</label>
-                        <select name="Month" class="form-select" required>
-                            <option value="1">January</option>
-                            <option value="2">February</option>
-                            <option value="3">March</option>
-                            <option value="4">April</option>
-                            <option value="5">May</option>
-                            <option value="6">June</option>
-                            <option value="7">July</option>
-                            <option value="8">August</option>
-                            <option value="9">September</option>
-                            <option value="10">October</option>
-                            <option value="11">November</option>
-                            <option value="12">December</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <div class="form-check form-switch">
-                            <input name="Recurrence" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" value="true">
-                            <label class="form-check-label text-dark" for="flexSwitchCheckDefault">Is this a Recurring Monthly entry?</label>
-                            <input name="Recurrence" type="hidden" value="false" />
                         </div>
-                        <small class="text-muted">Recurring entries will be included in the monthly balance calculation.</small>
+                    </div>
+
+                    <!-- Engine Trigger -->
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm text-center p-6">
+                        <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-3">
+                            <i data-lucide="cpu" class="w-6 h-6 text-primary"></i>
+                        </div>
+                        <h4 class="font-bold text-lg text-gray-900 mb-4">Motor de Cálculo</h4>
+                        
+                        <form asp-action="RunSimulation" method="post" class="mb-3">
+                            <input type="hidden" name="scenarioId" value="@scenario.Id" />
+                            <button type="submit" class="w-full bg-primary hover:bg-primary/90 text-white font-medium py-2.5 rounded-md flex items-center justify-center gap-2 transition-colors shadow-sm">
+                                <i data-lucide="play" class="w-4 h-4"></i> Correr Simulação Base
+                            </button>
+                        </form>
+                        
+                        <button data-modal-target="creditSimModal" class="w-full bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-2 rounded-md flex items-center justify-center gap-2 transition-colors text-sm shadow-sm">
+                            <i data-lucide="plus-square" class="w-4 h-4"></i> Simular Cenário c/ Crédito
+                        </button>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Entry</button>
+            </div>
+
+            <!-- History Table -->
+            <div class="bg-white rounded-xl border shadow-sm mt-6">
+                <div class="p-4 border-b bg-gray-50/50 rounded-t-xl">
+                    <h3 class="font-bold text-lg flex items-center gap-2">
+                        <i data-lucide="history" class="text-gray-600 w-5 h-5"></i> Histórico de Simulações
+                    </h3>
                 </div>
-            </form>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-gray-50 text-gray-500 uppercase">
+                            <tr>
+                                <th class="px-6 py-3 font-medium">Data / Hora</th>
+                                <th class="px-6 py-3 font-medium">Saldo (12m)</th>
+                                <th class="px-6 py-3 font-medium">Taxa de Esforço</th>
+                                <th class="px-6 py-3 font-medium text-center">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (!scenario.Histories.Any())
+                            {
+                                <tr><td colspan="4" class="px-6 py-8 text-center text-gray-500">Nenhum histórico disponível.</td></tr>
+                            }
+                            else
+                            {
+                                @foreach (var history in scenario.Histories.OrderByDescending(h => h.ExecutionDate))
+                                {
+                                    <tr class="border-b last:border-b-0 hover:bg-gray-50">
+                                        <td class="px-6 py-4 text-gray-600">@history.ExecutionDate.ToString("g")</td>
+                                        <td class="px-6 py-4 font-bold text-gray-900">@history.FinalBalance.ToString("C")</td>
+                                        <td class="px-6 py-4">
+                                            <span class="px-2 py-1 rounded text-xs font-bold @(history.EffortRate > 40 ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800")">
+                                                @history.EffortRate.ToString("F1")%
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-center">
+                                            @if (history.EffortRate <= 40)
+                                            { <span class="text-green-600 flex items-center justify-center gap-1 text-xs font-bold"><i data-lucide="check-circle" class="w-4 h-4"></i> Sustentável</span> }
+                                            else
+                                            { <span class="text-red-600 flex items-center justify-center gap-1 text-xs font-bold"><i data-lucide="alert-triangle" class="w-4 h-4"></i> Em Risco</span> }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Tab (Charts) -->
+        <div class="hidden p-4 rounded-lg" id="dashboard" role="tabpanel">
+            @if (lastResult == null)
+            {
+                <div class="bg-white rounded-xl border p-16 text-center shadow-sm">
+                    <i data-lucide="bar-chart-2" class="w-16 h-16 mx-auto mb-4 text-gray-300"></i>
+                    <h4 class="text-xl font-bold text-gray-700 mb-2">Sem Dados de Simulação</h4>
+                    <p class="text-gray-500">Corre uma simulação para gerar os gráficos interativos.</p>
+                </div>
+            }
+            else
+            {
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-xl border shadow-sm p-6">
+                        <h3 class="font-bold text-lg mb-4 text-center text-gray-800">Rendimentos vs Despesas</h3>
+                        <div class="h-[300px] w-full relative">
+                            <canvas id="chartIncomeExpenses"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl border shadow-sm p-6">
+                        <h3 class="font-bold text-lg mb-4 text-center text-gray-800">Projeção de Saldo (12 Meses)</h3>
+                        <div class="h-[300px] w-full relative">
+                            <canvas id="chartProjection"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2 bg-white rounded-xl border shadow-sm p-6">
+                        <h3 class="font-bold text-lg mb-4 text-gray-800">Análise da Taxa de Esforço</h3>
+                        <div class="h-[120px] w-full relative">
+                            <canvas id="chartEffortRate"></canvas>
+                        </div>
+                        <p class="text-center text-sm text-gray-500 mt-2 flex items-center justify-center gap-1">
+                            <i data-lucide="info" class="w-4 h-4"></i> Uma taxa de esforço saudável deve manter-se abaixo dos 40%.
+                        </p>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="addObjectiveModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form asp-action="AddObjective" method="post">
-                <input type="hidden" name="ScenarioId" value="@Model.Scenario.Id" />
-                <div class="modal-header">
-                    <h5 class="modal-title">Add Savings Goal</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-floating mb-3 text-dark">
-                        <input name="Description" type="text" class="form-control" placeholder="Description" required />
-                        <label>Description (e.g., Buy a Car)</label>
-                    </div>
-                    <div class="form-floating mb-3 text-dark">
-                        <input name="TargetValue" type="number" step="0.01" class="form-control" placeholder="Target Amount" required />
-                        <label>Target Amount ($)</label>
-                    </div>
-                    <div class="form-floating mb-3 text-dark">
-                        <input name="TargetMonths" type="number" min="1" class="form-control" placeholder="Months" required />
-                        <label>Target Months (Timeframe)</label>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-success">Save Goal</button>
-                </div>
-            </form>
+<!-- Modal: Add Entry -->
+<div id="addEntryModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
+        <div class="px-6 py-4 border-b flex justify-between items-center">
+            <h3 class="text-lg font-bold">Novo Lançamento Financeiro</h3>
+            <button type="button" class="text-gray-400 hover:text-gray-600" onclick="document.getElementById('addEntryModal').classList.add('hidden')"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <div class="p-6">
+            <partial name="_AddEntryForm" model="Model.AddEntry" />
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="creditSimModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form asp-action="RunSimulation" method="post">
-                <input type="hidden" name="scenarioId" value="@scenario.Id" />
-                <div class="modal-header bg-info text-white">
-                    <h5 class="modal-title">Credit Simulation</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+<!-- Modal: Add Objective -->
+<div id="addObjectiveModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
+        <form asp-action="AddObjective" method="post">
+            <input type="hidden" name="ScenarioId" value="@scenario.Id" />
+            <div class="px-6 py-4 border-b flex justify-between items-center bg-green-50/50">
+                <h3 class="text-lg font-bold text-green-800">Novo Objetivo de Poupança</h3>
+                <button type="button" class="text-gray-400 hover:text-gray-600" onclick="document.getElementById('addObjectiveModal').classList.add('hidden')"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Descrição</label>
+                    <input name="Description" type="text" class="w-full border rounded-md px-3 py-2 focus:ring-green-500/50" placeholder="Ex: Comprar Carro" required />
                 </div>
-                <div class="modal-body">
-                    <p class="text-muted small mb-4">Simulate how a loan would impact your monthly budget and effort rate.</p>
-                    
-                    <div class="form-floating mb-3 text-dark">
-                        <input asp-for="LoanSimulation.Principal" type="number" step="0.01" class="form-control" placeholder="Principal" required />
-                        <label asp-for="LoanSimulation.Principal">Loan Amount (Principal)</label>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Valor Alvo (€)</label>
+                        <input name="TargetValue" type="number" step="0.01" class="w-full border rounded-md px-3 py-2 focus:ring-green-500/50" required />
                     </div>
-                    
-                    <div class="form-floating mb-3 text-dark">
-                        <input asp-for="LoanSimulation.AnnualInterestRate" type="number" step="0.01" class="form-control" placeholder="Interest Rate" required />
-                        <label asp-for="LoanSimulation.AnnualInterestRate">Annual Interest Rate (%)</label>
-                    </div>
-                    
-                    <div class="form-floating mb-3 text-dark">
-                        <input asp-for="LoanSimulation.TermMonths" type="number" min="1" class="form-control" placeholder="Term" required />
-                        <label asp-for="LoanSimulation.TermMonths">Term (Months)</label>
-                    </div>
-
-                    <div class="alert alert-warning small">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        The monthly installment will be added as a virtual expense in this simulation.
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Prazo (Meses)</label>
+                        <input name="TargetMonths" type="number" min="1" class="w-full border rounded-md px-3 py-2 focus:ring-green-500/50" required />
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-info text-white fw-bold">Run "What-If" Simulation</button>
-                </div>
-            </form>
-        </div>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">
+                <button type="button" onclick="document.getElementById('addObjectiveModal').classList.add('hidden')" class="px-4 py-2 border rounded-md hover:bg-gray-100 font-medium text-gray-700">Cancelar</button>
+                <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 font-medium">Gravar Objetivo</button>
+            </div>
+        </form>
     </div>
 </div>
 
-<!-- Edit Scenario Modal (US_C002) -->
-<div class="modal fade" id="editScenarioModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form asp-action="UpdateScenario" method="post">
-                <input type="hidden" name="id" value="@Model.Scenario.Id" />
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Scenario</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<!-- Modal: Credit Simulation -->
+<div id="creditSimModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
+        <form asp-action="RunSimulation" method="post">
+            <input type="hidden" name="scenarioId" value="@scenario.Id" />
+            <div class="px-6 py-4 border-b flex justify-between items-center bg-blue-50/50">
+                <h3 class="text-lg font-bold text-blue-800">Simular "What-If" com Crédito</h3>
+                <button type="button" class="text-gray-400 hover:text-gray-600" onclick="document.getElementById('creditSimModal').classList.add('hidden')"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-sm text-gray-500">Veja o impacto que um novo empréstimo teria no seu orçamento mensal e na sua taxa de esforço.</p>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Montante do Empréstimo (€)</label>
+                    <input name="LoanSimulation.Principal" type="number" step="0.01" class="w-full border rounded-md px-3 py-2 focus:ring-blue-500/50" required />
                 </div>
-                <div class="modal-body">
-                    <div class="form-floating mb-3">
-                        <input name="familyName" type="text" class="form-control" value="@Model.Scenario.FamilyName" required />
-                        <label>Family Name</label>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Taxa Anual (TAN %)</label>
+                        <input name="LoanSimulation.AnnualInterestRate" type="number" step="0.01" class="w-full border rounded-md px-3 py-2 focus:ring-blue-500/50" required />
                     </div>
-                    <div class="form-floating mb-3">
-                        <input name="initialBalance" type="number" step="0.01" class="form-control" value="@Model.Scenario.InitialBalance" required />
-                        <label>Initial Balance ($)</label>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Prazo (Meses)</label>
+                        <input name="LoanSimulation.TermMonths" type="number" min="1" class="w-full border rounded-md px-3 py-2 focus:ring-blue-500/50" required />
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">
+                <button type="button" onclick="document.getElementById('creditSimModal').classList.add('hidden')" class="px-4 py-2 border rounded-md hover:bg-gray-100 font-medium text-gray-700">Cancelar</button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium">Correr Simulação</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Edit Scenario -->
+<div id="editScenarioModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden">
+        <form asp-action="UpdateScenario" method="post">
+            <input type="hidden" name="id" value="@scenario.Id" />
+            <div class="px-6 py-4 border-b flex justify-between items-center">
+                <h3 class="text-lg font-bold">Editar Cenário</h3>
+                <button type="button" class="text-gray-400 hover:text-gray-600" onclick="document.getElementById('editScenarioModal').classList.add('hidden')"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nome da Família</label>
+                    <input name="familyName" type="text" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" value="@scenario.FamilyName" required />
                 </div>
-            </form>
-        </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Saldo Inicial (€)</label>
+                    <input name="initialBalance" type="number" step="0.01" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" value="@scenario.InitialBalance" required />
+                </div>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">
+                <button type="button" onclick="document.getElementById('editScenarioModal').classList.add('hidden')" class="px-4 py-2 border rounded-md hover:bg-gray-100 font-medium text-gray-700">Cancelar</button>
+                <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 font-medium">Guardar Alterações</button>
+            </div>
+        </form>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        function showTab(tabName) {
-            if (tabName === 'tables') {
-                document.getElementById('tabTables').style.display = 'block';
-                document.getElementById('tabCharts').style.display = 'none';
-                document.getElementById('btnTables').classList.add('active');
-                document.getElementById('btnCharts').classList.remove('active');
-            } else {
-                document.getElementById('tabTables').style.display = 'none';
-                document.getElementById('tabCharts').style.display = 'block';
-                document.getElementById('btnTables').classList.remove('active');
-                document.getElementById('btnCharts').classList.add('active');
-                renderCharts();
-            }
-        }
+        // Modal logic
+        document.querySelectorAll('[data-modal-target]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = document.getElementById(btn.getAttribute('data-modal-target'));
+                if (target) target.classList.remove('hidden');
+            });
+        });
 
-        let chartsInitialized = false;
+        // Tabs and Charts logic
+        const tabs = document.querySelectorAll('[data-tabs-target]');
+        const tabContents = document.querySelectorAll('[role="tabpanel"]');
+        let chartsRendered = false;
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = document.querySelector(tab.dataset.tabsTarget);
+                
+                tabContents.forEach(tc => tc.classList.add('hidden'));
+                tabs.forEach(t => {
+                    t.classList.remove('border-primary', 'text-primary');
+                    t.classList.add('border-transparent');
+                });
+                
+                target.classList.remove('hidden');
+                tab.classList.remove('border-transparent');
+                tab.classList.add('border-primary', 'text-primary');
+
+                if (tab.id === 'dashboard-tab' && !chartsRendered) {
+                    renderCharts();
+                    chartsRendered = true;
+                }
+            });
+        });
+
         function renderCharts() {
-            if (chartsInitialized) return;
             @if (lastResult != null) {
                 <text>
+                // Clean up existing Chart.js instances
+                Chart.helpers.each(Chart.instances, function(instance){
+                    instance.destroy();
+                });
+
                 // 1. Income vs Expenses Pie Chart
                 new Chart(document.getElementById('chartIncomeExpenses'), {
                     type: 'doughnut',
                     data: {
-                        labels: ['Income', 'Expenses'],
+                        labels: ['Rendimentos', 'Despesas'],
                         datasets: [{
-                            data: [@lastResult.Summary.TotalMonthlyIncome, @lastResult.Summary.TotalMonthlyExpenses],
-                            backgroundColor: ['#198754', '#dc3545'],
+                            data: [@lastResult.Summary.TotalMonthlyIncome.ToString().Replace(",", "."), @lastResult.Summary.TotalMonthlyExpenses.ToString().Replace(",", ".")],
+                            backgroundColor: ['#16a34a', '#dc2626'],
                             borderWidth: 0
                         }]
                     },
-                    options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                    options: { maintainAspectRatio: false, animation: false, plugins: { legend: { position: 'bottom' } } }
                 });
 
                 // 2. Projection Line Chart
-                const initial = @scenario.InitialBalance;
-                const monthlyBalance = @lastResult.Summary.MonthlyBalance;
-                const labels = ['Now', '1m', '2m', '3m', '4m', '5m', '6m', '7m', '8m', '9m', '10m', '11m', '12m'];
+                const initial = @scenario.InitialBalance.ToString().Replace(",", ".");
+                const monthlyBalance = @lastResult.Summary.MonthlyBalance.ToString().Replace(",", ".");
+                const labels = ['Agora', '1m', '2m', '3m', '4m', '5m', '6m', '7m', '8m', '9m', '10m', '11m', '12m'];
                 const dataPoints = [];
                 for (let i = 0; i <= 12; i++) {
                     dataPoints.push(initial + (monthlyBalance * i));
@@ -554,45 +528,46 @@
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Projected Balance',
+                            label: 'Saldo Projetado',
                             data: dataPoints,
-                            borderColor: '#0d6efd',
-                            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                            borderColor: '#0C73B7',
+                            backgroundColor: 'rgba(12, 115, 183, 0.1)',
                             fill: true,
                             tension: 0.3
                         }]
                     },
                     options: { 
-                        maintainAspectRatio: false, 
-                        scales: { y: { beginAtZero: false, ticks: { callback: value => '$' + value } } } 
+                        maintainAspectRatio: false,
+                        animation: false,
+                        scales: { y: { beginAtZero: false, ticks: { callback: value => '€' + value } } } 
                     }
                 });
 
                 // 3. Effort Rate Bar Chart
+                const effortRate = @lastResult.Summary.EffortRatePercentage.ToString().Replace(",", ".");
                 new Chart(document.getElementById('chartEffortRate'), {
                     type: 'bar',
                     data: {
-                        labels: ['Current Effort Rate'],
+                        labels: ['Taxa de Esforço Atual'],
                         datasets: [{
-                            label: 'Your Rate (%)',
-                            data: [@lastResult.Summary.EffortRatePercentage],
-                            backgroundColor: @(lastResult.Summary.EffortRatePercentage > 40 ? "'#dc3545'" : "'#198754'"),
+                            label: 'A tua taxa (%)',
+                            data: [effortRate],
+                            backgroundColor: effortRate > 40 ? '#dc2626' : '#16a34a',
                             barThickness: 30
                         }, {
-                            label: 'Health Limit (40%)',
+                            label: 'Limite Saudável (40%)',
                             data: [40],
-                            backgroundColor: '#ffc107',
+                            backgroundColor: '#eab308',
                             barThickness: 30
                         }]
                     },
                     options: { 
                         indexAxis: 'y',
                         maintainAspectRatio: false,
+                        animation: false,
                         scales: { x: { max: 100, ticks: { callback: v => v + '%' } } }
                     }
                 });
-                
-                chartsInitialized = true;
                 </text>
             }
         }

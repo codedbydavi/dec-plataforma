@@ -12,7 +12,7 @@ namespace Frontend.Data
             
             // Fixed connection string for design-time (migrations)
             // Using 'localhost' for host-to-container connectivity
-            var connectionString = "Server=localhost;Database=dec_db;User=dec_user;Password=dec_password;";
+            var connectionString = "Server=db;Database=dec_db;User=dec_user;Password=dec_password;";
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 21));
 
             optionsBuilder.UseMySql(connectionString, serverVersion);

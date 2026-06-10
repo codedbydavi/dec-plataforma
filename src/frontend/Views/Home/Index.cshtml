@@ -1,123 +1,169 @@
 @{
-    ViewData["Title"] = "Welcome";
+    ViewData["Title"] = "Bem-vindo";
+    ViewData["HeaderVariant"] = "light";
 }
 
-<div id="landing-content" class="flex-grow-1 d-flex flex-column" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-    
-    <!-- Top Brand (since navbar is hidden) -->
-    <div class="container pt-4 px-4 animate-fade-in">
-        <a class="navbar-brand fw-bold d-flex align-items-center text-white fs-4 text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">
-            <i class="bi bi-wallet2 text-white me-2"></i> DEC
-        </a>
-    </div>
-
-    <!-- Center Content -->
-    <div class="container d-flex flex-column justify-content-center align-items-center text-center text-white flex-grow-1 px-4">
-        
-        <div class="mb-4 animate-fade-in">
-            <div class="bg-white bg-opacity-10 rounded-circle p-4 d-inline-flex align-items-center justify-content-center mb-3 shadow-lg border border-white border-opacity-25">
-                <i class="bi bi-wallet2 display-3"></i>
+<div class="min-h-screen bg-gradient-to-br from-white via-blue-50 to-blue-100">
+    <!-- Hero Section -->
+    <section class="bg-primary text-white py-20 px-6">
+        <div class="max-w-6xl mx-auto text-center">
+            <img src="/images/d5218954818f0b46d89a04972d9ea1b2b5f28bba.png" alt="ISTEC Logo" class="h-20 mx-auto mb-6" />
+            <h1 class="text-5xl mb-6 font-serif">
+                DEC – Dinheiro em Casa
+            </h1>
+            <p class="text-xl mb-8 max-w-3xl mx-auto opacity-90">
+                Plataforma digital de literacia financeira para alunos do 10.º ao 12.º ano. 
+                Aprende a gerir a economia doméstica através de cenários reais e simulações interativas.
+            </p>
+            <div class="flex gap-4 justify-center">
+                <a asp-controller="Auth" asp-action="Register" class="bg-secondary text-white px-8 py-3 rounded-md text-lg font-medium hover:bg-secondary/90 transition-colors">
+                    Começar Agora
+                </a>
+                <a asp-controller="Auth" asp-action="Login" class="bg-white/10 text-white border border-white px-8 py-3 rounded-md text-lg font-medium hover:bg-white/20 transition-colors">
+                    Já tenho conta
+                </a>
             </div>
-            <h1 class="display-3 fw-bold mb-2">DEC - Money at Home</h1>
-            <p class="lead fs-4 opacity-75 max-width-600 mx-auto">
-                Real-world financial literacy through smart simulation.
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-16 px-6">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl text-center mb-12 text-primary font-serif">
+                Funcionalidades Principais
+            </h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="bg-white p-6 rounded-xl border-2 hover:border-primary transition-colors shadow-sm">
+                    <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="target" class="text-primary lucide-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Cenários Familiares</h3>
+                    <p class="text-muted-foreground">
+                        Cria famílias virtuais e toma decisões financeiras reais
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-white p-6 rounded-xl border-2 hover:border-primary transition-colors shadow-sm">
+                    <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="piggy-bank" class="text-secondary lucide-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Gestão de Poupança</h3>
+                    <p class="text-muted-foreground">
+                        Define objetivos e simula o crescimento da tua poupança com juros compostos
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-white p-6 rounded-xl border-2 hover:border-primary transition-colors shadow-sm">
+                    <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="calculator" class="text-primary lucide-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Simulador de Crédito</h3>
+                    <p class="text-muted-foreground">
+                        Simula planos de amortização e compreende o impacto dos juros
+                    </p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="bg-white p-6 rounded-xl border-2 hover:border-primary transition-colors shadow-sm">
+                    <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="bar-chart-3" class="text-secondary lucide-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Dashboard Interativo</h3>
+                    <p class="text-muted-foreground">
+                        Visualiza graficamente os teus saldos, taxa de esforço e evolução
+                    </p>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="bg-white p-6 rounded-xl border-2 hover:border-primary transition-colors shadow-sm">
+                    <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="trending-up" class="text-primary lucide-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Projeções Financeiras</h3>
+                    <p class="text-muted-foreground">
+                        Relatórios de projeção a 12/24 meses considerando inflação
+                    </p>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="bg-white p-6 rounded-xl border-2 hover:border-primary transition-colors shadow-sm">
+                    <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="graduation-cap" class="text-secondary lucide-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Desafios Pedagógicos</h3>
+                    <p class="text-muted-foreground">
+                        Completa desafios propostos pelos professores e ganha badges
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="bg-white py-16 px-6">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-4xl text-center mb-12 text-primary font-serif">
+                Porquê DEC – Dinheiro em Casa?
+            </h2>
+            <div class="space-y-6">
+                <div class="flex gap-4">
+                    <div class="w-2 bg-primary rounded-full"></div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">Aprendizagem Prática</h3>
+                        <p class="text-muted-foreground">
+                            Simula cenários reais de gestão doméstica e observa o impacto das tuas decisões a curto e longo prazo
+                        </p>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="w-2 bg-secondary rounded-full"></div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">Feedback Automático</h3>
+                        <p class="text-muted-foreground">
+                            Recebe feedback sobre o cumprimento de metas pedagógicas e melhora continuamente
+                        </p>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="w-2 bg-primary rounded-full"></div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">Acompanhamento Docente</h3>
+                        <p class="text-muted-foreground">
+                            Os professores podem criar desafios personalizados e monitorizar o progresso da turma
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="bg-primary text-white py-16 px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl mb-6 font-serif">
+                Pronto para começar?
+            </h2>
+            <p class="text-xl mb-8 opacity-90">
+                Cria a tua conta gratuita e começa a aprender literacia financeira hoje mesmo
+            </p>
+            <a asp-controller="Auth" asp-action="Register" class="bg-secondary text-white px-8 py-3 rounded-md text-lg font-medium hover:bg-secondary/90 transition-colors">
+                Criar Conta Gratuita
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#1d1d1b] text-white py-8 px-6">
+        <div class="max-w-6xl mx-auto text-center">
+            <p class="opacity-80">
+                © 2026 ISTEC – Instituto Superior de Tecnologias Avançadas do Porto
+            </p>
+            <p class="text-sm opacity-60 mt-2">
+                Plataforma educativa para literacia financeira
             </p>
         </div>
-
-        <div class="d-flex flex-wrap justify-content-center gap-3 animate-slide-up">
-            @if (User.Identity?.IsAuthenticated != true)
-            {
-                <a asp-controller="Auth" asp-action="Login" class="btn btn-light btn-lg px-5 py-3 fw-bold text-primary rounded-pill shadow-lg hover-scale transition-btn">
-                    Get Started <i class="bi bi-arrow-right ms-2"></i>
-                </a>
-                <a asp-controller="Auth" asp-action="Register" class="btn btn-outline-light btn-lg px-5 py-3 fw-bold rounded-pill hover-scale transition-btn">
-                    Register
-                </a>
-            }
-            else
-            {
-                @if (User.IsInRole("ADMIN") || User.IsInRole("TEACHER")) {
-                    <a asp-controller="Professor" asp-action="Dashboard" class="btn btn-light btn-lg px-5 py-3 fw-bold text-primary rounded-pill shadow-lg hover-scale transition-btn">
-                        Go to Dashboard <i class="bi bi-speedometer2 ms-2"></i>
-                    </a>
-                } else {
-                    <a asp-controller="Student" asp-action="Dashboard" class="btn btn-light btn-lg px-5 py-3 fw-bold text-primary rounded-pill shadow-lg hover-scale transition-btn">
-                        My Dashboard <i class="bi bi-person-workspace ms-2"></i>
-                    </a>
-                }
-                <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
-                    <button type="submit" class="btn btn-outline-light btn-lg px-5 py-3 fw-bold rounded-pill hover-scale">Logout</button>
-                </form>
-            }
-        </div>
-
-        <!-- Quick Features (Condensed) -->
-        <div class="row w-100 mt-5 pt-4 border-top border-white border-opacity-10 d-none d-md-flex animate-fade-in-slow">
-            <div class="col">
-                <i class="bi bi-bank fs-4 mb-2 d-block"></i>
-                <span class="small fw-semibold opacity-75">Family Scenarios</span>
-            </div>
-            <div class="col border-start border-white border-opacity-10">
-                <i class="bi bi-graph-up-arrow fs-4 mb-2 d-block"></i>
-                <span class="small fw-semibold opacity-75">Real Simulations</span>
-            </div>
-            <div class="col border-start border-white border-opacity-10">
-                <i class="bi bi-mortarboard fs-4 mb-2 d-block"></i>
-                <span class="small fw-semibold opacity-75">Education First</span>
-            </div>
-        </div>
-    </div>
+    </footer>
 </div>
-
-<style>
-    /* Hide Navbar specifically for this view */
-    header { display: none !important; }
-
-    .max-width-600 { max-width: 600px; }
-    
-    .hover-scale { transition: transform 0.2s ease-in-out; }
-    .hover-scale:hover { transform: scale(1.05); }
-
-    /* Animations */
-    .animate-fade-in { animation: fadeIn 0.8s ease-out; }
-    .animate-slide-up { animation: slideUp 0.8s ease-out 0.2s both; }
-    .animate-fade-in-slow { animation: fadeIn 1.2s ease-out 0.5s both; }
-
-    @@keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    @@keyframes slideUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Handle very small mobile screens */
-    @@media (max-height: 600px) {
-        h1 { font-size: 2rem !important; }
-        .display-3 { font-size: 2.5rem !important; }
-        .mb-4 { margin-bottom: 1rem !important; }
-        .mt-5 { margin-top: 1rem !important; }
-    }
-</style>
-
-@section Scripts {
-    <script>
-        document.querySelectorAll('.transition-btn').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = this.href;
-                const content = document.getElementById('landing-content');
-                
-                // Trigger fade-out animation
-                content.classList.add('page-fade-out');
-                
-                // Navigate after animation completes
-                setTimeout(() => {
-                    window.location.href = target;
-                }, 400);
-            });
-        });
-    </script>
-}

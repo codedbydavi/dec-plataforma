@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using Frontend.Models.Entities;
+using System.Collections.Generic;
 
 namespace Frontend.Models.ViewModels
 {
@@ -20,5 +22,9 @@ namespace Frontend.Models.ViewModels
         public string Month { get; set; } = string.Empty;
 
         public bool Recurrence { get; set; }
+
+        public IEnumerable<EntryType> EntryTypes { get; set; } = new List<EntryType>();
+        public IEnumerable<Category> Categories { get; set; } = new List<Category>();
     }
 }
+

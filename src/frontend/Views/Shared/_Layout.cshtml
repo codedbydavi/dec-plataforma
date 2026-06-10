@@ -1,110 +1,161 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"] - DEC</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DEC – Dinheiro em Casa</title>
+    
+    <link rel="stylesheet" href="~/css/theme.css" asp-append-version="true" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--primary)',
+                        'primary-foreground': 'var(--primary-foreground)',
+                        secondary: 'var(--secondary)',
+                        'secondary-foreground': 'var(--secondary-foreground)',
+                        background: 'var(--background)',
+                        foreground: 'var(--foreground)',
+                        card: 'var(--card)',
+                        'card-foreground': 'var(--card-foreground)',
+                        popover: 'var(--popover)',
+                        'popover-foreground': 'var(--popover-foreground)',
+                        muted: 'var(--muted)',
+                        'muted-foreground': 'var(--muted-foreground)',
+                        accent: 'var(--accent)',
+                        'accent-foreground': 'var(--accent-foreground)',
+                        destructive: 'var(--destructive)',
+                        'destructive-foreground': 'var(--destructive-foreground)',
+                        border: 'var(--border)',
+                        input: 'var(--input)',
+                        'input-background': 'var(--input-background)',
+                        'switch-background': 'var(--switch-background)',
+                        ring: 'var(--ring)',
+                    },
+                    borderRadius: {
+                        lg: 'var(--radius)',
+                        md: 'calc(var(--radius) - 2px)',
+                        sm: 'calc(var(--radius) - 4px)',
+                    },
+                }
+            }
+        }
+    </script>
     <style>
-        /* Force full height and remove scroll */
-        html, body {
-            height: 100%;
-            margin: 0;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+        [data-lucide] {
+            width: 1rem;
+            height: 1rem;
         }
-
-        main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden; /* Main content handles its own overflow if needed, but we aim for zero scroll */
-        }
-
-        .navbar { z-index: 1030; }
-        .footer { z-index: 1030; }
-
-        @@media (max-width: 768px) {
-            .navbar-brand { font-size: 1.2rem; }
+        .lucide-lg {
+            width: 1.5rem;
+            height: 1.5rem;
         }
     </style>
+    @await RenderSectionAsync("Styles", required: false)
 </head>
-<body class="bg-light page-fade-in">
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-2 shadow-sm">
-            <div class="container">
-                <a class="navbar-brand fw-bold d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
-                    <i class="bi bi-wallet2 text-primary me-2"></i> DEC
-                </a>
-                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse">
-                    <ul class="navbar-nav me-auto">
-                        @if (User.Identity?.IsAuthenticated == true) {
-                            @if (User.IsInRole("Professor")) {
-                                <li class="nav-item"><a class="nav-link px-3 text-info fw-bold" asp-controller="Professor" asp-action="Dashboard"><i class="bi bi-speedometer2 me-2"></i>Professor Panel</a></li>
-                            }
-                            @if (User.IsInRole("Student")) {
-                                <li class="nav-item"><a class="nav-link px-3 text-info fw-bold" asp-controller="Student" asp-action="Dashboard"><i class="bi bi-house-door me-2"></i>My Dashboard</a></li>
-                            }
-                        } else {
-                            <li class="nav-item"><a class="nav-link px-3" asp-controller="Home" asp-action="Index">Home</a></li>
-                        }
-                    </ul>
-                    <ul class="navbar-nav align-items-center">
-                        @if (User.Identity?.IsAuthenticated == true) {
-                            <li class="nav-item dropdown bg-secondary bg-opacity-25 rounded-pill px-2">
-                                <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" id="userDrop" data-bs-toggle="dropdown">
-                                    <span class="badge bg-primary me-2">@User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value</span>
-                                    <span>@User.Identity.Name</span>
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-                                    <li><a class="dropdown-item py-2" href="#"><i class="bi bi-person me-2"></i> Profile</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <form asp-controller="Auth" asp-action="Logout" method="post" class="px-3 py-1">
-                                            <button type="submit" class="btn btn-sm btn-danger w-100 rounded-pill">Logout</button>
-                                        </form>
-                                    </li>
-                                </ul>
-                            </li>
-                        } else {
-                            <li class="nav-item"><a class="btn btn-outline-light btn-sm rounded-pill px-3 me-2" asp-controller="Auth" asp-action="Login">Login</a></li>
-                            <li class="nav-item"><a class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm" asp-controller="Auth" asp-action="Register">Register</a></li>
-                        }
-                    </ul>
+<body class="min-h-screen bg-gray-50 font-sans">
+    @{
+        var headerVariant = ViewData["HeaderVariant"] as string ?? "dark";
+        var isLight = headerVariant == "light";
+        var headerClass = isLight ? "bg-primary text-white" : "bg-white border-b";
+        var logo = isLight ? "/images/0adf42d423b7a187f0e52c3f8865e6194626553e.png" : "/images/15b23ae75b11299058584f1907ef93163ec08d27.png";
+        var titleClass = isLight ? "text-white" : "text-primary";
+        var btnGhostClass = isLight ? "text-white hover:bg-white/10" : "text-foreground hover:bg-gray-100";
+    }
+
+    <header class="@headerClass py-4 px-6 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <a asp-controller="Home" asp-action="Index" class="flex items-center gap-3">
+                <img src="@logo" alt="ISTEC" class="h-10" />
+                <div class="border-l border-current/20 pl-3">
+                    <h1 class="text-xl font-bold @titleClass">
+                        DEC – Dinheiro em Casa
+                    </h1>
                 </div>
-            </div>
-        </nav>
+            </a>
+
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <nav class="hidden md:flex items-center gap-2">
+                    @if (User.IsInRole("Student"))
+                    {
+                        <a asp-controller="Student" asp-action="Dashboard" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium @btnGhostClass">
+                            <i data-lucide="home"></i> Dashboard
+                        </a>
+                        <a asp-controller="Student" asp-action="Family" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium @btnGhostClass">
+                            <i data-lucide="user"></i> Família
+                        </a>
+                        <a asp-controller="Student" asp-action="Transactions" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium @btnGhostClass">
+                            <i data-lucide="file-text"></i> Lançamentos
+                        </a>
+                        <a asp-controller="Student" asp-action="Simulations" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium @btnGhostClass">
+                            <i data-lucide="trending-up"></i> Simulações
+                        </a>
+                        <a asp-controller="Student" asp-action="Challenges" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium @btnGhostClass">
+                            <i data-lucide="target"></i> Desafios
+                        </a>
+                    }
+                    else if (User.IsInRole("Professor"))
+                    {
+                        <a asp-controller="Professor" asp-action="Dashboard" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium @btnGhostClass">
+                            <i data-lucide="graduation-cap"></i> Turmas
+                        </a>
+                        <a asp-controller="Professor" asp-action="Challenges" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium @btnGhostClass">
+                            <i data-lucide="target"></i> Desafios
+                        </a>
+                    }
+                    else if (User.IsInRole("Admin"))
+                    {
+                        <a asp-controller="Admin" asp-action="Dashboard" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium @btnGhostClass">
+                            <i data-lucide="settings"></i> Administração
+                        </a>
+                    }
+
+                    <div class="relative group ml-4">
+                        <button class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium @btnGhostClass">
+                            <i data-lucide="user"></i> @User.Identity.Name
+                        </button>
+                        <div class="absolute right-0 w-48 mt-2 py-2 bg-white border rounded-md shadow-xl hidden group-hover:block text-gray-800">
+                            <div class="px-4 py-2 border-b font-medium">Minha Conta</div>
+                            <form asp-controller="Auth" asp-action="Logout" method="post">
+                                <button type="submit" class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2 text-red-600">
+                                    <i data-lucide="log-out"></i> Sair
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </nav>
+            }
+            else
+            {
+                <div class="flex gap-2">
+                    <a asp-controller="Auth" asp-action="Login" class="px-4 py-2 rounded-md text-sm font-medium @(isLight ? "bg-white text-primary" : "border hover:bg-gray-50")">
+                        Entrar
+                    </a>
+                    <a asp-controller="Auth" asp-action="Register" class="px-4 py-2 rounded-md text-sm font-medium @(isLight ? "bg-white text-primary" : "bg-primary text-white hover:bg-primary/90")">
+                        Registar
+                    </a>
+                </div>
+            }
+        </div>
     </header>
 
     <main role="main">
         @RenderBody()
     </main>
 
-    <footer class="footer py-2 bg-dark text-white-50 border-top border-secondary border-opacity-25">
-        <div class="container">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center small text-center text-md-start">
-                <div>
-                    <span class="text-white fw-bold">DEC</span>
-                    <span class="ms-1 opacity-75">| Money at Home</span>
-                </div>
-                <div class="mt-1 mt-md-0">
-                    <a asp-controller="Home" asp-action="Privacy" class="text-white-50 text-decoration-none me-2">Privacy Policy</a>
-                    <span class="opacity-50">| ISTEC Porto - Institutions</span>
-                </div>
-            </div>
-        </div>
-    </footer>
-
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+

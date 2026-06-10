@@ -1,0 +1,53 @@
+@model Frontend.Models.ViewModels.AddEntryViewModel
+
+<form asp-controller="Student" asp-action="AddEntry" method="post">
+    <input type="hidden" asp-for="ScenarioId" />
+    <div class="grid md:grid-cols-2 gap-4">
+        <div>
+            <label class="block text-sm font-medium mb-1">Tipo</label>
+            <select asp-for="TypeId" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required>
+                @foreach (var type in Model.EntryTypes) { <option value="@type.Id">@type.Type</option> }
+            </select>
+        </div>
+        <div>
+            <label class="block text-sm font-medium mb-1">Categoria</label>
+            <select asp-for="CategoryId" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required>
+                @foreach (var cat in Model.Categories) { <option value="@cat.Id">@cat.Name</option> }
+            </select>
+        </div>
+    </div>
+    <div class="grid md:grid-cols-2 gap-4 mt-4">
+        <div>
+            <label class="block text-sm font-medium mb-1">Valor (€)</label>
+            <input asp-for="Amount" type="number" step="0.01" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required />
+        </div>
+        <div>
+            <label class="block text-sm font-medium mb-1">Mês Inicial</label>
+            <select asp-for="Month" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required>
+                <option value="1">Janeiro</option>
+                <option value="2">Fevereiro</option>
+                <option value="3">Março</option>
+                <option value="4">Abril</option>
+                <option value="5">Maio</option>
+                <option value="6">Junho</option>
+                <option value="7">Julho</option>
+                <option value="8">Agosto</option>
+                <option value="9">Setembro</option>
+                <option value="10">Outubro</option>
+                <option value="11">Novembro</option>
+                <option value="12">Dezembro</option>
+            </select>
+        </div>
+    </div>
+    <div class="flex items-start gap-2 mt-4">
+        <input type="checkbox" id="recCheckbox-@Model.ScenarioId" class="mt-1 rounded border-gray-300 text-primary focus:ring-primary/50" onchange="document.getElementById('hdnRec-@Model.ScenarioId').value = this.checked ? 'true' : 'false'" />
+        <input asp-for="Recurrence" type="hidden" id="hdnRec-@Model.ScenarioId" value="false" />
+        <label for="recCheckbox-@Model.ScenarioId" class="text-sm text-gray-700">Lançamento mensal recorrente<br/><span class="text-xs text-gray-500">Será somado a todos os meses subsequentes.</span></label>
+    </div>
+    
+    <div class="mt-6 flex justify-end gap-3">
+        <button type="submit" class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90 font-medium flex items-center gap-2">
+            <i data-lucide="plus" class="w-4 h-4"></i> Registar Lançamento
+        </button>
+    </div>
+</form>

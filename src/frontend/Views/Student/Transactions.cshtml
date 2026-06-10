@@ -1,0 +1,77 @@
+@model IEnumerable<Frontend.Models.Entities.Scenario>
+
+@{
+    ViewData["Title"] = "Lançamentos Financeiros";
+    var currentFamily = Model.FirstOrDefault();
+}
+
+<div class="max-w-6xl mx-auto p-6">
+    <div class="mb-6">
+        <h1 class="text-3xl mb-2 font-bold">Lançamentos Financeiros</h1>
+        <p class="text-gray-500">
+            Regista rendimentos e despesas do cenário
+        </p>
+    </div>
+
+    @if (currentFamily == null)
+    {
+        <div class="bg-white rounded-xl border p-12 text-center shadow-sm">
+            <p class="text-gray-500 mb-4">Cria um cenário primeiro.</p>
+            <a asp-action="Family" class="px-4 py-2 bg-primary text-white rounded-md">Ir para Família</a>
+        </div>
+    }
+    else
+    {
+        <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="grid md:grid-cols-3 gap-4 flex-1">
+                <div class="bg-white rounded-xl border p-6 shadow-sm">
+                    <p class="text-sm text-gray-500 mb-2">Total de Rendimentos</p>
+                    <div class="text-2xl font-bold flex items-center gap-2 text-green-600">
+                        <i data-lucide="trending-up" class="w-5 h-5"></i> €@currentFamily.Entries.Where(e => e is Frontend.Models.Entities.Income).Sum(e => e.Amount).ToString("0.00")
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl border p-6 shadow-sm">
+                    <p class="text-sm text-gray-500 mb-2">Total de Despesas</p>
+                    <div class="text-2xl font-bold flex items-center gap-2 text-red-600">
+                        <i data-lucide="trending-down" class="w-5 h-5"></i> €@currentFamily.Entries.Where(e => e is Frontend.Models.Entities.Expense).Sum(e => e.Amount).ToString("0.00")
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl border p-6 shadow-sm">
+                    <p class="text-sm text-gray-500 mb-2">Saldo Inicial do Cenário</p>
+                    <div class="text-2xl font-bold text-gray-900">
+                        €@currentFamily.InitialBalance.ToString("0.00")
+                    </div>
+                </div>
+            </div>
+            <form method="get" asp-action="Transactions" class="flex flex-col gap-2">
+                <label for="scenarioId" class="text-sm font-medium text-gray-700">Família Analisada:</label>
+                <select id="scenarioId" name="scenarioId" onchange="this.form.submit()" class="border-gray-300 rounded-md shadow-sm focus:border-primary focus:ring-primary py-2 px-3 bg-white">
+                    @foreach (var s in ViewBag.Scenarios as IEnumerable<Frontend.Models.Entities.Scenario>)
+                    {
+                        if (s.Id == currentFamily.Id)
+                        {
+                            <option value="@s.Id" selected>@s.FamilyName</option>
+                        }
+                        else
+                        {
+                            <option value="@s.Id">@s.FamilyName</option>
+                        }
+                    }
+                </select>
+            </form>
+        </div>
+
+        <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
+            <div class="border-b px-6 py-4 flex gap-4">
+                <button class="font-medium text-primary border-b-2 border-primary pb-4 -mb-4">Registar Lançamento</button>
+            </div>
+            
+            <div class="p-6 max-w-3xl">
+                @if (ViewBag.AddEntryModel != null)
+                {
+                    <partial name="_AddEntryForm" model="(Frontend.Models.ViewModels.AddEntryViewModel)ViewBag.AddEntryModel" />
+                }
+            </div>
+        </div>
+    }
+</div>
