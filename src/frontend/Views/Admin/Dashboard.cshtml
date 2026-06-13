@@ -1,3 +1,4 @@
+@model Frontend.Models.ViewModels.AdminDashboardViewModel
 @{
     ViewData["Title"] = "Painel de Administração";
 }
@@ -16,32 +17,32 @@
             <p class="text-sm text-gray-500 mb-2">Utilizadores Totais</p>
             <div class="text-3xl font-bold flex items-center gap-2">
                 <i data-lucide="users" class="w-6 h-6 text-primary"></i>
-                6
+                @Model.TotalUsers
             </div>
-            <p class="text-sm text-gray-500 mt-2">5 ativos</p>
+            <p class="text-sm text-gray-500 mt-2">Ativos no sistema</p>
         </div>
 
         <div class="bg-white rounded-xl border p-6 shadow-sm">
-            <p class="text-sm text-gray-500 mb-2">Alunos</p>
+            <p class="text-sm text-gray-500 mb-2">Cenários Criados</p>
             <div class="text-3xl font-bold flex items-center gap-2">
-                <i data-lucide="graduation-cap" class="w-6 h-6 text-secondary"></i>
-                4
-            </div>
-        </div>
-
-        <div class="bg-white rounded-xl border p-6 shadow-sm">
-            <p class="text-sm text-gray-500 mb-2">Professores</p>
-            <div class="text-3xl font-bold flex items-center gap-2">
-                <i data-lucide="users" class="w-6 h-6 text-primary"></i>
-                2
+                <i data-lucide="layout" class="w-6 h-6 text-secondary"></i>
+                @Model.TotalScenarios
             </div>
         </div>
 
         <div class="bg-white rounded-xl border p-6 shadow-sm">
-            <p class="text-sm text-gray-500 mb-2">Estado do Sistema</p>
+            <p class="text-sm text-gray-500 mb-2">Simulações</p>
             <div class="text-3xl font-bold flex items-center gap-2">
-                <i data-lucide="activity" class="w-6 h-6 text-green-500"></i>
-                Operacional
+                <i data-lucide="line-chart" class="w-6 h-6 text-primary"></i>
+                @Model.TotalSimulations
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl border p-6 shadow-sm">
+            <p class="text-sm text-gray-500 mb-2">Turmas Ativas</p>
+            <div class="text-3xl font-bold flex items-center gap-2">
+                <i data-lucide="graduation-cap" class="w-6 h-6 text-green-500"></i>
+                @Model.ActiveClasses
             </div>
         </div>
     </div>
@@ -49,7 +50,7 @@
     <!-- System Activity Chart -->
     <div class="bg-white rounded-xl border p-6 shadow-sm mb-8">
         <h3 class="font-bold text-lg mb-1">Atividade do Sistema (Últimos 7 dias)</h3>
-        <p class="text-sm text-gray-500 mb-4">Utilizadores ativos, sessões e cenários criados</p>
+        <p class="text-sm text-gray-500 mb-4">Cenários e simulações executadas por dia</p>
         <canvas id="activityChart" height="300"></canvas>
     </div>
 
@@ -112,15 +113,29 @@
 @section Scripts {
     <script>
         if (document.getElementById('activityChart')) {
+            const labels = @Html.Raw(Json.Serialize(Model.Labels));
+            const scenariosData = @Html.Raw(Json.Serialize(Model.ScenariosData));
+            const simulationsData = @Html.Raw(Json.Serialize(Model.SimulationsData));
+
             new Chart(document.getElementById('activityChart').getContext('2d'), {
                 type: 'line',
                 data: {
-                    labels: ['24/03', '25/03', '26/03', '27/03', '28/03', '29/03', '30/03'],
+                    labels: labels,
                     datasets: [
-                        { label: 'Utilizadores', data: [12, 15, 18, 14, 20, 22, 25], borderColor: '#0C73B7', tension: 0.1 },
-                        { label: 'Sessões', data: [45, 52, 61, 48, 68, 75, 82], borderColor: '#2da7df', tension: 0.1 },
-                        { label: 'Cenários', data: [8, 10, 12, 9, 15, 18, 20], borderColor: '#1d1d1b', tension: 0.1 }
+                        { label: 'Novos Cenários', data: scenariosData, borderColor: '#0C73B7', tension: 0.1 },
+                        { label: 'Simulações Executadas', data: simulationsData, borderColor: '#2da7df', tension: 0.1 }
                     ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
                 }
             });
         }

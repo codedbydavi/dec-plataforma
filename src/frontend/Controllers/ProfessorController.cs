@@ -32,17 +32,48 @@ namespace Frontend.Controllers
             int userId = GetUserId();
             if (userId == 0) return Unauthorized();
 
-            var viewModel = new ProfessorDashboardViewModel
-            {
-                Classes = await _context.Classrooms
+            var classes = await _context.Classrooms
                     .Include(c => c.Enrollments)
+                        .ThenInclude(e => e.Student)
+                            .ThenInclude(s => s!.Scenarios)
+                                .ThenInclude(sc => sc.Histories)
                     .Where(c => c.TeacherId == userId)
                     .OrderByDescending(c => c.CreatedAt)
-                    .ToListAsync(),
+                    .ToListAsync();
+
+            var viewModel = new ProfessorDashboardViewModel
+            {
+                Classes = classes,
                 GlobalChallenges = await _context.Challenges
                     .OrderByDescending(c => c.Id)
                     .ToListAsync()
             };
+
+            // Calculate Chart Data
+            var allEnrollments = classes.SelectMany(c => c.Enrollments).Where(e => e.Student != null).ToList();
+            
+            foreach (var enrollment in allEnrollments.Take(5)) // Show top 5 or first 5
+            {
+                var student = enrollment.Student!;
+                viewModel.StudentNames.Add(student.FullName);
+                
+                var histories = student.Scenarios.SelectMany(s => s.Histories).ToList();
+                viewModel.StudentChallenges.Add(histories.Count);
+                
+                float avgScore = histories.Any(h => h.Score.HasValue) 
+                    ? (float)histories.Where(h => h.Score.HasValue).Average(h => h.Score!.Value) 
+                    : 0;
+                viewModel.StudentScores.Add(avgScore);
+            }
+
+            var allHistories = classes.SelectMany(c => c.Enrollments)
+                .Where(e => e.Student != null)
+                .SelectMany(e => e.Student!.Scenarios)
+                .SelectMany(s => s.Histories)
+                .ToList();
+
+            viewModel.TotalEvaluated = allHistories.Count(h => h.Score.HasValue);
+            viewModel.TotalPending = allHistories.Count(h => !h.Score.HasValue);
 
             return View(viewModel);
         }
