@@ -1,11 +1,7 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import SimulacaoViewSet
-
-# Router automatically creates routes for CRUD (GET, POST, etc.)
-router = DefaultRouter()
-router.register(r'simulacoes', SimulacaoViewSet)
+from django.urls import path
+from .views import calculate_financials, health_check
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('calculate/', calculate_financials, name='calculate'),
+    path('health/', health_check, name='health'),
 ]

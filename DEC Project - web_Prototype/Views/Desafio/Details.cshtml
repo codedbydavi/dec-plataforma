@@ -1,0 +1,63 @@
+@model DEC.Models.Desafio
+
+@{
+    ViewData["Title"] = Model.Titulo;
+    var nivelClass = Model.Nivel == DEC.Models.NivelDificuldade.Facil ? "nivel-facil" :
+                   Model.Nivel == DEC.Models.NivelDificuldade.Medio ? "nivel-medio" : "nivel-dificil";
+}
+
+<div class="container">
+    <div class="flex justify-between align-center mb-3">
+        <h1>@Model.Titulo</h1>
+        <a class="btn btn-secondary" asp-action="Index">Voltar</a>
+    </div>
+
+    <div class="card">
+        <div class="flex justify-between align-center mb-3">
+            <span class="desafio-nivel @nivelClass" style="font-size: 1rem; padding: 0.5rem 1rem;">@Model.Nivel</span>
+            <span class="badge badge-primary" style="font-size: 1.2rem; padding: 0.75rem 1.5rem;">@Model.Pontos pontos</span>
+        </div>
+
+        <h3 style="margin-bottom: 1rem; color: var(--istec-blue);">Descrição</h3>
+        <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 2rem;">@Model.Descricao</p>
+
+        @if (!string.IsNullOrEmpty(Model.ObjetivoAprendizagem))
+        {
+            <div style="padding: 1.5rem; background: #f8f9fa; border-left: 4px solid var(--istec-blue); margin-bottom: 2rem;">
+                <h4 style="color: var(--istec-blue); margin-bottom: 1rem;">Objetivo de Aprendizagem</h4>
+                <p style="margin: 0; font-size: 1.05rem;">@Model.ObjetivoAprendizagem</p>
+            </div>
+        }
+
+        <div style="padding: 1.5rem; background: #fff3cd; border-radius: 8px; margin-bottom: 2rem;">
+            <h4 style="margin-bottom: 1rem;">Como Completar Este Desafio</h4>
+            <ol style="margin: 0; padding-left: 1.5rem; line-height: 1.8;">
+                <li>Leia atentamente a descrição e os objetivos do desafio</li>
+                <li>Crie ou utilize uma família existente na plataforma</li>
+                <li>Complete as tarefas conforme descrito no desafio</li>
+                <li>Verifique se cumpriu todos os requisitos</li>
+                <li>Marque o desafio como completo (funcionalidade futura)</li>
+            </ol>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
+            <div>
+                <small style="color: #666;">Criado em</small>
+                <p style="margin: 0; font-weight: 600;">@Model.DataCriacao.ToString("dd/MM/yyyy")</p>
+            </div>
+            <div>
+                <small style="color: #666;">Estado</small>
+                <p style="margin: 0;">
+                    @if (Model.Ativo)
+                    {
+                        <span class="badge badge-success">Ativo</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-danger">Inativo</span>
+                    }
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

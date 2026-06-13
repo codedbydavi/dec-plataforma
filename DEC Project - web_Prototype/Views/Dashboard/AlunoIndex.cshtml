@@ -1,0 +1,138 @@
+@{
+    ViewData["Title"] = "Dashboard do Aluno";
+    var user = ViewBag.User as DEC.Models.User;
+    var stats = ViewBag.Stats as Dictionary<string, object>;
+    var familias = ViewBag.Familias as List<DEC.Models.Familia>;
+    var desafios = ViewBag.Desafios as List<DEC.Models.Desafio>;
+}
+
+<div class="container">
+    <h1 class="mb-3">Bem-vindo, @user.Nome!</h1>
+
+    <div class="dashboard-grid">
+        <div class="stat-card">
+            <div class="stat-label">Famílias Criadas</div>
+            <div class="stat-value">@stats["totalFamilias"]</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Famílias Ativas</div>
+            <div class="stat-value">@stats["familiasAtivas"]</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Desafios Disponíveis</div>
+            <div class="stat-value">@stats["totalDesafios"]</div>
+        </div>
+
+        @if (stats.ContainsKey("taxaEsforcoMedia"))
+        {
+            <div class="stat-card">
+                <div class="stat-label">Taxa Esforço Média</div>
+                <div class="stat-value">@stats["taxaEsforcoMedia"]%</div>
+            </div>
+        }
+    </div>
+
+    <div class="card">
+        <div class="card-header flex justify-between align-center">
+            <h2 class="card-title">As Minhas Famílias</h2>
+            <a class="btn btn-primary" asp-controller="Familia" asp-action="Create">+ Nova Família</a>
+        </div>
+
+        @if (familias.Any())
+        {
+            @foreach (var familia in familias.Take(3))
+            {
+                <div class="familia-card">
+                    <div class="familia-header">
+                        <div>
+                            <h3 style="margin-bottom: 0.5rem;">@familia.Nome</h3>
+                            <p style="color: #666; margin: 0;">@familia.Descricao</p>
+                        </div>
+                        <div>
+                            @{
+                                var taxaClass = familia.TaxaEsforco < 30 ? "taxa-boa" :
+                                               familia.TaxaEsforco < 40 ? "taxa-media" : "taxa-alta";
+                            }
+                            <div class="taxa-esforco @taxaClass">@familia.TaxaEsforco%</div>
+                            <small style="display: block; text-align: center; color: #666;">Taxa de Esforço</small>
+                        </div>
+                    </div>
+
+                    <div class="grid-3 mb-2">
+                        <div>
+                            <small style="color: #666;">Rendimento</small>
+                            <div style="font-weight: 600; color: #28a745;">@familia.RendimentoMensal.ToString("C")</div>
+                        </div>
+                        <div>
+                            <small style="color: #666;">Despesas</small>
+                            <div style="font-weight: 600; color: #dc3545;">@((familia.DespesasFixas + familia.DespesasVariaveis).ToString("C"))</div>
+                        </div>
+                        <div>
+                            <small style="color: #666;">Poupança</small>
+                            <div style="font-weight: 600; color: #0C73B7;">@familia.Poupanca.ToString("C")</div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-1">
+                        <a class="btn btn-primary btn-small" asp-controller="Familia" asp-action="Details" asp-route-id="@familia.Id">Ver Detalhes</a>
+                        <a class="btn btn-secondary btn-small" asp-controller="Simulacao" asp-action="Index" asp-route-familiaId="@familia.Id">Simulações</a>
+                    </div>
+                </div>
+            }
+
+            @if (familias.Count > 3)
+            {
+                <div class="text-center mt-2">
+                    <a class="btn btn-secondary" asp-controller="Familia" asp-action="Index">Ver Todas as Famílias</a>
+                </div>
+            }
+        }
+        else
+        {
+            <div style="text-align: center; padding: 3rem; color: #666;">
+                <p style="font-size: 1.1rem; margin-bottom: 1rem;">Ainda não tens famílias criadas</p>
+                <a class="btn btn-primary" asp-controller="Familia" asp-action="Create">Criar a Primeira Família</a>
+            </div>
+        }
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Desafios Disponíveis</h2>
+        </div>
+
+        @if (desafios != null && desafios.Any())
+        {
+            @foreach (var desafio in desafios.Take(3))
+            {
+                <div class="desafio-card">
+                    <div class="flex justify-between align-center mb-2">
+                        <h3 style="margin: 0;">@desafio.Titulo</h3>
+                        @{
+                            var nivelClass = desafio.Nivel == DEC.Models.NivelDificuldade.Facil ? "nivel-facil" :
+                                           desafio.Nivel == DEC.Models.NivelDificuldade.Medio ? "nivel-medio" : "nivel-dificil";
+                        }
+                        <span class="desafio-nivel @nivelClass">@desafio.Nivel</span>
+                    </div>
+
+                    <p style="margin-bottom: 1rem;">@desafio.Descricao</p>
+
+                    <div class="flex justify-between align-center">
+                        <span class="badge badge-primary">@desafio.Pontos pontos</span>
+                        <a class="btn btn-primary btn-small" asp-controller="Desafio" asp-action="Details" asp-route-id="@desafio.Id">Ver Desafio</a>
+                    </div>
+                </div>
+            }
+
+            <div class="text-center mt-2">
+                <a class="btn btn-secondary" asp-controller="Desafio" asp-action="Index">Ver Todos os Desafios</a>
+            </div>
+        }
+        else
+        {
+            <p style="text-align: center; padding: 2rem; color: #666;">Não há desafios disponíveis no momento</p>
+        }
+    </div>
+</div>

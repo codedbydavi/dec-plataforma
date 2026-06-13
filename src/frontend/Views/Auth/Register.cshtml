@@ -1,0 +1,104 @@
+@model Frontend.Models.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Criar Conta";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DEC – Dinheiro em Casa</title>
+    <link rel="stylesheet" href="~/css/theme.css" asp-append-version="true" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--primary)',
+                        secondary: 'var(--secondary)',
+                        muted: 'var(--muted)',
+                        'muted-foreground': 'var(--muted-foreground)',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-sans">
+    <div class="min-h-screen bg-gradient-to-br from-primary via-secondary to-primary flex items-center justify-center p-6 text-[#1d1d1b]">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div class="p-8">
+                <div class="text-center mb-8">
+                    <img src="/images/15b23ae75b11299058584f1907ef93163ec08d27.png" alt="ISTEC" class="h-12 mx-auto mb-4" />
+                    <h2 class="text-2xl font-bold">Criar Conta</h2>
+                    <p class="text-gray-500">
+                        Regista-te na plataforma DEC – Dinheiro em Casa
+                    </p>
+                </div>
+
+                <form asp-action="Register" method="post" class="space-y-4">
+                    <div asp-validation-summary="ModelOnly" class="text-red-600 text-sm mb-4"></div>
+
+                    <div class="space-y-2">
+                        <label asp-for="FullName" class="text-sm font-medium leading-none">Nome Completo</label>
+                        <input asp-for="FullName" class="flex h-10 w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="João Silva" required />
+                        <span asp-validation-for="FullName" class="text-red-600 text-xs"></span>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label asp-for="Username" class="text-sm font-medium leading-none">Nome de Utilizador</label>
+                        <input asp-for="Username" class="flex h-10 w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="joaosilva" required />
+                        <span asp-validation-for="Username" class="text-red-600 text-xs"></span>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label asp-for="Email" class="text-sm font-medium leading-none">Email</label>
+                        <input asp-for="Email" type="email" class="flex h-10 w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="exemplo@istec.pt" required />
+                        <span asp-validation-for="Email" class="text-red-600 text-xs"></span>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label asp-for="Password" class="text-sm font-medium leading-none">Password</label>
+                        <input asp-for="Password" type="password" class="flex h-10 w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="••••••••" required />
+                        <span asp-validation-for="Password" class="text-red-600 text-xs"></span>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label asp-for="ConfirmPassword" class="text-sm font-medium leading-none">Confirmar Password</label>
+                        <input asp-for="ConfirmPassword" type="password" class="flex h-10 w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="••••••••" required />
+                        <span asp-validation-for="ConfirmPassword" class="text-red-600 text-xs"></span>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label asp-for="Role" class="text-sm font-medium leading-none">Tipo de Conta</label>
+                        <select asp-for="Role" class="flex h-10 w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                            <option value="Student">Aluno</option>
+                            <option value="Professor">Professor</option>
+                            <option value="Admin">Administrador</option>
+                        </select>
+                        <span asp-validation-for="Role" class="text-red-600 text-xs"></span>
+                    </div>
+
+                    <button type="submit" class="w-full bg-primary text-white py-3 rounded-md font-medium hover:bg-primary/90 transition-colors mt-6">
+                        Criar Conta
+                    </button>
+
+                    <div class="text-sm text-center mt-4">
+                        Já tens conta? 
+                        <a asp-action="Login" class="text-primary hover:underline font-semibold">
+                            Entrar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+</body>
+</html>

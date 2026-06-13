@@ -1,0 +1,8 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS dev
+WORKDIR /app
+
+# Expose the port for the app
+EXPOSE 8080
+
+# The command is now handled by docker-compose for dev mode
+CMD ["dotnet", "watch", "run", "--no-launch-profile"]

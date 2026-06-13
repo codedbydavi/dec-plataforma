@@ -1,0 +1,65 @@
+@model DEC.Models.User
+
+@{
+    ViewData["Title"] = "Registo";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registo - DEC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <img src="~/images/d5218954818f0b46d89a04972d9ea1b2b5f28bba.png" alt="ISTEC Logo" />
+            </div>
+
+            <h2 class="text-center mb-3">Criar Conta</h2>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger">
+                    @ViewBag.Error
+                </div>
+            }
+
+            <form asp-controller="Home" asp-action="Register" method="post">
+                <div class="form-group">
+                    <label class="form-label">Nome Completo</label>
+                    <input type="text" asp-for="Nome" class="form-control" placeholder="João Silva" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" asp-for="Email" class="form-control" placeholder="seu@email.com" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" asp-for="Password" class="form-control" placeholder="••••••••" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Turma (opcional)</label>
+                    <input type="text" asp-for="Turma" class="form-control" placeholder="10A" />
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Registar</button>
+            </form>
+
+            <div class="text-center mt-3">
+                <p>Já tens conta? <a asp-controller="Home" asp-action="Login">Entra aqui</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

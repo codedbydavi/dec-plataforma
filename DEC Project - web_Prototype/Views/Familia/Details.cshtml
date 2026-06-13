@@ -1,0 +1,198 @@
+@model DEC.Models.Familia
+
+@{
+    ViewData["Title"] = Model.Nome;
+    var transacoes = ViewBag.Transacoes as List<DEC.Models.Transacao>;
+}
+
+<div class="container">
+    <div class="flex justify-between align-center mb-3">
+        <h1>@Model.Nome</h1>
+        <div class="flex gap-1">
+            <a class="btn btn-secondary btn-small" asp-controller="Simulacao" asp-action="Index" asp-route-familiaId="@Model.Id">Simulações</a>
+            <a class="btn btn-secondary btn-small" asp-action="Edit" asp-route-id="@Model.Id">Editar</a>
+            <a class="btn btn-secondary btn-small" asp-action="Index">Voltar</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-bottom: 1rem;">Resumo Financeiro</h3>
+
+        <div class="dashboard-grid" style="margin-bottom: 2rem;">
+            <div class="stat-card" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                <div class="stat-label">Rendimento Mensal</div>
+                <div class="stat-value">@Model.RendimentoMensal.ToString("C")</div>
+            </div>
+
+            <div class="stat-card" style="background: linear-gradient(135deg, #dc3545, #e83e4d);">
+                <div class="stat-label">Despesas Totais</div>
+                <div class="stat-value">@((Model.DespesasFixas + Model.DespesasVariaveis).ToString("C"))</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Poupança</div>
+                <div class="stat-value">@Model.Poupanca.ToString("C")</div>
+            </div>
+
+            <div class="stat-card" style="background: linear-gradient(135deg, #ffc107, #ffca2c);">
+                <div class="stat-label">Taxa de Esforço</div>
+                @{
+                    var taxaClass = Model.TaxaEsforco < 30 ? "taxa-boa" :
+                                   Model.TaxaEsforco < 40 ? "taxa-media" : "taxa-alta";
+                }
+                <div class="stat-value">@Model.TaxaEsforco%</div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
+                <h4 style="margin-bottom: 1rem;">Despesas Fixas</h4>
+                <p style="font-size: 2rem; font-weight: bold; color: #dc3545; margin: 0;">@Model.DespesasFixas.ToString("C")</p>
+            </div>
+
+            <div style="padding: 1.5rem; background: #f8f9fa; border-radius: 8px;">
+                <h4 style="margin-bottom: 1rem;">Despesas Variáveis</h4>
+                <p style="font-size: 2rem; font-weight: bold; color: #fd7e14; margin: 0;">@Model.DespesasVariaveis.ToString("C")</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header flex justify-between align-center">
+            <h2 class="card-title">Transações</h2>
+            <button class="btn btn-primary btn-small" onclick="document.getElementById('addTransacaoForm').style.display='block'">+ Nova Transação</button>
+        </div>
+
+        <div id="addTransacaoForm" style="display: none; padding: 1.5rem; background: #f8f9fa; border-radius: 8px; margin-bottom: 2rem;">
+            <h4 style="margin-bottom: 1rem;">Adicionar Transação</h4>
+
+            <form asp-action="AddTransacao" method="post">
+                <input type="hidden" name="familiaId" value="@Model.Id" />
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Descrição *</label>
+                        <input type="text" name="transacao.Descricao" class="form-control" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Valor (€) *</label>
+                        <input type="number" name="transacao.Valor" class="form-control" min="0" step="0.01" required />
+                    </div>
+                </div>
+
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label class="form-label">Tipo *</label>
+                        <select name="transacao.Tipo" class="form-select" required>
+                            <option value="0">Rendimento</option>
+                            <option value="1">Despesa Fixa</option>
+                            <option value="2">Despesa Variável</option>
+                            <option value="3">Poupança</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Categoria *</label>
+                        <select name="transacao.Categoria" class="form-select" required>
+                            <option value="0">Salário</option>
+                            <option value="1">Subsídio</option>
+                            <option value="2">Outros Rendimentos</option>
+                            <option value="3">Habitação</option>
+                            <option value="4">Alimentação</option>
+                            <option value="5">Transporte</option>
+                            <option value="6">Saúde</option>
+                            <option value="7">Educação</option>
+                            <option value="8">Lazer</option>
+                            <option value="9">Seguros</option>
+                            <option value="10">Comunicações</option>
+                            <option value="11">Outros</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Data</label>
+                        <input type="date" name="transacao.Data" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="transacao.Recorrente" /> Transação Recorrente
+                    </label>
+                </div>
+
+                <div class="flex gap-1">
+                    <button type="submit" class="btn btn-primary btn-small">Adicionar</button>
+                    <button type="button" class="btn btn-secondary btn-small" onclick="document.getElementById('addTransacaoForm').style.display='none'">Cancelar</button>
+                </div>
+            </form>
+        </div>
+
+        @if (transacoes != null && transacoes.Any())
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Descrição</th>
+                        <th>Tipo</th>
+                        <th>Categoria</th>
+                        <th>Valor</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var t in transacoes)
+                    {
+                        <tr>
+                            <td>@t.Data.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @t.Descricao
+                                @if (t.Recorrente)
+                                {
+                                    <span class="badge badge-primary" style="font-size: 0.7rem;">Recorrente</span>
+                                }
+                            </td>
+                            <td>
+                                @if (t.Tipo == DEC.Models.TipoTransacao.Rendimento)
+                                {
+                                    <span class="badge badge-success">Rendimento</span>
+                                }
+                                else if (t.Tipo == DEC.Models.TipoTransacao.DespesaFixa)
+                                {
+                                    <span class="badge badge-danger">Despesa Fixa</span>
+                                }
+                                else if (t.Tipo == DEC.Models.TipoTransacao.DespesaVariavel)
+                                {
+                                    <span class="badge badge-warning">Despesa Variável</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-primary">Poupança</span>
+                                }
+                            </td>
+                            <td>@t.Categoria</td>
+                            <td style="@(t.Tipo == DEC.Models.TipoTransacao.Rendimento ? "color: #28a745;" : "color: #dc3545;") font-weight: 600;">
+                                @(t.Tipo == DEC.Models.TipoTransacao.Rendimento ? "+" : "-")@t.Valor.ToString("C")
+                            </td>
+                            <td>
+                                <form asp-action="DeleteTransacao" method="post" style="display: inline;" onsubmit="return confirm('Eliminar esta transação?');">
+                                    <input type="hidden" name="id" value="@t.Id" />
+                                    <input type="hidden" name="familiaId" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-danger btn-small">Eliminar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p style="text-align: center; padding: 2rem; color: #666;">
+                Ainda não existem transações. Clique em "Nova Transação" para adicionar a primeira.
+            </p>
+        }
+    </div>
+</div>

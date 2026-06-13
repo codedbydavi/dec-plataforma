@@ -1,0 +1,128 @@
+@{
+    ViewData["Title"] = "Painel de Administração";
+}
+
+<div class="max-w-7xl mx-auto p-6">
+    <div class="mb-6">
+        <h1 class="text-3xl mb-2 font-bold">Painel de Administração</h1>
+        <p class="text-gray-500">
+            Gestão e monitorização da infraestrutura do sistema
+        </p>
+    </div>
+
+    <!-- System Overview -->
+    <div class="grid md:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white rounded-xl border p-6 shadow-sm">
+            <p class="text-sm text-gray-500 mb-2">Utilizadores Totais</p>
+            <div class="text-3xl font-bold flex items-center gap-2">
+                <i data-lucide="users" class="w-6 h-6 text-primary"></i>
+                6
+            </div>
+            <p class="text-sm text-gray-500 mt-2">5 ativos</p>
+        </div>
+
+        <div class="bg-white rounded-xl border p-6 shadow-sm">
+            <p class="text-sm text-gray-500 mb-2">Alunos</p>
+            <div class="text-3xl font-bold flex items-center gap-2">
+                <i data-lucide="graduation-cap" class="w-6 h-6 text-secondary"></i>
+                4
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl border p-6 shadow-sm">
+            <p class="text-sm text-gray-500 mb-2">Professores</p>
+            <div class="text-3xl font-bold flex items-center gap-2">
+                <i data-lucide="users" class="w-6 h-6 text-primary"></i>
+                2
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl border p-6 shadow-sm">
+            <p class="text-sm text-gray-500 mb-2">Estado do Sistema</p>
+            <div class="text-3xl font-bold flex items-center gap-2">
+                <i data-lucide="activity" class="w-6 h-6 text-green-500"></i>
+                Operacional
+            </div>
+        </div>
+    </div>
+
+    <!-- System Activity Chart -->
+    <div class="bg-white rounded-xl border p-6 shadow-sm mb-8">
+        <h3 class="font-bold text-lg mb-1">Atividade do Sistema (Últimos 7 dias)</h3>
+        <p class="text-sm text-gray-500 mb-4">Utilizadores ativos, sessões e cenários criados</p>
+        <canvas id="activityChart" height="300"></canvas>
+    </div>
+
+    <!-- System Health -->
+    <div class="bg-white rounded-xl border p-6 shadow-sm mb-8">
+        <h3 class="font-bold text-lg flex items-center gap-2 mb-1">
+            <i data-lucide="shield" class="w-5 h-5 text-primary"></i>
+            Saúde da Infraestrutura
+        </h3>
+        <p class="text-sm text-gray-500 mb-4">Estado dos componentes do sistema</p>
+        
+        <div class="space-y-3">
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i>
+                    <div>
+                        <p class="font-medium">API Gateway</p>
+                        <p class="text-sm text-gray-500">Uptime: 99.9%</p>
+                    </div>
+                </div>
+                <span class="bg-green-500 text-white text-xs font-medium px-2.5 py-0.5 rounded">Operacional</span>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i>
+                    <div>
+                        <p class="font-medium">Database MySQL</p>
+                        <p class="text-sm text-gray-500">Uptime: 99.8%</p>
+                    </div>
+                </div>
+                <span class="bg-green-500 text-white text-xs font-medium px-2.5 py-0.5 rounded">Operacional</span>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i>
+                    <div>
+                        <p class="font-medium">Simulation Service</p>
+                        <p class="text-sm text-gray-500">Uptime: 99.7%</p>
+                    </div>
+                </div>
+                <span class="bg-green-500 text-white text-xs font-medium px-2.5 py-0.5 rounded">Operacional</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mt-8 flex flex-wrap gap-4">
+        <button class="px-4 py-2 border rounded-md font-medium hover:bg-gray-50 flex items-center gap-2">
+            <i data-lucide="database" class="w-4 h-4"></i> Executar Backup
+        </button>
+        <button class="px-4 py-2 border rounded-md font-medium hover:bg-gray-50 flex items-center gap-2">
+            <i data-lucide="activity" class="w-4 h-4"></i> Ver Logs do Sistema
+        </button>
+        <button class="px-4 py-2 border rounded-md font-medium hover:bg-gray-50 flex items-center gap-2">
+            <i data-lucide="shield" class="w-4 h-4"></i> Configurações de Segurança
+        </button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        if (document.getElementById('activityChart')) {
+            new Chart(document.getElementById('activityChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: ['24/03', '25/03', '26/03', '27/03', '28/03', '29/03', '30/03'],
+                    datasets: [
+                        { label: 'Utilizadores', data: [12, 15, 18, 14, 20, 22, 25], borderColor: '#0C73B7', tension: 0.1 },
+                        { label: 'Sessões', data: [45, 52, 61, 48, 68, 75, 82], borderColor: '#2da7df', tension: 0.1 },
+                        { label: 'Cenários', data: [8, 10, 12, 9, 15, 18, 20], borderColor: '#1d1d1b', tension: 0.1 }
+                    ]
+                }
+            });
+        }
+    </script>
+}

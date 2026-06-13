@@ -1,8 +1,169 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Bem-vindo";
+    ViewData["HeaderVariant"] = "light";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="min-h-screen bg-gradient-to-br from-white via-blue-50 to-blue-100">
+    <!-- Hero Section -->
+    <section class="bg-primary text-white py-20 px-6">
+        <div class="max-w-6xl mx-auto text-center">
+            <img src="/images/d5218954818f0b46d89a04972d9ea1b2b5f28bba.png" alt="ISTEC Logo" class="h-20 mx-auto mb-6" />
+            <h1 class="text-5xl mb-6 font-serif">
+                DEC – Dinheiro em Casa
+            </h1>
+            <p class="text-xl mb-8 max-w-3xl mx-auto opacity-90">
+                Plataforma digital de literacia financeira para alunos do 10.º ao 12.º ano. 
+                Aprende a gerir a economia doméstica através de cenários reais e simulações interativas.
+            </p>
+            <div class="flex gap-4 justify-center">
+                <a asp-controller="Auth" asp-action="Register" class="bg-secondary text-white px-8 py-3 rounded-md text-lg font-medium hover:bg-secondary/90 transition-colors">
+                    Começar Agora
+                </a>
+                <a asp-controller="Auth" asp-action="Login" class="bg-white/10 text-white border border-white px-8 py-3 rounded-md text-lg font-medium hover:bg-white/20 transition-colors">
+                    Já tenho conta
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-16 px-6">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl text-center mb-12 text-primary font-serif">
+                Funcionalidades Principais
+            </h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="bg-white p-6 rounded-xl border-2 hover:border-primary transition-colors shadow-sm">
+                    <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="target" class="text-primary lucide-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Cenários Familiares</h3>
+                    <p class="text-muted-foreground">
+                        Cria famílias virtuais e toma decisões financeiras reais
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-white p-6 rounded-xl border-2 hover:border-primary transition-colors shadow-sm">
+                    <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="piggy-bank" class="text-secondary lucide-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Gestão de Poupança</h3>
+                    <p class="text-muted-foreground">
+                        Define objetivos e simula o crescimento da tua poupança com juros compostos
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-white p-6 rounded-xl border-2 hover:border-primary transition-colors shadow-sm">
+                    <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="calculator" class="text-primary lucide-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Simulador de Crédito</h3>
+                    <p class="text-muted-foreground">
+                        Simula planos de amortização e compreende o impacto dos juros
+                    </p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="bg-white p-6 rounded-xl border-2 hover:border-primary transition-colors shadow-sm">
+                    <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="bar-chart-3" class="text-secondary lucide-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Dashboard Interativo</h3>
+                    <p class="text-muted-foreground">
+                        Visualiza graficamente os teus saldos, taxa de esforço e evolução
+                    </p>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="bg-white p-6 rounded-xl border-2 hover:border-primary transition-colors shadow-sm">
+                    <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="trending-up" class="text-primary lucide-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Projeções Financeiras</h3>
+                    <p class="text-muted-foreground">
+                        Relatórios de projeção a 12/24 meses considerando inflação
+                    </p>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="bg-white p-6 rounded-xl border-2 hover:border-primary transition-colors shadow-sm">
+                    <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="graduation-cap" class="text-secondary lucide-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Desafios Pedagógicos</h3>
+                    <p class="text-muted-foreground">
+                        Completa desafios propostos pelos professores e ganha badges
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="bg-white py-16 px-6">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-4xl text-center mb-12 text-primary font-serif">
+                Porquê DEC – Dinheiro em Casa?
+            </h2>
+            <div class="space-y-6">
+                <div class="flex gap-4">
+                    <div class="w-2 bg-primary rounded-full"></div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">Aprendizagem Prática</h3>
+                        <p class="text-muted-foreground">
+                            Simula cenários reais de gestão doméstica e observa o impacto das tuas decisões a curto e longo prazo
+                        </p>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="w-2 bg-secondary rounded-full"></div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">Feedback Automático</h3>
+                        <p class="text-muted-foreground">
+                            Recebe feedback sobre o cumprimento de metas pedagógicas e melhora continuamente
+                        </p>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="w-2 bg-primary rounded-full"></div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">Acompanhamento Docente</h3>
+                        <p class="text-muted-foreground">
+                            Os professores podem criar desafios personalizados e monitorizar o progresso da turma
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="bg-primary text-white py-16 px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl mb-6 font-serif">
+                Pronto para começar?
+            </h2>
+            <p class="text-xl mb-8 opacity-90">
+                Cria a tua conta gratuita e começa a aprender literacia financeira hoje mesmo
+            </p>
+            <a asp-controller="Auth" asp-action="Register" class="bg-secondary text-white px-8 py-3 rounded-md text-lg font-medium hover:bg-secondary/90 transition-colors">
+                Criar Conta Gratuita
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#1d1d1b] text-white py-8 px-6">
+        <div class="max-w-6xl mx-auto text-center">
+            <p class="opacity-80">
+                © 2026 ISTEC – Instituto Superior de Tecnologias Avançadas do Porto
+            </p>
+            <p class="text-sm opacity-60 mt-2">
+                Plataforma educativa para literacia financeira
+            </p>
+        </div>
+    </footer>
 </div>

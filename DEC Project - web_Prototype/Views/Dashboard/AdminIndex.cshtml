@@ -1,0 +1,121 @@
+@{
+    ViewData["Title"] = "Dashboard do Administrador";
+    var user = ViewBag.User as DEC.Models.User;
+    var stats = ViewBag.Stats as Dictionary<string, object>;
+    var users = ViewBag.Users as List<DEC.Models.User>;
+}
+
+<div class="container">
+    <h1 class="mb-3">Dashboard do Administrador</h1>
+
+    <div class="dashboard-grid">
+        <div class="stat-card">
+            <div class="stat-label">Total de Utilizadores</div>
+            <div class="stat-value">@stats["totalUsers"]</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Alunos</div>
+            <div class="stat-value">@stats["totalAlunos"]</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Professores</div>
+            <div class="stat-value">@stats["totalProfessores"]</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Famílias Criadas</div>
+            <div class="stat-value">@stats["totalFamilias"]</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Desafios Ativos</div>
+            <div class="stat-value">@stats["totalDesafios"]</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Utilizadores do Sistema</h2>
+        </div>
+
+        @if (users != null && users.Any())
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Turma</th>
+                        <th>Data de Registo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var u in users)
+                    {
+                        <tr>
+                            <td>@u.Id</td>
+                            <td>@u.Nome</td>
+                            <td>@u.Email</td>
+                            <td>
+                                @if (u.Role == DEC.Models.UserRole.Administrador)
+                                {
+                                    <span class="badge badge-danger">Administrador</span>
+                                }
+                                else if (u.Role == DEC.Models.UserRole.Professor)
+                                {
+                                    <span class="badge badge-warning">Professor</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-primary">Aluno</span>
+                                }
+                            </td>
+                            <td>@(u.Turma ?? "N/A")</td>
+                            <td>@u.DataCriacao.ToString("dd/MM/yyyy")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p style="text-align: center; padding: 2rem; color: #666;">Nenhum utilizador encontrado</p>
+        }
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Ações de Sistema</h2>
+        </div>
+
+        <div class="grid-2">
+            <div style="padding: 1.5rem; border: 1px solid #ddd; border-radius: 8px;">
+                <h4 style="margin-bottom: 1rem;">Gestão de Utilizadores</h4>
+                <p style="margin-bottom: 1rem; color: #666;">Adicionar, editar ou remover utilizadores do sistema</p>
+                <button class="btn btn-primary btn-small" onclick="alert('Funcionalidade em desenvolvimento')">Gerir Utilizadores</button>
+            </div>
+
+            <div style="padding: 1.5rem; border: 1px solid #ddd; border-radius: 8px;">
+                <h4 style="margin-bottom: 1rem;">Gestão de Desafios</h4>
+                <p style="margin-bottom: 1rem; color: #666;">Moderar e gerir todos os desafios da plataforma</p>
+                <a class="btn btn-primary btn-small" asp-controller="Desafio" asp-action="Index">Ver Desafios</a>
+            </div>
+
+            <div style="padding: 1.5rem; border: 1px solid #ddd; border-radius: 8px;">
+                <h4 style="margin-bottom: 1rem;">Relatórios</h4>
+                <p style="margin-bottom: 1rem; color: #666;">Gerar relatórios de uso e estatísticas</p>
+                <button class="btn btn-primary btn-small" onclick="alert('Funcionalidade em desenvolvimento')">Gerar Relatório</button>
+            </div>
+
+            <div style="padding: 1.5rem; border: 1px solid #ddd; border-radius: 8px;">
+                <h4 style="margin-bottom: 1rem;">Configurações</h4>
+                <p style="margin-bottom: 1rem; color: #666;">Configurar parâmetros globais do sistema</p>
+                <button class="btn btn-primary btn-small" onclick="alert('Funcionalidade em desenvolvimento')">Configurações</button>
+            </div>
+        </div>
+    </div>
+</div>

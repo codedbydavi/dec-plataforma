@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DEC - Dinheiro em Casa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <nav class="navbar">
+        <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+            <img src="~/images/d5218954818f0b46d89a04972d9ea1b2b5f28bba.png" alt="ISTEC Logo" />
+            <span>DEC - Dinheiro em Casa</span>
+        </a>
+
+        @if (Context.Session.GetString("UserName") != null)
+        {
+            <ul class="navbar-nav">
+                <li><a asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+
+                @if (Context.Session.GetString("UserRole") == "Aluno")
+                {
+                    <li><a asp-controller="Familia" asp-action="Index">Minhas Famílias</a></li>
+                    <li><a asp-controller="Desafio" asp-action="Index">Desafios</a></li>
+                }
+
+                @if (Context.Session.GetString("UserRole") == "Professor" || Context.Session.GetString("UserRole") == "Administrador")
+                {
+                    <li><a asp-controller="Desafio" asp-action="Index">Gestão de Desafios</a></li>
+                }
+            </ul>
+
+            <div class="user-info">
+                <span>@Context.Session.GetString("UserName")</span>
+                <span class="badge badge-primary">@Context.Session.GetString("UserRole")</span>
+                <a class="btn btn-secondary btn-small" asp-controller="Home" asp-action="Logout">Sair</a>
+            </div>
+        }
+    </nav>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

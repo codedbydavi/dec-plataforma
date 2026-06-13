@@ -1,0 +1,60 @@
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - DEC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <img src="~/images/d5218954818f0b46d89a04972d9ea1b2b5f28bba.png" alt="ISTEC Logo" />
+            </div>
+
+            <h2 class="text-center mb-3">Iniciar Sessão</h2>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger">
+                    @ViewBag.Error
+                </div>
+            }
+
+            <form asp-controller="Home" asp-action="Login" method="post">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" placeholder="seu@email.com" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control" placeholder="••••••••" required />
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Entrar</button>
+            </form>
+
+            <div class="text-center mt-3">
+                <p>Não tens conta? <a asp-controller="Home" asp-action="Register">Regista-te aqui</a></p>
+            </div>
+
+            <div class="mt-3" style="padding: 1rem; background: #f8f9fa; border-radius: 4px;">
+                <p style="margin-bottom: 0.5rem; font-weight: 600;">Contas de teste:</p>
+                <p style="font-size: 0.875rem; margin: 0.25rem 0;">Aluno: joao@istec.pt / aluno123</p>
+                <p style="font-size: 0.875rem; margin: 0.25rem 0;">Professor: prof.silva@istec.pt / prof123</p>
+                <p style="font-size: 0.875rem; margin: 0.25rem 0;">Admin: admin@istec.pt / admin123</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,5 +1,5 @@
 services:
-  # Nginx acting as a Reverse Proxy on port 443 (and 80 for redirection)
+  # Nginx acting as a Reverse Proxy
   nginx:
     image: nginx:latest
     ports:
@@ -7,56 +7,53 @@ services:
       - "443:443"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
     depends_on:
       - frontend
     networks:
       - internal
 
-  # Container: .NET MVC (Web Application)
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+  # Container: .NET MVC (Educational Platform - CORE)
   frontend:
     build:
       context: ./src/frontend
-    # No external ports exposed; accessed only internally via Nginx
-    depends_on:
-      - backend
-    networks:
-      - internal
-
-  # Container: Django API (REST API)
-  backend:
-    build:
-      context: ./src/backend
-    # Uses variables from the global .env
+      dockerfile: Dockerfile.dev
     environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - MICROSERVICE_URL=http://service:5000
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=db;Database=$${MYSQL_DATABASE};User=$${MYSQL_USER};Password=$${MYSQL_PASSWORD};
+      - FinancialEngine__BaseUrl=http://calculation-engine:8000/api/
     depends_on:
       - db
-      - service
     networks:
       - internal
 
-  # Container: Python Microservice (Financial Engine)
-  service:
+  # Container: Django (Financial Calculation Engine)
+  calculation-engine:
     build:
-      context: ./src/service
-    # Microservice now also has access to DB credentials
+      context: ./src/backend
     environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
+      - DJANGO_SECRET_KEY=$${DJANGO_SECRET_KEY}
+      - DEBUG=False
+      - ALLOWED_HOSTS=calculation-engine,localhost,dec-plataforma.duckdns.org
     networks:
       - internal
 
   # Container: MySQL (Database)
   db:
     image: mysql:8.0
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -65,7 +62,10 @@ services:
     networks:
       - internal
 
-# Internal Docker Network to protect container communication
+# Internal Docker Network
 networks:
   internal:
     driver: bridge
+
+volumes:
+  mysql_data:

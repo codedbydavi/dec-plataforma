@@ -1,0 +1,194 @@
+@model IEnumerable<Frontend.Models.Entities.Scenario>
+
+@{
+    ViewData["Title"] = "Simulações Financeiras";
+    var currentFamily = Model.FirstOrDefault();
+}
+
+<div class="max-w-7xl mx-auto p-6">
+    <div class="mb-6">
+        <h1 class="text-3xl mb-2 font-bold">Simulações Financeiras</h1>
+        <p class="text-gray-500">
+            Executa simulações de poupança, crédito e projeções de fluxo de caixa no motor financeiro central
+        </p>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <span class="block sm:inline">@TempData["SuccessMessage"]</span>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <span class="block sm:inline">@TempData["ErrorMessage"]</span>
+        </div>
+    }
+
+    @if (currentFamily == null)
+    {
+        <div class="bg-white rounded-xl border p-12 text-center shadow-sm">
+            <p class="text-gray-500 mb-4">Cria um cenário primeiro.</p>
+            <a asp-action="Family" class="px-4 py-2 bg-primary text-white rounded-md">Ir para Família</a>
+        </div>
+    }
+    else
+    {
+        <!-- Tabs -->
+        <div class="mb-6 border-b border-gray-200">
+            <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="myTab" role="tablist">
+                <li class="mr-2" role="presentation">
+                    <button class="inline-block p-4 border-b-2 border-primary text-primary rounded-t-lg active" id="savings-tab" data-tabs-target="#savings" type="button" role="tab" aria-controls="savings" aria-selected="true">
+                        <i data-lucide="piggy-bank" class="w-4 h-4 inline mr-2"></i> Poupança
+                    </button>
+                </li>
+                <li class="mr-2" role="presentation">
+                    <button class="inline-block p-4 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 rounded-t-lg" id="loan-tab" data-tabs-target="#loan" type="button" role="tab" aria-controls="loan" aria-selected="false">
+                        <i data-lucide="credit-card" class="w-4 h-4 inline mr-2"></i> Crédito
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div id="myTabContent">
+            <!-- Savings Tab -->
+            <div class="p-4 rounded-lg bg-gray-50" id="savings" role="tabpanel" aria-labelledby="savings-tab">
+                <div class="bg-white rounded-xl border shadow-sm p-6">
+                    <h3 class="text-lg font-bold mb-1">Simulação de Poupança com Juros Compostos</h3>
+                    <p class="text-sm text-gray-500 mb-6">Projeta o crescimento da tua poupança (via motor Django)</p>
+                    
+                    <!-- Savings Presets -->
+                    <div class="mb-6 pb-6 border-b">
+                        <p class="text-sm font-medium mb-3 text-gray-700">Sugestões de Simulação</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" onclick="fillSavings(100, 2.5, 12)" class="px-3 py-1.5 text-sm border rounded hover:bg-primary/5 hover:border-primary transition-colors text-left">
+                                <span class="block font-bold text-primary">Conservadora</span>
+                                <span class="block text-xs text-gray-500">100€ | 2.5% | 1 ano</span>
+                            </button>
+                            <button type="button" onclick="fillSavings(250, 4.0, 60)" class="px-3 py-1.5 text-sm border rounded hover:bg-primary/5 hover:border-primary transition-colors text-left">
+                                <span class="block font-bold text-primary">Médio Prazo</span>
+                                <span class="block text-xs text-gray-500">250€ | 4.0% | 5 anos</span>
+                            </button>
+                            <button type="button" onclick="fillSavings(500, 7.0, 120)" class="px-3 py-1.5 text-sm border rounded hover:bg-primary/5 hover:border-primary transition-colors text-left">
+                                <span class="block font-bold text-primary">Agressiva</span>
+                                <span class="block text-xs text-gray-500">500€ | 7.0% | 10 anos</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <form asp-action="RunSimulation" method="post" class="grid md:grid-cols-2 gap-6">
+                        <input type="hidden" name="scenarioId" value="@currentFamily.Id" />
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Capital Inicial (€)</label>
+                                <input type="number" value="@currentFamily.InitialBalance" class="w-full border rounded-md px-3 py-2 bg-gray-100" readonly />
+                                <p class="text-xs text-gray-500 mt-1">Carregado automaticamente do saldo do cenário</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Contribuição Mensal (€)</label>
+                                <input id="savContrib" name="savingsSimulation.MonthlyContribution" type="number" value="100" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Taxa de Juro Anual (%)</label>
+                                <input id="savRate" name="savingsSimulation.AnnualInterestRate" type="number" step="0.1" value="2" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Período (meses)</label>
+                                <input id="savTerm" name="savingsSimulation.TermMonths" type="number" value="12" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required />
+                            </div>
+                            <button type="submit" class="w-full bg-primary text-white py-2 rounded-md font-medium hover:bg-primary/90 flex justify-center items-center gap-2">
+                                <i data-lucide="calculator" class="w-4 h-4"></i> Simular
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Loan Tab -->
+            <div class="hidden p-4 rounded-lg bg-gray-50" id="loan" role="tabpanel" aria-labelledby="loan-tab">
+                <div class="bg-white rounded-xl border shadow-sm p-6">
+                    <h3 class="text-lg font-bold mb-1">Simulação de Crédito (Sistema Francês)</h3>
+                    <p class="text-sm text-gray-500 mb-6">Calcula as prestações e custo total de um empréstimo</p>
+                    
+                    <!-- Loan Presets -->
+                    <div class="mb-6 pb-6 border-b">
+                        <p class="text-sm font-medium mb-3 text-gray-700">Cenários Típicos</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" onclick="fillLoan(150000, 3.5, 360)" class="px-3 py-1.5 text-sm border rounded hover:bg-primary/5 hover:border-primary transition-colors text-left">
+                                <span class="block font-bold text-primary">Crédito Habitação</span>
+                                <span class="block text-xs text-gray-500">150k€ | 3.5% | 30 anos</span>
+                            </button>
+                            <button type="button" onclick="fillLoan(25000, 7.5, 84)" class="px-3 py-1.5 text-sm border rounded hover:bg-primary/5 hover:border-primary transition-colors text-left">
+                                <span class="block font-bold text-primary">Crédito Automóvel</span>
+                                <span class="block text-xs text-gray-500">25k€ | 7.5% | 7 anos</span>
+                            </button>
+                            <button type="button" onclick="fillLoan(5000, 11.0, 48)" class="px-3 py-1.5 text-sm border rounded hover:bg-primary/5 hover:border-primary transition-colors text-left">
+                                <span class="block font-bold text-primary">Crédito Pessoal</span>
+                                <span class="block text-xs text-gray-500">5k€ | 11.0% | 4 anos</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <form asp-action="RunSimulation" method="post" class="grid md:grid-cols-2 gap-6">
+                        <input type="hidden" name="scenarioId" value="@currentFamily.Id" />
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Montante do Crédito (€)</label>
+                                <input id="loanPrincipal" name="loanSimulation.Principal" type="number" value="50000" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Taxa de Juro Anual (TAN %)</label>
+                                <input id="loanRate" name="loanSimulation.AnnualInterestRate" type="number" step="0.1" value="5" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required />
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Prazo (meses)</label>
+                                <input id="loanTerm" name="loanSimulation.TermMonths" type="number" value="240" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required />
+                            </div>
+                            <button type="submit" class="w-full bg-primary text-white py-2 rounded-md font-medium hover:bg-primary/90 flex justify-center items-center gap-2">
+                                <i data-lucide="calculator" class="w-4 h-4"></i> Simular
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function fillSavings(contrib, rate, term) {
+            document.getElementById('savContrib').value = contrib;
+            document.getElementById('savRate').value = rate;
+            document.getElementById('savTerm').value = term;
+        }
+
+        function fillLoan(principal, rate, term) {
+            document.getElementById('loanPrincipal').value = principal;
+            document.getElementById('loanRate').value = rate;
+            document.getElementById('loanTerm').value = term;
+        }
+
+        // Simple JS Tabs
+        const tabs = document.querySelectorAll('[data-tabs-target]');
+        const tabContents = document.querySelectorAll('[role="tabpanel"]');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = document.querySelector(tab.dataset.tabsTarget);
+                
+                tabContents.forEach(tc => tc.classList.add('hidden'));
+                tabs.forEach(t => {
+                    t.classList.remove('border-primary', 'text-primary');
+                    t.classList.add('border-transparent');
+                });
+                
+                target.classList.remove('hidden');
+                tab.classList.remove('border-transparent');
+                tab.classList.add('border-primary', 'text-primary');
+            });
+        });
+    </script>
+}

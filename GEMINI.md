@@ -1,58 +1,40 @@
 # GEMINI Context: DEC – Dinheiro em Casa
 
 ## Project Overview
-**DEC – Dinheiro em Casa** is a digital financial literacy platform designed for secondary school students. It simulates domestic economy scenarios to help users make informed financial decisions. The project uses a microservices-based monorepo architecture.
+**DEC – Dinheiro em Casa** is a digital financial literacy platform designed for secondary school students. It simulates domestic economy scenarios to help users make informed financial decisions.
 
 ### Architecture & Stack
-- **Frontend:** ASP.NET Core MVC (located in `src/frontend`)
-- **Backend:** Django REST API (located in `src/backend`)
-- **Microservice:** Python for financial calculations (located in `src/service`)
-- **Database:** MySQL
+- **Frontend:** ASP.NET Core 10.0 MVC (Centralized Security & UI)
+- **Backend/Calculation Engine:** Django 6.0 REST API (Financial Calculation Engine)
+- **Database:** MySQL 8.0 (Schema v1.0 alingned with ERD)
 - **Infrastructure:** Docker, Docker Compose, Nginx as a Reverse Proxy
 - **CI/CD:** GitHub Actions
 
+## Quick Access
+- **Portal:** `http://localhost`
+- **Django Engine API:** `http://localhost/api/calculate/`
+- **Django Admin:** `http://localhost/admin/`
+
 ## Directory Structure
-- `src/frontend/`: ASP.NET Core MVC application (.NET 10.0 based on `.csproj`, though CI uses 7.0).
-- `src/backend/`: Django project using Django REST Framework and CORS headers.
-- `src/service/`: Python microservice skeleton.
-- `docker-compose.yml`: Root orchestration for all services, including a MySQL database and Nginx.
-- `.github/workflows/ci.yml`: Automated pipeline for building and testing all components.
-
-## Building and Running
-
-### Full Stack (Docker)
-The entire system can be started using Docker Compose from the root directory:
-```bash
-docker-compose up --build
-```
-The application becomes available at `http://localhost` via Nginx.
-
-### Backend (Django)
-1. Navigate to `src/backend`.
-2. Activate virtual environment: `source venv/bin/activate`.
-3. Install dependencies: `pip install -r requirements.txt`.
-4. Run server: `python manage.py runserver`.
-5. Run tests: `python manage.py test`.
-
-### Frontend (.NET)
-1. Navigate to `src/frontend`.
-2. Restore dependencies: `dotnet restore`.
-3. Build project: `dotnet build`.
-4. Run project: `dotnet run`.
-5. Run tests: `dotnet test`.
-
-### Microservice (Python)
-1. Navigate to `src/service`.
-2. Run microservice: `python main.py`.
-3. Run tests: `python -m unittest discover`.
+- `src/frontend/`: ASP.NET Core MVC application (.NET 10.0).
+- `src/backend/`: Django project acting as the Financial Calculation Engine.
+- `docker-compose.yml`: Root orchestration with database persistence (volumes).
+- `nginx/conf.d/default.conf`: Unified gateway routing.
 
 ## Development Conventions
-- **Monorepo Workflow:** All components are housed under the `src/` directory.
-- **CI/CD:** GitHub Actions validates Django, .NET, and Docker builds on every push to `main` and `dev`.
-- **Dockerization:** Each service has its own `Dockerfile` for consistent deployment.
-- **RESTful API:** The backend is designed as a REST API to serve the frontend and potentially other clients.
+- **Monorepo Workflow:** All components under `src/`.
+- **Security:** Secrets managed via `.env`. No hardcoded keys.
+- **Comments:** Standardized in English.
+- **CI/CD:** GitHub Actions validates all components on push/PR.
+- **Database:** Managed via Django Migrations. Version control for DDL.
+
+## Building and Running
+```bash
+# Start the entire ecosystem
+docker-compose up --build
+```
 
 ## Pending/TODO
-- [ ] Align .NET versions between `Frontend.csproj` (10.0) and `ci.yml` (7.0).
-- [ ] Implement financial calculation logic in `src/service/main.py`.
-- [ ] Configure Nginx rules for routing between Frontend and Backend in a dedicated config file (referenced in `docker-compose.yml` but directory not yet present).
+- [x] Implement financial calculation logic in `src/backend/api/services.py`.
+- [ ] Create Student Scenario form in Frontend (US_B015).
+- [ ] Implement Simulation History visualization.
