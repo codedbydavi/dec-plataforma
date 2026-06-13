@@ -23,9 +23,9 @@ services:
 
   # Container: .NET MVC (Educational Platform - CORE)
   frontend:
-    build:
-      context: ./src/frontend
-      dockerfile: Dockerfile
+    image: ghcr.io/codedbydavi/dec-plataforma-frontend:latest
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
@@ -38,8 +38,9 @@ services:
 
   # Container: Django (Financial Calculation Engine)
   calculation-engine:
-    build:
-      context: ./src/backend
+    image: ghcr.io/codedbydavi/dec-plataforma-backend:latest
+    env_file:
+      - .env
     environment:
       - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
       - DEBUG=False
@@ -50,6 +51,8 @@ services:
   # Container: MySQL (Database)
   db:
     image: mysql:8.0
+    env_file:
+      - .env
     ports:
       - "3306:3306"
     volumes:

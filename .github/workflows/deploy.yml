@@ -1,16 +1,48 @@
-name: Continuous Deployment
+name: Build and Push Artifacts
 
 on:
-  workflow_run:
-    workflows: ["Monorepo CI Pipeline"]
-    types:
-      - completed
+  push:
     branches: [main]
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
-  deploy:
+  build-and-push:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v4
+        with:
+          context: ./src/frontend
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ github.repository }}-frontend:latest
+
+      - name: Build and push Backend
+        uses: docker/build-push-action@v4
+        with:
+          context: ./src/backend
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ github.repository }}-backend:latest
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
     steps:
       - name: Deploy to GCP VM
         uses: appleboy/ssh-action@master
@@ -20,9 +52,8 @@ jobs:
           key: ${{ secrets.GCP_SSH_KEY }}
           script: |
             cd ~/dec-plataforma
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             git pull origin main
-            # Atualiza os containers
-            docker compose down
-            docker compose up -d --build
-            # Remove imagens antigas para economizar espaço (importante no Free Tier)
+            docker compose pull
+            docker compose up -d
             docker image prune -f
