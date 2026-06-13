@@ -23,9 +23,7 @@ services:
 
   # Container: .NET MVC (Educational Platform - CORE)
   frontend:
-    build:
-      context: ./src/frontend
-      dockerfile: Dockerfile
+    image: ghcr.io/codedbydavi/dec-plataforma-frontend:latest
     env_file:
       - .env
     environment:
@@ -40,8 +38,7 @@ services:
 
   # Container: Django (Financial Calculation Engine)
   calculation-engine:
-    build:
-      context: ./src/backend
+    image: ghcr.io/codedbydavi/dec-plataforma-backend:latest
     env_file:
       - .env
     environment:
