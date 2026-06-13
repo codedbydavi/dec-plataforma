@@ -29,7 +29,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DefaultConnection=Server=db;Database=$${MYSQL_DATABASE};User=$${MYSQL_USER};Password=$${MYSQL_PASSWORD};
+      - ConnectionStrings__DefaultConnection=Server=db;Database=${MYSQL_DATABASE};User=${MYSQL_USER};Password=${MYSQL_PASSWORD};
       - FinancialEngine__BaseUrl=http://calculation-engine:8000/api/
     depends_on:
       - db
@@ -41,7 +41,7 @@ services:
     build:
       context: ./src/backend
     environment:
-      - DJANGO_SECRET_KEY=$${DJANGO_SECRET_KEY}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
       - DEBUG=False
       - ALLOWED_HOSTS=calculation-engine,localhost,dec-plataforma.duckdns.org
     networks:
