@@ -7,23 +7,29 @@ services:
       - "443:443"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
     depends_on:
       - frontend
     networks:
       - internal
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
   # Container: .NET MVC (Educational Platform - CORE)
   frontend:
     build:
       context: ./src/frontend
       dockerfile: Dockerfile.dev
-    volumes:
-      - ./src/frontend:/app
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
-      - DOTNET_USE_POLLING_FILE_WATCHER=1
-      - ConnectionStrings__DefaultConnection=Server=db;Database=${MYSQL_DATABASE};User=${MYSQL_USER};Password=${MYSQL_PASSWORD};
+      - ConnectionStrings__DefaultConnection=Server=db;Database=$${MYSQL_DATABASE};User=$${MYSQL_USER};Password=$${MYSQL_PASSWORD};
       - FinancialEngine__BaseUrl=http://calculation-engine:8000/api/
     depends_on:
       - db
@@ -34,12 +40,10 @@ services:
   calculation-engine:
     build:
       context: ./src/backend
-    volumes:
-      - ./src/backend:/app
     environment:
-      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
-      - DEBUG=${DEBUG}
-      - ALLOWED_HOSTS=calculation-engine,localhost
+      - DJANGO_SECRET_KEY=$${DJANGO_SECRET_KEY}
+      - DEBUG=False
+      - ALLOWED_HOSTS=calculation-engine,localhost,dec-plataforma.duckdns.org
     networks:
       - internal
 

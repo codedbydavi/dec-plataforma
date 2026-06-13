@@ -1,0 +1,28 @@
+name: Continuous Deployment
+
+on:
+  workflow_run:
+    workflows: ["Monorepo CI Pipeline"]
+    types:
+      - completed
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Deploy to GCP VM
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.GCP_IP }}
+          username: ${{ secrets.GCP_USER }}
+          key: ${{ secrets.GCP_SSH_KEY }}
+          script: |
+            cd ~/dec-plataforma
+            git pull origin main
+            # Atualiza os containers
+            docker compose down
+            docker compose up -d --build
+            # Remove imagens antigas para economizar espaço (importante no Free Tier)
+            docker image prune -f
