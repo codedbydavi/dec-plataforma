@@ -42,7 +42,7 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddHttpClient("FinancialEngine", client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["FinancialEngine:BaseUrl"] ?? "http:
+    client.BaseAddress = new Uri(builder.Configuration["FinancialEngine:BaseUrl"] ?? "http://calculation-engine:8000/api/");
     client.DefaultRequestVersion = HttpVersion.Version11;
     client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionExact;
 }).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
