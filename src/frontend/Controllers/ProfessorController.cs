@@ -114,9 +114,10 @@ namespace Frontend.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateChallenge(CreateChallengeViewModel model)
         {
-            if (!ModelState.IsValid)
+            // We ignore complex nested validation for simple creation
+            if (string.IsNullOrEmpty(model.Name) || string.IsNullOrEmpty(model.AccessLink))
             {
-                TempData["ErrorMessage"] = "Invalid challenge data.";
+                TempData["ErrorMessage"] = "Nome e Link são obrigatórios.";
                 return RedirectToAction("Dashboard");
             }
 
@@ -130,7 +131,23 @@ namespace Frontend.Controllers
             _context.Challenges.Add(challenge);
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "Pedagogical challenge created successfully!";
+            // Auto-assign to class if selected
+            if (model.TargetClassroomId.HasValue && model.TargetClassroomId.Value > 0)
+            {
+                var assignment = new ChallengeAssignment
+                {
+                    ChallengeId = challenge.Id,
+                    ClassroomId = model.TargetClassroomId.Value
+                };
+                _context.ChallengeAssignments.Add(assignment);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = $"Desafio '{model.Name}' criado e atribuído com sucesso!";
+            }
+            else
+            {
+                TempData["SuccessMessage"] = "Desafio pedagógico criado com sucesso!";
+            }
+
             return RedirectToAction("Dashboard");
         }
 

@@ -80,6 +80,57 @@
         </div>
     </div>
 
+    <!-- Classes List (Added for visibility) -->
+    <div class="bg-white rounded-xl border shadow-sm overflow-hidden mb-8">
+        <div class="p-6 border-b flex justify-between items-center">
+            <div>
+                <h3 class="font-bold text-lg">As Minhas Turmas</h3>
+                <p class="text-sm text-gray-500">Gere os códigos de acesso para os seus alunos</p>
+            </div>
+            <button data-modal-target="createClassModal" class="px-3 py-1 bg-primary text-white text-sm font-medium rounded hover:bg-primary/90">
+                Nova Turma
+            </button>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead class="bg-gray-50 text-gray-500 uppercase">
+                    <tr>
+                        <th class="px-6 py-3">Nome da Turma</th>
+                        <th class="px-6 py-3 text-center">Código de Acesso</th>
+                        <th class="px-6 py-3 text-center">Alunos</th>
+                        <th class="px-6 py-3 text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Classes.Any())
+                    {
+                        <tr>
+                            <td colspan="4" class="px-6 py-8 text-center text-gray-500">Ainda não criou nenhuma turma.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var cls in Model.Classes)
+                        {
+                            <tr class="border-b last:border-b-0 hover:bg-gray-50">
+                                <td class="px-6 py-4 font-medium">@cls.Name</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-mono font-bold border border-blue-100">
+                                        @cls.MemberCode
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center">@cls.Enrollments.Count</td>
+                                <td class="px-6 py-4 text-center">
+                                    <a asp-action="ClassDetails" asp-route-id="@cls.Id" class="text-primary hover:underline">Ver Detalhes</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <!-- Students Table -->
     <div class="bg-white rounded-xl border shadow-sm overflow-hidden mb-8">
         <div class="p-6 border-b flex justify-between items-center">
@@ -145,11 +196,21 @@
             <div class="p-6 space-y-4">
                 <div>
                     <label class="block text-sm font-medium mb-1">Título do Desafio</label>
-                    <input name="CreateChallenge.Name" type="text" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required />
+                    <input name="Name" type="text" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required />
                 </div>
                 <div>
                     <label class="block text-sm font-medium mb-1">Link de Acesso (URL)</label>
-                    <input name="CreateChallenge.AccessLink" type="url" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required />
+                    <input name="AccessLink" type="url" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Atribuir a Turma (Opcional)</label>
+                    <select name="TargetClassroomId" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50">
+                        <option value="">-- Não atribuir agora --</option>
+                        @foreach (var cls in Model.Classes)
+                        {
+                            <option value="@cls.Id">@cls.Name</option>
+                        }
+                    </select>
                 </div>
             </div>
             <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">

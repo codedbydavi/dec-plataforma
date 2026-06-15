@@ -12,5 +12,8 @@ namespace Frontend.Models.ViewModels
         [Url]
         [Display(Name = "Resource Link (External)")]
         public string AccessLink { get; set; } = string.Empty;
+
+        [Display(Name = "Assign to Class")]
+        public int? TargetClassroomId { get; set; }
     }
 }
