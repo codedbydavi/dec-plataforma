@@ -114,14 +114,15 @@
                     <!-- Submit Modal -->
                     <div id="submitModal-@challenge.Id" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
                         <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
-                            <form asp-action="SubmitChallenge" method="post">
+                            <form action="/Student/SubmitChallenge" method="post">
+                                @Html.AntiForgeryToken()
                                 <input type="hidden" name="challengeId" value="@challenge.Id" />
                                 <div class="px-6 py-4 border-b">
-                                    <h3 class="text-lg font-bold">Entregar: @challenge.Name</h3>
+                                    <h3 class="text-lg font-bold text-gray-900">Entregar: @challenge.Name</h3>
                                 </div>
                                 <div class="p-6 space-y-4">
                                     <p class="text-sm text-gray-500">Escolha o cenário financeiro que criou para responder a este desafio:</p>
-                                    <select name="scenarioId" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required>
+                                    <select name="scenarioId" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50 text-gray-900" required>
                                         <option value="">-- Selecionar Cenário --</option>
                                         @if (myScenarios != null)
                                         {
@@ -136,7 +137,7 @@
                                     </div>
                                 </div>
                                 <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">
-                                    <button type="button" onclick="document.getElementById('submitModal-@challenge.Id').classList.add('hidden')" class="px-4 py-2 border rounded-md hover:bg-gray-100 font-medium">Cancelar</button>
+                                    <button type="button" onclick="document.getElementById('submitModal-@challenge.Id').classList.add('hidden')" class="px-4 py-2 border rounded-md hover:bg-gray-100 font-medium text-gray-700">Cancelar</button>
                                     <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 font-medium">Confirmar Entrega</button>
                                 </div>
                             </form>
@@ -204,6 +205,18 @@
 
 @section Scripts {
     <script>
+        // Modal functionality
+        document.querySelectorAll('[data-modal-target]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-modal-target');
+                const target = document.getElementById(targetId);
+                if (target) {
+                    target.classList.remove('hidden');
+                }
+            });
+        });
+
+        // Tabs functionality
         const tabs = document.querySelectorAll('[data-tabs-target]');
         const tabContents = document.querySelectorAll('[role="tabpanel"]');
 

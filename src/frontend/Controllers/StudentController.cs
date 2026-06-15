@@ -138,13 +138,6 @@ namespace Frontend.Controllers
             return View(scenarios);
         }
 
-        public async Task<IActionResult> Simulations()
-        {
-            int userId = GetUserId();
-            var scenarios = await _simulationService.GetMyScenariosAsync(userId);
-            return View(scenarios);
-        }
-
         public async Task<IActionResult> Challenges()
         {
             int userId = GetUserId();
@@ -314,6 +307,39 @@ namespace Frontend.Controllers
 
             TempData["SuccessMessage"] = "Scenario updated successfully!";
             return RedirectToAction("ScenarioDetails", new { id = id });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RunSimulation(int scenarioId, LoanParamsDto? loanSimulation, SavingsParamsDto? savingsSimulation, CashFlowParamsDto? cashFlowSimulation)
+        {
+            int userId = GetUserId();
+            
+            if (loanSimulation != null && loanSimulation.Principal <= 0)
+            {
+                loanSimulation = null;
+            }
+
+            if (savingsSimulation != null && savingsSimulation.MonthlyContribution <= 0)
+            {
+                savingsSimulation = null;
+            }
+
+            if (cashFlowSimulation != null && cashFlowSimulation.MonthlyIncome <= 0)
+            {
+                cashFlowSimulation = null;
+            }
+
+            var result = await _simulationService.RunSimulationAsync(scenarioId, userId, loanSimulation, savingsSimulation, cashFlowSimulation);
+
+            if (result != null)
+            {
+                TempData["SuccessMessage"] = "Simulation completed successfully!";
+                return RedirectToAction("ScenarioDetails", new { id = scenarioId });
+            }
+
+            TempData["ErrorMessage"] = "Failed to run simulation. Please check your data and try again.";
+            return RedirectToAction("ScenarioDetails", new { id = scenarioId });
         }
 
         [HttpPost]
