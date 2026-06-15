@@ -161,6 +161,8 @@ namespace Frontend.Controllers
                 .Cast<Challenge>()
                 .ToListAsync();
 
+            ViewBag.MyScenarios = await _simulationService.GetMyScenariosAsync(userId);
+
             return View(challenges);
         }
 
@@ -316,35 +318,23 @@ namespace Frontend.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RunSimulation(int scenarioId, LoanParamsDto? loanSimulation, SavingsParamsDto? savingsSimulation, CashFlowParamsDto? cashFlowSimulation)
+        public async Task<IActionResult> SubmitChallenge(int challengeId, int scenarioId)
         {
             int userId = GetUserId();
+            var scenario = await _context.Scenarios.FirstOrDefaultAsync(s => s.Id == scenarioId && s.StudentId == userId);
             
-            if (loanSimulation != null && loanSimulation.Principal <= 0)
+            if (scenario == null)
             {
-                loanSimulation = null;
+                TempData["ErrorMessage"] = "Cenário não encontrado.";
+                return RedirectToAction("Challenges");
             }
 
-            if (savingsSimulation != null && savingsSimulation.MonthlyContribution <= 0)
-            {
-                savingsSimulation = null;
-            }
+            scenario.ChallengeId = challengeId;
+            _context.Scenarios.Update(scenario);
+            await _context.SaveChangesAsync();
 
-            if (cashFlowSimulation != null && cashFlowSimulation.MonthlyIncome <= 0)
-            {
-                cashFlowSimulation = null;
-            }
-
-            var result = await _simulationService.RunSimulationAsync(scenarioId, userId, loanSimulation, savingsSimulation, cashFlowSimulation);
-
-            if (result != null)
-            {
-                TempData["SuccessMessage"] = "Simulation completed successfully!";
-                return RedirectToAction("ScenarioDetails", new { id = scenarioId });
-            }
-
-            TempData["ErrorMessage"] = "Failed to run simulation. Please check your data and try again.";
-            return RedirectToAction("ScenarioDetails", new { id = scenarioId });
+            TempData["SuccessMessage"] = "Desafio entregue com sucesso! Aguarde a avaliação do professor.";
+            return RedirectToAction("Challenges");
         }
     }
 }

@@ -98,9 +98,12 @@ namespace Frontend.Controllers
             var classroom = await _context.Classrooms
                 .Include(c => c.Enrollments)
                     .ThenInclude(e => e.Student)
+                        .ThenInclude(s => s!.Scenarios)
+                            .ThenInclude(sc => sc.Histories)
                 .Include(c => c.Enrollments)
                     .ThenInclude(e => e.Student)
-                    .ThenInclude(s => s!.Scenarios)
+                        .ThenInclude(s => s!.Scenarios)
+                            .ThenInclude(sc => sc.Challenge) // Carregar o desafio vinculado
                 .FirstOrDefaultAsync(c => c.Id == id && c.TeacherId == userId);
 
             if (classroom == null) return NotFound();

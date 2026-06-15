@@ -165,15 +165,25 @@
                         {
                             <tr class="border-b last:border-b-0 hover:bg-gray-50">
                                 <td class="px-6 py-4 font-medium">@student?.FullName</td>
-                                <td class="px-6 py-4 text-center">1</td>
+                                <td class="px-6 py-4 text-center">@student.Scenarios.Count</td>
                                 <td class="px-6 py-4 text-center">
-                                    <span class="bg-gray-100 px-2 py-1 rounded">2/@totalChallenges</span>
+                                    @{
+                                        var completed = student.Scenarios.Count(s => s.ChallengeId.HasValue);
+                                    }
+                                    <span class="bg-gray-100 px-2 py-1 rounded">@completed/@totalChallenges</span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
+                                    @{
+                                        var allScores = student.Scenarios.SelectMany(s => s.Histories).Where(h => h.Score.HasValue).Select(h => h.Score!.Value).ToList();
+                                        var avg = allScores.Any() ? allScores.Average() : 0;
+                                        var colorClass = avg >= 15 ? "text-green-600" : (avg >= 10 ? "text-yellow-600" : "text-red-600");
+                                        var barColor = avg >= 15 ? "bg-green-600" : (avg >= 10 ? "bg-yellow-600" : "bg-red-600");
+                                        var barWidth = (avg * 5); // Scale 0-20 to 0-100%
+                                    }
                                     <div class="flex flex-col items-center gap-1">
-                                        <span class="font-bold text-green-600">85</span>
+                                        <span class="font-bold @colorClass">@avg.ToString("F1")</span>
                                         <div class="w-16 bg-gray-200 rounded-full h-1">
-                                            <div class="bg-green-600 h-1 rounded-full" style="width: 85%"></div>
+                                            <div class="@barColor h-1 rounded-full" style="width: @barWidth%"></div>
                                         </div>
                                     </div>
                                 </td>
