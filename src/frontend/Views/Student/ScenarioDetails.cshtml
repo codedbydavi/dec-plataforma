@@ -38,7 +38,7 @@
         <div class="flex items-center gap-4">
             <div class="text-right">
                 <p class="text-sm text-gray-500">Saldo Inicial</p>
-                <p class="text-2xl font-bold text-gray-900">@scenario.InitialBalance.ToString("C")</p>
+                <p class="text-2xl font-bold text-gray-900">€@scenario.InitialBalance.ToString("C")</p>
             </div>
             <button data-modal-target="editScenarioModal" class="p-2 border rounded-md hover:bg-gray-50 text-gray-600 transition-colors" title="Editar Cenário">
                 <i data-lucide="pencil" class="w-5 h-5"></i>
@@ -164,10 +164,11 @@
                                         <th class="px-4 py-3 font-medium text-right">Valor</th>
                                         <th class="px-4 py-3 font-medium text-center">Mês</th>
                                         <th class="px-4 py-3 font-medium text-center">Recorrente</th>
+                                        <th class="px-4 py-3 font-medium text-right">Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var entry in scenario.Entries.OrderBy(e => e.Month))
+                                    @foreach (var entry in scenario.Entries.OrderBy(e => int.TryParse(e.Month, out var m) ? m : 0))
                                     {
                                         <tr class="border-b last:border-b-0 hover:bg-gray-50">
                                             <td class="px-4 py-3">
@@ -180,10 +181,23 @@
                                             <td class="px-4 py-3 font-bold text-right">@entry.Amount.ToString("C")</td>
                                             <td class="px-4 py-3 text-center text-gray-600">@entry.Month</td>
                                             <td class="px-4 py-3 text-center">
-                                                @if (entry.Recurrence != "None" && entry.Recurrence != "False")
+                                                @if (entry.Recurrence != "None" && entry.Recurrence != "False" && entry.Recurrence != "0")
                                                 { <i data-lucide="repeat" class="w-4 h-4 mx-auto text-primary" title="Sim"></i> }
                                                 else
                                                 { <span class="text-gray-400">—</span> }
+                                            </td>
+                                            <td class="px-4 py-3 text-right">
+                                                <div class="flex justify-end gap-2">
+                                                    <button onclick="openEditEntryModal(@entry.Id, @entry.CategoryId, @entry.Amount.ToString().Replace(",", "."), '@entry.Month', @((entry.Recurrence != "None" && entry.Recurrence != "False" && entry.Recurrence != "0") ? "true" : "false"))" class="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Editar">
+                                                        <i data-lucide="edit-2" class="w-4 h-4"></i>
+                                                    </button>
+                                                    <form asp-action="DeleteEntry" method="post" onsubmit="return confirm('Tem a certeza que deseja remover este lançamento?')" class="inline">
+                                                        <input type="hidden" name="id" value="@entry.Id" />
+                                                        <button type="submit" class="p-1 text-red-600 hover:bg-red-50 rounded transition-colors" title="Remover">
+                                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </td>
                                         </tr>
                                     }
@@ -216,9 +230,17 @@
                                     @foreach (var obj in scenario.Objectives)
                                     {
                                         var analysis = lastResult?.ObjectivesAnalysis.FirstOrDefault(a => a.Description == obj.Description);
-                                        <li class="p-4 hover:bg-gray-50">
+                                        <li class="p-4 hover:bg-gray-50 group">
                                             <div class="flex justify-between items-center mb-1">
-                                                <span class="font-bold text-sm text-gray-900">@obj.Description</span>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="font-bold text-sm text-gray-900">@obj.Description</span>
+                                                    <form asp-action="DeleteObjective" method="post" onsubmit="return confirm('Deseja remover este objetivo?')" class="opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <input type="hidden" name="id" value="@obj.Id" />
+                                                        <button type="submit" class="text-red-400 hover:text-red-600">
+                                                            <i data-lucide="x-circle" class="w-4 h-4"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
                                                 <span class="font-bold text-sm text-green-600">@obj.TargetValue.ToString("C")</span>
                                             </div>
                                             <div class="flex justify-between items-center text-xs">
@@ -542,8 +564,76 @@
     </div>
 </div>
 
+<!-- Modal: Edit Entry -->
+<div id="editEntryModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
+        <form asp-action="EditEntry" method="post">
+            <input type="hidden" name="id" id="editEntryId" />
+            <div class="px-6 py-4 border-b flex justify-between items-center">
+                <h3 class="text-lg font-bold">Editar Lançamento Financeiro</h3>
+                <button type="button" class="text-gray-400 hover:text-gray-600" onclick="document.getElementById('editEntryModal').classList.add('hidden')"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Categoria</label>
+                        <select name="categoryId" id="editEntryCategory" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required>
+                            @foreach (var cat in Model.Categories)
+                            {
+                                <option value="@cat.Id">@cat.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Valor (€)</label>
+                        <input name="amount" id="editEntryAmount" type="number" step="0.01" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required />
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Mês Inicial</label>
+                        <select name="month" id="editEntryMonth" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required>
+                            <option value="1">Janeiro</option>
+                            <option value="2">Fevereiro</option>
+                            <option value="3">Março</option>
+                            <option value="4">Abril</option>
+                            <option value="5">Maio</option>
+                            <option value="6">Junho</option>
+                            <option value="7">Julho</option>
+                            <option value="8">Agosto</option>
+                            <option value="9">Setembro</option>
+                            <option value="10">Outubro</option>
+                            <option value="11">Novembro</option>
+                            <option value="12">Dezembro</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center pt-6">
+                        <input name="recurrence" id="editEntryRecurrence" type="checkbox" value="true" class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary" />
+                        <label for="editEntryRecurrence" class="ml-2 text-sm font-medium text-gray-700">Lançamento Recorrente</label>
+                        <input type="hidden" name="recurrence" value="false" />
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">
+                <button type="button" onclick="document.getElementById('editEntryModal').classList.add('hidden')" class="px-4 py-2 border rounded-md hover:bg-gray-100 font-medium text-gray-700">Cancelar</button>
+                <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 font-medium">Salvar Alterações</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @section Scripts {
     <script>
+        function openEditEntryModal(id, categoryId, amount, month, recurrence) {
+            document.getElementById('editEntryId').value = id;
+            document.getElementById('editEntryCategory').value = categoryId;
+            document.getElementById('editEntryAmount').value = amount;
+            document.getElementById('editEntryMonth').value = month;
+            document.getElementById('editEntryRecurrence').checked = recurrence;
+            
+            document.getElementById('editEntryModal').classList.remove('hidden');
+        }
+
         // Modal logic
         document.querySelectorAll('[data-modal-target]').forEach(btn => {
             btn.addEventListener('click', () => {
