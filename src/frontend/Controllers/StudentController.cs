@@ -138,13 +138,6 @@ namespace Frontend.Controllers
             return View(scenarios);
         }
 
-        public async Task<IActionResult> Simulations()
-        {
-            int userId = GetUserId();
-            var scenarios = await _simulationService.GetMyScenariosAsync(userId);
-            return View(scenarios);
-        }
-
         public async Task<IActionResult> Challenges()
         {
             int userId = GetUserId();
@@ -160,6 +153,8 @@ namespace Frontend.Controllers
                 .Where(c => c != null)
                 .Cast<Challenge>()
                 .ToListAsync();
+
+            ViewBag.MyScenarios = await _simulationService.GetMyScenariosAsync(userId);
 
             return View(challenges);
         }
@@ -345,6 +340,27 @@ namespace Frontend.Controllers
 
             TempData["ErrorMessage"] = "Failed to run simulation. Please check your data and try again.";
             return RedirectToAction("ScenarioDetails", new { id = scenarioId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubmitChallenge(int challengeId, int scenarioId)
+        {
+            int userId = GetUserId();
+            var scenario = await _context.Scenarios.FirstOrDefaultAsync(s => s.Id == scenarioId && s.StudentId == userId);
+            
+            if (scenario == null)
+            {
+                TempData["ErrorMessage"] = "Cenário não encontrado.";
+                return RedirectToAction("Challenges");
+            }
+
+            scenario.ChallengeId = challengeId;
+            _context.Scenarios.Update(scenario);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Desafio entregue com sucesso! Aguarde a avaliação do professor.";
+            return RedirectToAction("Challenges");
         }
     }
 }

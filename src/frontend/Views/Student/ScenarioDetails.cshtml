@@ -246,14 +246,24 @@
                         
                         <form asp-action="RunSimulation" method="post" class="mb-3">
                             <input type="hidden" name="scenarioId" value="@scenario.Id" />
-                            <button type="submit" class="w-full bg-primary hover:bg-primary/90 text-white font-medium py-2.5 rounded-md flex items-center justify-center gap-2 transition-colors shadow-sm">
+                            <button type="submit" class="w-full bg-primary hover:bg-primary/90 text-white font-medium py-2.5 rounded-md flex items-center justify-center gap-2 transition-colors shadow-sm mb-3">
                                 <i data-lucide="play" class="w-4 h-4"></i> Correr Simulação Base
                             </button>
                         </form>
                         
-                        <button data-modal-target="creditSimModal" class="w-full bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-2 rounded-md flex items-center justify-center gap-2 transition-colors text-sm shadow-sm">
-                            <i data-lucide="plus-square" class="w-4 h-4"></i> Simular Cenário c/ Crédito
-                        </button>
+                        <div class="space-y-2">
+                            <button data-modal-target="creditSimModal" class="w-full bg-white border border-gray-300 text-gray-700 hover:bg-blue-50 font-medium py-2 rounded-md flex items-center justify-center gap-2 transition-colors text-sm shadow-sm">
+                                <i data-lucide="credit-card" class="w-4 h-4 text-blue-600"></i> Simular Cenário c/ Crédito
+                            </button>
+                            
+                            <button data-modal-target="savingsSimModal" class="w-full bg-white border border-gray-300 text-gray-700 hover:bg-green-50 font-medium py-2 rounded-md flex items-center justify-center gap-2 transition-colors text-sm shadow-sm">
+                                <i data-lucide="piggy-bank" class="w-4 h-4 text-green-600"></i> Simular Plano de Poupança
+                            </button>
+
+                            <button data-modal-target="cashFlowSimModal" class="w-full bg-white border border-gray-300 text-gray-700 hover:bg-yellow-50 font-medium py-2 rounded-md flex items-center justify-center gap-2 transition-colors text-sm shadow-sm">
+                                <i data-lucide="trending-up" class="w-4 h-4 text-yellow-600"></i> Simular c/ Inflação
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -424,6 +434,82 @@
             <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">
                 <button type="button" onclick="document.getElementById('creditSimModal').classList.add('hidden')" class="px-4 py-2 border rounded-md hover:bg-gray-100 font-medium text-gray-700">Cancelar</button>
                 <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium">Correr Simulação</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Savings Simulation -->
+<div id="savingsSimModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
+        <form asp-action="RunSimulation" method="post">
+            <input type="hidden" name="scenarioId" value="@scenario.Id" />
+            <div class="px-6 py-4 border-b flex justify-between items-center bg-green-50/50">
+                <h3 class="text-lg font-bold text-green-800">Simular "What-If" com Plano de Poupança</h3>
+                <button type="button" class="text-gray-400 hover:text-gray-600" onclick="document.getElementById('savingsSimModal').classList.add('hidden')"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-sm text-gray-500">Aplica a magia dos juros compostos para projetar o crescimento das tuas poupanças.</p>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Contribuição Mensal Extra (€)</label>
+                    <input name="SavingsSimulation.MonthlyContribution" type="number" step="0.01" class="w-full border rounded-md px-3 py-2 focus:ring-green-500/50" required />
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Taxa Anual (%)</label>
+                        <input name="SavingsSimulation.AnnualInterestRate" type="number" step="0.01" class="w-full border rounded-md px-3 py-2 focus:ring-green-500/50" required />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Prazo (Meses)</label>
+                        <input name="SavingsSimulation.TermMonths" type="number" min="1" class="w-full border rounded-md px-3 py-2 focus:ring-green-500/50" required />
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">
+                <button type="button" onclick="document.getElementById('savingsSimModal').classList.add('hidden')" class="px-4 py-2 border rounded-md hover:bg-gray-100 font-medium text-gray-700">Cancelar</button>
+                <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 font-medium">Projetar Poupança</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Cash Flow Simulation -->
+<div id="cashFlowSimModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
+        <form asp-action="RunSimulation" method="post">
+            <input type="hidden" name="scenarioId" value="@scenario.Id" />
+            <div class="px-6 py-4 border-b flex justify-between items-center bg-yellow-50/50">
+                <h3 class="text-lg font-bold text-yellow-800">Simular Efeito da Inflação</h3>
+                <button type="button" class="text-gray-400 hover:text-gray-600" onclick="document.getElementById('cashFlowSimModal').classList.add('hidden')"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-sm text-gray-500">Veja o impacto que a inflação terá no seu fluxo de caixa mensal ao longo do tempo.</p>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Total Receitas (€)</label>
+                        <input name="CashFlowSimulation.MonthlyIncome" type="number" step="0.01" class="w-full border rounded-md px-3 py-2 focus:ring-yellow-500/50 bg-gray-100" value="@(scenario.Entries.Where(e => e is Income).Sum(e => e.Amount).ToString().Replace(",", "."))" readonly />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Despesas Fixas (€)</label>
+                        <input name="CashFlowSimulation.FixedExpenses" type="number" step="0.01" class="w-full border rounded-md px-3 py-2 focus:ring-yellow-500/50" required placeholder="Ex: Renda" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Despesas Variáveis (€)</label>
+                        <input name="CashFlowSimulation.VariableExpenses" type="number" step="0.01" class="w-full border rounded-md px-3 py-2 focus:ring-yellow-500/50" required placeholder="Sofrem inflação" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Taxa de Inflação (%)</label>
+                        <input name="CashFlowSimulation.InflationRate" type="number" step="0.01" class="w-full border rounded-md px-3 py-2 focus:ring-yellow-500/50" required placeholder="Ex: 2.5" />
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Prazo de Projeção (Meses)</label>
+                    <input name="CashFlowSimulation.TermMonths" type="number" min="1" value="12" class="w-full border rounded-md px-3 py-2 focus:ring-yellow-500/50" required />
+                </div>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">
+                <button type="button" onclick="document.getElementById('cashFlowSimModal').classList.add('hidden')" class="px-4 py-2 border rounded-md hover:bg-gray-100 font-medium text-gray-700">Cancelar</button>
+                <button type="submit" class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 font-medium">Projetar Fluxo</button>
             </div>
         </form>
     </div>

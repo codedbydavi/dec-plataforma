@@ -1,0 +1,66 @@
+services:
+  # Nginx acting as a Reverse Proxy (HTTP Only for Dev)
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf.d/dev.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - frontend
+    networks:
+      - internal
+
+  # Container: .NET MVC (Educational Platform - CORE)
+  frontend:
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./src/frontend:/app
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+      - ConnectionStrings__DefaultConnection=Server=db;Database=${MYSQL_DATABASE};User=${MYSQL_USER};Password=${MYSQL_PASSWORD};
+      - FinancialEngine__BaseUrl=http://calculation-engine:8000/api/
+    depends_on:
+      - db
+    networks:
+      - internal
+
+  # Container: Django (Financial Calculation Engine)
+  calculation-engine:
+    build:
+      context: ./src/backend
+    volumes:
+      - ./src/backend:/app
+    environment:
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DEBUG=True
+      - ALLOWED_HOSTS=calculation-engine,localhost
+    networks:
+      - internal
+
+  # Container: MySQL (Database)
+  db:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - internal
+
+# Internal Docker Network
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  mysql_data:

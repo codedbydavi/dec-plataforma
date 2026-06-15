@@ -8,10 +8,6 @@
     var allStudents = Model.Classes.SelectMany(c => c.Enrollments.Select(e => e.Student)).Where(s => s != null).Distinct().ToList();
     var totalStudents = allStudents.Count;
     var totalChallenges = Model.GlobalChallenges.Count();
-    
-    // For demo purposes matching the prototype visually
-    var avgCompletionRate = 85; 
-    var avgScore = 82;
 }
 
 <div class="max-w-7xl mx-auto p-6">
@@ -53,14 +49,14 @@
         <div class="bg-white rounded-xl border p-6 shadow-sm">
             <p class="text-sm text-gray-500 mb-2">Taxa Média de Conclusão</p>
             <div class="text-3xl font-bold flex items-center gap-2">
-                <i data-lucide="trending-up" class="w-6 h-6 text-green-500"></i> @avgCompletionRate%
+                <i data-lucide="trending-up" class="w-6 h-6 text-green-500"></i> @Model.GlobalAvgCompletionRate%
             </div>
         </div>
 
         <div class="bg-white rounded-xl border p-6 shadow-sm">
             <p class="text-sm text-gray-500 mb-2">Pontuação Média</p>
             <div class="text-3xl font-bold flex items-center gap-2">
-                <i data-lucide="award" class="w-6 h-6 text-yellow-500"></i> @avgScore
+                <i data-lucide="award" class="w-6 h-6 text-yellow-500"></i> @Model.GlobalAvgScore
             </div>
         </div>
     </div>
@@ -77,6 +73,57 @@
             <h3 class="font-bold text-lg mb-1">Estado dos Desafios</h3>
             <p class="text-sm text-gray-500 mb-4">Desafios concluídos vs. em andamento</p>
             <canvas id="challengesChart" height="300"></canvas>
+        </div>
+    </div>
+
+    <!-- Classes List (Added for visibility) -->
+    <div class="bg-white rounded-xl border shadow-sm overflow-hidden mb-8">
+        <div class="p-6 border-b flex justify-between items-center">
+            <div>
+                <h3 class="font-bold text-lg">As Minhas Turmas</h3>
+                <p class="text-sm text-gray-500">Gere os códigos de acesso para os seus alunos</p>
+            </div>
+            <button data-modal-target="createClassModal" class="px-3 py-1 bg-primary text-white text-sm font-medium rounded hover:bg-primary/90">
+                Nova Turma
+            </button>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead class="bg-gray-50 text-gray-500 uppercase">
+                    <tr>
+                        <th class="px-6 py-3">Nome da Turma</th>
+                        <th class="px-6 py-3 text-center">Código de Acesso</th>
+                        <th class="px-6 py-3 text-center">Alunos</th>
+                        <th class="px-6 py-3 text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Classes.Any())
+                    {
+                        <tr>
+                            <td colspan="4" class="px-6 py-8 text-center text-gray-500">Ainda não criou nenhuma turma.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var cls in Model.Classes)
+                        {
+                            <tr class="border-b last:border-b-0 hover:bg-gray-50">
+                                <td class="px-6 py-4 font-medium">@cls.Name</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span class="bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-mono font-bold border border-blue-100">
+                                        @cls.MemberCode
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-center">@cls.Enrollments.Count</td>
+                                <td class="px-6 py-4 text-center">
+                                    <a asp-action="ClassDetails" asp-route-id="@cls.Id" class="text-primary hover:underline">Ver Detalhes</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -114,15 +161,25 @@
                         {
                             <tr class="border-b last:border-b-0 hover:bg-gray-50">
                                 <td class="px-6 py-4 font-medium">@student?.FullName</td>
-                                <td class="px-6 py-4 text-center">1</td>
+                                <td class="px-6 py-4 text-center">@student.Scenarios.Count</td>
                                 <td class="px-6 py-4 text-center">
-                                    <span class="bg-gray-100 px-2 py-1 rounded">2/@totalChallenges</span>
+                                    @{
+                                        var completed = student.Scenarios.Count(s => s.ChallengeId.HasValue);
+                                    }
+                                    <span class="bg-gray-100 px-2 py-1 rounded">@completed/@totalChallenges</span>
                                 </td>
                                 <td class="px-6 py-4 text-center">
+                                    @{
+                                        var allScores = student.Scenarios.SelectMany(s => s.Histories).Where(h => h.Score.HasValue).Select(h => h.Score!.Value).ToList();
+                                        var avg = allScores.Any() ? allScores.Average() : 0;
+                                        var colorClass = avg >= 15 ? "text-green-600" : (avg >= 10 ? "text-yellow-600" : "text-red-600");
+                                        var barColor = avg >= 15 ? "bg-green-600" : (avg >= 10 ? "bg-yellow-600" : "bg-red-600");
+                                        var barWidth = (avg * 5); // Scale 0-20 to 0-100%
+                                    }
                                     <div class="flex flex-col items-center gap-1">
-                                        <span class="font-bold text-green-600">85</span>
+                                        <span class="font-bold @colorClass">@avg.ToString("F1")</span>
                                         <div class="w-16 bg-gray-200 rounded-full h-1">
-                                            <div class="bg-green-600 h-1 rounded-full" style="width: 85%"></div>
+                                            <div class="@barColor h-1 rounded-full" style="width: @barWidth%"></div>
                                         </div>
                                     </div>
                                 </td>
@@ -135,30 +192,7 @@
     </div>
 </div>
 
-<!-- Modal Create Challenge -->
-<div id="createChallengeModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
-        <form asp-action="CreateChallenge" method="post">
-            <div class="px-6 py-4 border-b">
-                <h3 class="text-lg font-bold">Criar Desafio Pedagógico</h3>
-            </div>
-            <div class="p-6 space-y-4">
-                <div>
-                    <label class="block text-sm font-medium mb-1">Título do Desafio</label>
-                    <input name="CreateChallenge.Name" type="text" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1">Link de Acesso (URL)</label>
-                    <input name="CreateChallenge.AccessLink" type="url" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required />
-                </div>
-            </div>
-            <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">
-                <button type="button" onclick="document.getElementById('createChallengeModal').classList.add('hidden')" class="px-4 py-2 border rounded-md hover:bg-gray-100 font-medium">Cancelar</button>
-                <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 font-medium">Salvar</button>
-            </div>
-        </form>
-    </div>
-</div>
+<partial name="_CreateChallengeModal" model="Model.Classes" />
 
 <!-- Modal Create Class -->
 <div id="createClassModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
@@ -195,14 +229,24 @@
 
         // Charts
         if (document.getElementById('performanceChart')) {
+            const studentNames = @Html.Raw(Json.Serialize(Model.StudentNames));
+            const studentScores = @Html.Raw(Json.Serialize(Model.StudentScores));
+            const studentChallenges = @Html.Raw(Json.Serialize(Model.StudentChallenges));
+
             new Chart(document.getElementById('performanceChart').getContext('2d'), {
                 type: 'bar',
                 data: {
-                    labels: ['Ana', 'Bruno', 'Carla', 'Daniel', 'Eva'],
+                    labels: studentNames,
                     datasets: [
-                        { label: 'Desafios Concluídos', data: [3, 2, 4, 1, 3], backgroundColor: '#0C73B7' },
-                        { label: 'Pontuação Média', data: [85, 78, 92, 65, 88], backgroundColor: '#2da7df' }
+                        { label: 'Simulações Realizadas', data: studentChallenges, backgroundColor: '#0C73B7' },
+                        { label: 'Pontuação Média', data: studentScores, backgroundColor: '#2da7df' }
                     ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
                 }
             });
         }
@@ -211,11 +255,17 @@
             new Chart(document.getElementById('challengesChart').getContext('2d'), {
                 type: 'pie',
                 data: {
-                    labels: ['Concluídos', 'Em Andamento'],
+                    labels: ['Avaliadas', 'Pendentes'],
                     datasets: [{
-                        data: [15, 8],
+                        data: [@Model.TotalEvaluated, @Model.TotalPending],
                         backgroundColor: ['#0C73B7', '#2da7df']
                     }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
                 }
             });
         }

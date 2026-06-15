@@ -32,17 +32,60 @@ namespace Frontend.Controllers
             int userId = GetUserId();
             if (userId == 0) return Unauthorized();
 
-            var viewModel = new ProfessorDashboardViewModel
-            {
-                Classes = await _context.Classrooms
+            var classes = await _context.Classrooms
                     .Include(c => c.Enrollments)
+                        .ThenInclude(e => e.Student)
+                            .ThenInclude(s => s!.Scenarios)
+                                .ThenInclude(sc => sc.Histories)
                     .Where(c => c.TeacherId == userId)
                     .OrderByDescending(c => c.CreatedAt)
-                    .ToListAsync(),
+                    .ToListAsync();
+
+            var viewModel = new ProfessorDashboardViewModel
+            {
+                Classes = classes,
                 GlobalChallenges = await _context.Challenges
                     .OrderByDescending(c => c.Id)
                     .ToListAsync()
             };
+
+            // Calculate Chart Data
+            var allEnrollments = classes.SelectMany(c => c.Enrollments).Where(e => e.Student != null).ToList();
+            
+            foreach (var enrollment in allEnrollments.Take(5)) // Show top 5 or first 5
+            {
+                var student = enrollment.Student!;
+                viewModel.StudentNames.Add(student.FullName);
+                
+                var histories = student.Scenarios.SelectMany(s => s.Histories).ToList();
+                viewModel.StudentChallenges.Add(histories.Count);
+                
+                float avgScore = histories.Any(h => h.Score.HasValue) 
+                    ? (float)histories.Where(h => h.Score.HasValue).Average(h => h.Score!.Value) 
+                    : 0;
+                viewModel.StudentScores.Add(avgScore);
+            }
+
+            var allHistories = classes.SelectMany(c => c.Enrollments)
+                .Where(e => e.Student != null)
+                .SelectMany(e => e.Student!.Scenarios)
+                .SelectMany(s => s.Histories)
+                .ToList();
+
+            viewModel.TotalEvaluated = allHistories.Count(h => h.Score.HasValue);
+            viewModel.TotalPending = allHistories.Count(h => !h.Score.HasValue);
+
+            // KPI Calculations
+            var totalPossibleSubmissions = allEnrollments.Count * viewModel.GlobalChallenges.Count;
+            var totalActualSubmissions = allEnrollments.SelectMany(e => e.Student!.Scenarios).Count(s => s.ChallengeId.HasValue);
+            
+            viewModel.GlobalAvgCompletionRate = totalPossibleSubmissions > 0 
+                ? (int)Math.Round((double)totalActualSubmissions / totalPossibleSubmissions * 100) 
+                : 0;
+
+            viewModel.GlobalAvgScore = allHistories.Any(h => h.Score.HasValue)
+                ? (float)Math.Round(allHistories.Where(h => h.Score.HasValue).Average(h => h.Score!.Value), 1)
+                : 0;
 
             return View(viewModel);
         }
@@ -54,6 +97,10 @@ namespace Frontend.Controllers
                 .OrderByDescending(c => c.Id)
                 .ToListAsync();
 
+            ViewBag.Classes = await _context.Classrooms
+                .Where(c => c.TeacherId == userId)
+                .ToListAsync();
+
             return View(challenges);
         }
 
@@ -63,9 +110,12 @@ namespace Frontend.Controllers
             var classroom = await _context.Classrooms
                 .Include(c => c.Enrollments)
                     .ThenInclude(e => e.Student)
+                        .ThenInclude(s => s!.Scenarios)
+                            .ThenInclude(sc => sc.Histories)
                 .Include(c => c.Enrollments)
                     .ThenInclude(e => e.Student)
-                    .ThenInclude(s => s!.Scenarios)
+                        .ThenInclude(s => s!.Scenarios)
+                            .ThenInclude(sc => sc.Challenge) // Carregar o desafio vinculado
                 .FirstOrDefaultAsync(c => c.Id == id && c.TeacherId == userId);
 
             if (classroom == null) return NotFound();
@@ -83,15 +133,17 @@ namespace Frontend.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateChallenge(CreateChallengeViewModel model)
         {
-            if (!ModelState.IsValid)
+            // We ignore complex nested validation for simple creation
+            if (string.IsNullOrEmpty(model.Name) || string.IsNullOrEmpty(model.AccessLink) || string.IsNullOrEmpty(model.Description))
             {
-                TempData["ErrorMessage"] = "Invalid challenge data.";
+                TempData["ErrorMessage"] = "Nome, Descrição e Link são obrigatórios.";
                 return RedirectToAction("Dashboard");
             }
 
             var challenge = new Challenge
             {
                 Name = model.Name,
+                Description = model.Description,
                 AccessLink = model.AccessLink,
                 StatusId = 1 // Active
             };
@@ -99,7 +151,23 @@ namespace Frontend.Controllers
             _context.Challenges.Add(challenge);
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "Pedagogical challenge created successfully!";
+            // Auto-assign to class if selected
+            if (model.TargetClassroomId.HasValue && model.TargetClassroomId.Value > 0)
+            {
+                var assignment = new ChallengeAssignment
+                {
+                    ChallengeId = challenge.Id,
+                    ClassroomId = model.TargetClassroomId.Value
+                };
+                _context.ChallengeAssignments.Add(assignment);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = $"Desafio '{model.Name}' criado e atribuído com sucesso!";
+            }
+            else
+            {
+                TempData["SuccessMessage"] = "Desafio pedagógico criado com sucesso!";
+            }
+
             return RedirectToAction("Dashboard");
         }
 

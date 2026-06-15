@@ -186,21 +186,31 @@
                 }
                 else
                 {
-                    <div class="space-y-3">
-                        @foreach (var challenge in Model.Challenges.Take(3))
-                        {
-                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
-                                <div>
-                                    <p class="font-medium">@challenge.Name</p>
-                                    <p class="text-sm text-gray-500">100 pontos</p>
+                    var myScenarios = Model.Scenarios;
+                    var activeChallenges = Model.Challenges.Where(c => !myScenarios.Any(s => s.ChallengeId == c.Id)).ToList();
+
+                    if (!activeChallenges.Any())
+                    {
+                        <p class="text-gray-500 text-center py-4">Todos os desafios concluídos!</p>
+                    }
+                    else
+                    {
+                        <div class="space-y-3">
+                            @foreach (var challenge in activeChallenges.Take(3))
+                            {
+                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+                                    <div>
+                                        <p class="font-medium">@challenge.Name</p>
+                                        <p class="text-sm text-gray-500">100 pontos</p>
+                                    </div>
+                                    <a href="@challenge.AccessLink" target="_blank" class="px-3 py-1 bg-white border rounded text-sm hover:bg-gray-100">Ver</a>
                                 </div>
-                                <a href="@challenge.AccessLink" target="_blank" class="px-3 py-1 bg-white border rounded text-sm hover:bg-gray-100">Ver</a>
-                            </div>
-                        }
-                    </div>
-                    <a asp-action="Challenges" class="block text-center w-full mt-4 px-4 py-2 border rounded-md hover:bg-gray-50 font-medium">
-                        Ver Todos os Desafios
-                    </a>
+                            }
+                        </div>
+                        <a asp-action="Challenges" class="block text-center w-full mt-4 px-4 py-2 border rounded-md hover:bg-gray-50 font-medium">
+                            Ver Todos os Desafios
+                        </a>
+                    }
                 }
             </div>
 

@@ -1,0 +1,47 @@
+@model IEnumerable<Frontend.Models.Entities.Classroom>
+
+<div id="createChallengeModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
+        <form asp-action="CreateChallenge" method="post">
+            <div class="px-6 py-4 border-b flex items-center justify-between">
+                <h3 class="text-lg font-bold">Criar Desafio Pedagógico</h3>
+                <button type="button" onclick="document.getElementById('createChallengeModal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-700">Título do Desafio</label>
+                    <input name="Name" type="text" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" placeholder="Ex: Planeamento Familiar" required />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-700">Descrição Curta</label>
+                    <textarea name="Description" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" rows="3" placeholder="Explique o objetivo deste desafio..." required></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-700">Link de Acesso (URL)</label>
+                    <input name="AccessLink" type="url" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" placeholder="https://exemplo.com/material" required />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-gray-700">Atribuir a Turma (Opcional)</label>
+                    <select name="TargetClassroomId" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50">
+                        <option value="">-- Não atribuir agora --</option>
+                        @if (Model != null)
+                        {
+                            @foreach (var cls in Model)
+                            {
+                                <option value="@cls.Id">@cls.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">
+                <button type="button" onclick="document.getElementById('createChallengeModal').classList.add('hidden')" class="px-4 py-2 border rounded-md hover:bg-gray-100 font-medium">Cancelar</button>
+                <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 font-medium flex items-center gap-2">
+                    <i data-lucide="save" class="w-4 h-4"></i> Salvar Desafio
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

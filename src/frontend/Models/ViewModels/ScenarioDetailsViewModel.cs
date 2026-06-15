@@ -14,6 +14,10 @@ namespace Frontend.Models.ViewModels
         // Form Models for modals
         public AddEntryViewModel AddEntry { get; set; } = new();
         public AddObjectiveViewModel AddObjective { get; set; } = new();
+
         public LoanParamsDto LoanSimulation { get; set; } = new();
-    }
-}
+        public SavingsParamsDto SavingsSimulation { get; set; } = new();
+        public CashFlowParamsDto CashFlowSimulation { get; set; } = new();
+        }
+        }
+
