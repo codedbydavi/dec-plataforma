@@ -85,6 +85,10 @@ namespace Frontend.Controllers
                 .OrderByDescending(c => c.Id)
                 .ToListAsync();
 
+            ViewBag.Classes = await _context.Classrooms
+                .Where(c => c.TeacherId == userId)
+                .ToListAsync();
+
             return View(challenges);
         }
 
@@ -115,15 +119,16 @@ namespace Frontend.Controllers
         public async Task<IActionResult> CreateChallenge(CreateChallengeViewModel model)
         {
             // We ignore complex nested validation for simple creation
-            if (string.IsNullOrEmpty(model.Name) || string.IsNullOrEmpty(model.AccessLink))
+            if (string.IsNullOrEmpty(model.Name) || string.IsNullOrEmpty(model.AccessLink) || string.IsNullOrEmpty(model.Description))
             {
-                TempData["ErrorMessage"] = "Nome e Link são obrigatórios.";
+                TempData["ErrorMessage"] = "Nome, Descrição e Link são obrigatórios.";
                 return RedirectToAction("Dashboard");
             }
 
             var challenge = new Challenge
             {
                 Name = model.Name,
+                Description = model.Description,
                 AccessLink = model.AccessLink,
                 StatusId = 1 // Active
             };
