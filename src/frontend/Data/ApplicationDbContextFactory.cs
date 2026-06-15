@@ -10,8 +10,8 @@ namespace Frontend.Data
         {
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
             
-            // Fixed connection string for design-time (migrations)
-            // Using 'localhost' for host-to-container connectivity
+
+
             var connectionString = "Server=db;Database=dec_db;User=dec_user;Password=dec_password;";
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 21));
 

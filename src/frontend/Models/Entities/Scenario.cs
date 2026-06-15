@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace Frontend.Models.Entities
 {
-    /// <summary>
-    /// Financial Scenario created by a student.
-    /// Following Encapsulation and Abstraction.
-    /// </summary>
+
+
+
+
     public class Scenario
     {
         private int _id;

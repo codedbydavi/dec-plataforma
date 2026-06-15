@@ -1,9 +1,9 @@
 namespace Frontend.Models.Entities
 {
-    /// <summary>
-    /// Abstract base for financial movements.
-    /// Following the Abstraction pillar.
-    /// </summary>
+
+
+
+
     public abstract class FinancialEntry
     {
         private int _id;

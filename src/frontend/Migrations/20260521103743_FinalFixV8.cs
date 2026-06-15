@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Frontend.Migrations
 {
-    /// <inheritdoc />
+
     public partial class FinalFixV8 : Migration
     {
-        /// <inheritdoc />
+
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
@@ -642,7 +642,7 @@ namespace Frontend.Migrations
                 onDelete: ReferentialAction.Cascade);
         }
 
-        /// <inheritdoc />
+
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(

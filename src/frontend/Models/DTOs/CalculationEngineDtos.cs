@@ -69,7 +69,7 @@ namespace Frontend.Models.DTOs
     public class EntryRequestDto
     {
         [JsonPropertyName("type")]
-        public string Type { get; set; } = string.Empty; // INCOME or EXPENSE
+        public string Type { get; set; } = string.Empty; 
 
         [JsonPropertyName("category")]
         public string Category { get; set; } = string.Empty;

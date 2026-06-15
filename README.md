@@ -1,120 +1,100 @@
 # 💰 DEC – Dinheiro em Casa (Money at Home)
 
-## 📌 Description
-
-**DEC – Dinheiro em Casa** is a digital financial literacy platform developed to simulate household economy scenarios and assist students in making informed financial decisions.
-
-The application allows for the creation of virtual family scenarios, recording income and expenses, defining savings goals, and performing financial simulations, promoting practical and interactive learning.
+<p align="center">
+  <em>A digital financial literacy platform designed to simulate household economy scenarios, helping students make informed financial decisions through practical, interactive learning.</em>
+</p>
 
 ---
 
-## 🚀 Quick Access (Local Environment)
+## 📌 Overview
 
-If the system is running via Docker, use these links for quick access:
+**DEC (Dinheiro em Casa)** is an educational platform built for secondary school students. It bridges the gap between theoretical mathematics and real-world financial literacy. By simulating household budgets, evaluating loan impact, projecting compound interest, and adjusting for inflation, the platform empowers students to develop a realistic understanding of personal finance.
 
-*   **🌐 Frontend Portal:** [http://localhost](http://localhost)
-*   **📖 API Documentation (Swagger):** [http://localhost/api/docs/](http://localhost/api/docs/)
-*   **🛡️ Admin Panel (Django):** [http://localhost/admin/](http://localhost/admin/)
-*   **📊 API Redoc:** [http://localhost/api/redoc/](http://localhost/api/redoc/)
+The system is structured around two main roles:
+*   **Students:** Create family scenarios, record financial entries, set savings goals, run complex mathematical simulations, and submit their work.
+*   **Professors:** Create classes, assign pedagogical challenges, monitor student progress, and evaluate submitted simulations with actionable feedback.
 
 ---
 
-## ✅ Implementation Progress (User Stories)
+## ✨ Key Features
 
-The following User Stories have been successfully implemented:
+### 🎓 For Students
+*   **Virtual Family Scenarios:** Define starting balances and aggregate incomes/expenses to build realistic monthly budgets.
+*   **Financial Engine (What-If Analysis):**
+    *   **Base Simulation:** Projects the monthly balance based on recurring entries.
+    *   **Credit Simulation:** Calculates monthly installments, total interest, and effort rate (using the French amortization system).
+    *   **Savings Projection:** Computes compound interest over a specified term.
+    *   **Cash Flow & Inflation:** Projects the impact of inflation on variable expenses over time.
+*   **Challenge Submissions:** Respond to professor-assigned challenges directly using customized scenarios.
 
-| ID | Role | Requirement |
-|:---|:---|:---|
-| **US_B004** | Developer | Implementation of Authentication (JWT) and Session/Token management. |
-| **US_B005** | Manager | Implementation of Roles and Permissions (Admin, Teacher, Student). |
-| **US_B006** | Developer | Centralized security in .NET MVC Portal communicating securely with Django API. |
-| **US_B007** | DB Manager | Definition of MySQL schema (tables, keys, and optimized indexes) v1.0. |
-| **US_B008** | Developer | Automatic Database Migrations and DDL version control. |
-| **US_B009** | Developer | Python Microservice skeleton with Clean Architecture and Health-check. |
-| **US_B010** | DevOps | Full Docker Compose orchestration (Portal + API + Service + MySQL). |
-| **US_B011** | DevOps | Structured logging implementation in API and Microservice. |
-| **US_B012** | Admin | Class/Challenge creation with unique Join Codes (DEC-XXXXXX). |
-| **US_B013** | Student | Joining a class/challenge using a Join Code. |
-| **US_B014** | Teacher | Dashboard to list classes, join codes, and enrolled students. |
+### 👨‍🏫 For Professors
+*   **Classroom Management:** Generate unique Join Codes for students to enroll seamlessly.
+*   **Pedagogical Challenges:** Create and assign tailored financial tasks with integrated external resources.
+*   **Real-time Dashboard:** Monitor student performance, including average scores, completion rates, and pending evaluations.
+*   **Evaluation System:** Review student simulations, assess financial sustainability (e.g., effort rates), and provide targeted feedback.
 
 ---
 
 ## 🏗️ System Architecture
 
-The project follows a distributed architecture based on **Clean Architecture** and **Microservices**:
+The project follows a distributed, highly decoupled architecture:
 
-*   **Frontend:** ASP.NET Core 10.0 MVC (Centralized Security & UI)
-*   **Backend:** Django 6.0 REST API (Business Logic & Data Persistence)
-*   **Microservice:** Python Flask (Financial Calculation Engine)
-*   **Database:** MySQL 8.0 (Relational Data Model v1.0)
-*   **Reverse Proxy:** Nginx (Gateway & Unified Routing)
-*   **Containerization:** Docker & Docker Compose
+*   **Frontend (UI & Security):** Built with **ASP.NET Core 10.0 MVC**, utilizing TailwindCSS for a responsive, modern interface. It centralizes Identity Management (Auth), securing routes via JWT and HttpOnly Cookies.
+*   **Backend (Financial Engine):** Developed in **Django 6.0 (Python 3.12)**. It acts as the mathematical core, processing heavy financial simulations via a RESTful API.
+*   **Database:** **MySQL 8.0**, fully modeled to support relational integrity between classrooms, scenarios, entries, and simulation histories.
+*   **Infrastructure:** Containerized with **Docker**, orchestrated via **Docker Compose**, and routed through an **Nginx** reverse proxy acting as an API Gateway.
 
 ---
 
-## ⚙️ Technologies & Security
+## 🚀 Deployment & CI/CD
 
-*   **Auth:** JWT (JSON Web Tokens) + Secure HttpOnly Cookies.
-*   **Environment:** All secrets (SECRET_KEY, DB credentials) managed via `.env`.
-*   **Persistence:** Docker Volumes for MySQL data.
-*   **Documentation:** Automatic OpenAPI 3.0 generation with Swagger UI.
-*   **Architecture:** Dependency Injection, Service Layer, and Repository Pattern principles.
+The platform is configured for production readiness, leveraging cloud infrastructure and automated pipelines:
 
----
-
-## 🚀 How to Run the Project
-
-### 🔧 Prerequisites
-
-*   Docker & Docker Compose
-*   Git
-
-### ▶️ Run with Docker (Recommended)
-
-```bash
-git clone <repo-url>
-cd dec-plataforma
-
-# The system will automatically build images, wait for MySQL, and apply migrations
-docker-compose up --build
-```
+*   **Hosting:** Deployed on **Google Cloud Platform (GCP)** Compute Engine.
+*   **SSL/Security:** Fully secured with HTTPS using **Let's Encrypt / Certbot**.
+*   **CI/CD Pipeline:** Powered by **GitHub Actions**.
+    *   **Continuous Integration:** Automatically runs builds and sanity checks (Python & .NET) on every push.
+    *   **Continuous Deployment:** Builds Docker images as Artifacts, pushes them to the **GitHub Container Registry (GHCR)**, and triggers a rolling update on the GCP server via SSH.
 
 ---
 
-## 📁 Repository Structure (Monorepo)
+## 💻 How to Run Locally
 
-```
-/
-├── src/
-│   ├── backend/    # Django API (Python 3.14)
-│   ├── frontend/   # ASP.NET MVC Application (.NET 10.0)
-│   └── service/    # Financial Microservice (Python 3.14)
-├── nginx/          # Nginx Gateway Configuration
-├── docker-compose.yml
-└── dec-plataforma.sln
-```
+To run the application in a local development environment:
+
+### Prerequisites
+*   [Docker Desktop](https://www.docker.com/products/docker-desktop) installed and running.
+*   Git installed.
+
+### Quick Start
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/codedbydavi/dec-plataforma.git
+   cd dec-plataforma
+   ```
+
+2. Start the development environment:
+   ```bash
+   # Uses the dev-specific compose file without SSL requirements
+   docker-compose -f docker-compose.dev.yml up -d --build
+   ```
+
+3. Access the platform:
+   *   **Frontend Application:** [http://localhost](http://localhost)
+   *   **Django Engine API:** [http://localhost:8000/api/](http://localhost:8000/api/)
+   *   **Django Admin Panel:** [http://localhost:8000/admin/](http://localhost:8000/admin/)
 
 ---
 
-## 📊 Methodology
+## 👥 Development Team
 
-The project development follows an **Agile (Scrum)** approach:
-
-*   Organized by Sprints
-*   Task management with GitHub Projects
-*   User Stories for requirements definition
-*   Sprint Reviews for continuous validation
-
----
-
-## 👥 Team
-
-*   **Davi Vasconcelos** – Frontend & Backend
-*   **Diogo Silva** – Backend, Infrastructure & DevOps
-*   **João Maia** – QA, Documentation & Modeling
+*   **Davi Vasconcelos** – Frontend Architecture, Cloud Infrastructure (GCP) & CI/CD
+*   **Diogo Silva** – Backend Development (Django Engine) & DevOps
+*   **João Maia** – QA, Database Modeling & Documentation
 
 ---
 
 ## 📄 License
 
-This project was developed for academic purposes as part of the Computer Science course at ISTEC Porto.
+Developed for academic purposes as the final project for the Computer Science degree at ISTEC Porto. All rights reserved by the authors.

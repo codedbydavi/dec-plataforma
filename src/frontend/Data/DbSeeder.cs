@@ -10,10 +10,10 @@ namespace Frontend.Data
             using var scope = serviceProvider.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            // Ensure database is created and migrations are applied
+
             await context.Database.MigrateAsync();
 
-            // Seed Roles (Matching AuthController IDs)
+
             if (!await context.RoleLookups.AnyAsync())
             {
                 context.RoleLookups.AddRange(
@@ -24,7 +24,7 @@ namespace Frontend.Data
                 await context.SaveChangesAsync();
             }
 
-            // Seed User Status
+
             if (!await context.UserStatuses.AnyAsync())
             {
                 context.UserStatuses.AddRange(
@@ -35,7 +35,7 @@ namespace Frontend.Data
                 await context.SaveChangesAsync();
             }
 
-            // Seed Gender
+
             if (!await context.Genders.AnyAsync())
             {
                 context.Genders.AddRange(
@@ -46,7 +46,7 @@ namespace Frontend.Data
                 await context.SaveChangesAsync();
             }
 
-            // Seed Class Status
+
             if (!await context.ClassStatuses.AnyAsync())
             {
                 context.ClassStatuses.AddRange(
@@ -57,7 +57,7 @@ namespace Frontend.Data
                 await context.SaveChangesAsync();
             }
 
-            // Seed Entry Types (Portuguese)
+
             if (!await context.EntryTypes.AnyAsync())
             {
                 context.EntryTypes.AddRange(
@@ -67,7 +67,7 @@ namespace Frontend.Data
                 await context.SaveChangesAsync();
             }
 
-            // Seed Categories (Detailed)
+
             if (!await context.Categories.AnyAsync())
             {
                 context.Categories.AddRange(

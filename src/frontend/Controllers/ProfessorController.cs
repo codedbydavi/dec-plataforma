@@ -49,10 +49,10 @@ namespace Frontend.Controllers
                     .ToListAsync()
             };
 
-            // Calculate Chart Data
+
             var allEnrollments = classes.SelectMany(c => c.Enrollments).Where(e => e.Student != null).ToList();
             
-            foreach (var enrollment in allEnrollments.Take(5)) // Show top 5 or first 5
+            foreach (var enrollment in allEnrollments.Take(5)) 
             {
                 var student = enrollment.Student!;
                 viewModel.StudentNames.Add(student.FullName);
@@ -75,7 +75,7 @@ namespace Frontend.Controllers
             viewModel.TotalEvaluated = allHistories.Count(h => h.Score.HasValue);
             viewModel.TotalPending = allHistories.Count(h => !h.Score.HasValue);
 
-            // KPI Calculations
+
             var totalPossibleSubmissions = allEnrollments.Count * viewModel.GlobalChallenges.Count;
             var totalActualSubmissions = allEnrollments.SelectMany(e => e.Student!.Scenarios).Count(s => s.ChallengeId.HasValue);
             
@@ -115,12 +115,12 @@ namespace Frontend.Controllers
                 .Include(c => c.Enrollments)
                     .ThenInclude(e => e.Student)
                         .ThenInclude(s => s!.Scenarios)
-                            .ThenInclude(sc => sc.Challenge) // Carregar o desafio vinculado
+                            .ThenInclude(sc => sc.Challenge) 
                 .FirstOrDefaultAsync(c => c.Id == id && c.TeacherId == userId);
 
             if (classroom == null) return NotFound();
 
-            // Load assigned challenges
+
             ViewBag.AssignedChallenges = await _context.ChallengeAssignments
                 .Include(a => a.Challenge)
                 .Where(a => a.ClassroomId == id)
@@ -133,7 +133,7 @@ namespace Frontend.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateChallenge(CreateChallengeViewModel model)
         {
-            // We ignore complex nested validation for simple creation
+
             if (string.IsNullOrEmpty(model.Name) || string.IsNullOrEmpty(model.AccessLink) || string.IsNullOrEmpty(model.Description))
             {
                 TempData["ErrorMessage"] = "Nome, Descrição e Link são obrigatórios.";
@@ -145,13 +145,13 @@ namespace Frontend.Controllers
                 Name = model.Name,
                 Description = model.Description,
                 AccessLink = model.AccessLink,
-                StatusId = 1 // Active
+                StatusId = 1 
             };
 
             _context.Challenges.Add(challenge);
             await _context.SaveChangesAsync();
 
-            // Auto-assign to class if selected
+
             if (model.TargetClassroomId.HasValue && model.TargetClassroomId.Value > 0)
             {
                 var assignment = new ChallengeAssignment

@@ -8,7 +8,7 @@ namespace Frontend.Models.ViewModels
         public int[] ScenariosData { get; set; } = new int[7];
         public int[] SimulationsData { get; set; } = new int[7];
         
-        // General stats
+
         public int TotalUsers { get; set; }
         public int TotalScenarios { get; set; }
         public int TotalSimulations { get; set; }

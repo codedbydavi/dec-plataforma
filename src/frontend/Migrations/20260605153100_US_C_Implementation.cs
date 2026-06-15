@@ -6,10 +6,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Frontend.Migrations
 {
-    /// <inheritdoc />
+
     public partial class US_C_Implementation : Migration
     {
-        /// <inheritdoc />
+
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
@@ -64,7 +64,7 @@ namespace Frontend.Migrations
                 column: "Class_id");
         }
 
-        /// <inheritdoc />
+
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

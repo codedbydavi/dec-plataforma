@@ -23,5 +23,7 @@ namespace Frontend.Models.ViewModels
         public string ConfirmPassword { get; set; } = string.Empty;
 
         public string Role { get; set; } = "Student";
+
+        public string? SecretCode { get; set; }
     }
 }

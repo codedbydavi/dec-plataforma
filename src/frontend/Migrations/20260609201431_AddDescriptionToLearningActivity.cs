@@ -4,10 +4,10 @@
 
 namespace Frontend.Migrations
 {
-    /// <inheritdoc />
+
     public partial class AddDescriptionToLearningActivity : Migration
     {
-        /// <inheritdoc />
+
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
@@ -25,7 +25,7 @@ namespace Frontend.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
         }
 
-        /// <inheritdoc />
+
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(

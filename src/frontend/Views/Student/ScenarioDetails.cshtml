@@ -22,7 +22,7 @@
         </div>
     }
 
-    <!-- Header Section -->
+    
     <div class="flex items-center justify-between mb-6">
         <div>
             <nav class="flex text-sm text-gray-500 mb-2">
@@ -38,7 +38,7 @@
         <div class="flex items-center gap-4">
             <div class="text-right">
                 <p class="text-sm text-gray-500">Saldo Inicial</p>
-                <p class="text-2xl font-bold text-gray-900">@scenario.InitialBalance.ToString("C")</p>
+                <p class="text-2xl font-bold text-gray-900">€@scenario.InitialBalance.ToString("N2")</p>
             </div>
             <button data-modal-target="editScenarioModal" class="p-2 border rounded-md hover:bg-gray-50 text-gray-600 transition-colors" title="Editar Cenário">
                 <i data-lucide="pencil" class="w-5 h-5"></i>
@@ -46,7 +46,7 @@
         </div>
     </div>
 
-    <!-- Active Simulations Alerts -->
+    
     @if (lastResult != null)
     {
         @if (lastResult.CreditSimulation != null)
@@ -54,9 +54,9 @@
             <div class="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-md mb-4 flex items-center gap-3">
                 <i data-lucide="banknote" class="w-5 h-5 text-blue-600"></i>
                 <div class="text-sm">
-                    <strong>Simulação de Crédito Ativa:</strong> Prestação Mensal: <span class="font-bold">@lastResult.CreditSimulation.MonthlyInstallment.ToString("C")</span> | 
-                    Custo Total: <span class="font-bold">@lastResult.CreditSimulation.TotalCost.ToString("C")</span> 
-                    (Juros: @lastResult.CreditSimulation.TotalInterest.ToString("C"))
+                    <strong>Simulação de Crédito Ativa:</strong> Prestação Mensal: <span class="font-bold">€@lastResult.CreditSimulation.MonthlyInstallment.ToString("N2")</span> | 
+                    Custo Total: <span class="font-bold">€@lastResult.CreditSimulation.TotalCost.ToString("N2")</span> 
+                    (Juros: €@lastResult.CreditSimulation.TotalInterest.ToString("N2"))
                 </div>
             </div>
         }
@@ -66,7 +66,7 @@
             <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-md mb-4 flex items-center gap-3">
                 <i data-lucide="piggy-bank" class="w-5 h-5 text-green-600"></i>
                 <div class="text-sm">
-                    <strong>Projeção de Poupança Ativa:</strong> Valor Final Projetado: <span class="font-bold">@lastResult.SavingsSimulation.FinalAmount.ToString("C")</span>
+                    <strong>Projeção de Poupança Ativa:</strong> Valor Final Projetado: <span class="font-bold">€@lastResult.SavingsSimulation.FinalAmount.ToString("N2")</span>
                 </div>
             </div>
         }
@@ -76,16 +76,16 @@
             <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-md mb-4 flex items-center gap-3">
                 <i data-lucide="trending-up" class="w-5 h-5 text-yellow-600"></i>
                 <div class="text-sm">
-                    <strong>Fluxo de Caixa (com Inflação):</strong> Poupança Acumulada no Fim do Prazo: <span class="font-bold">@lastResult.CashFlowSimulation.CumulativeSavings.ToString("C")</span>
+                    <strong>Fluxo de Caixa (com Inflação):</strong> Poupança Acumulada no Fim do Prazo: <span class="font-bold">€@lastResult.CashFlowSimulation.CumulativeSavings.ToString("N2")</span>
                 </div>
             </div>
         }
 
-        <!-- Key Metrics Cards -->
+        
         <div class="grid md:grid-cols-4 gap-4 mb-8">
             <div class="bg-primary text-white rounded-xl p-6 shadow-sm">
                 <p class="text-sm text-white/80 uppercase tracking-wider mb-2">Saldo Mensal Real</p>
-                <div class="text-3xl font-bold">@lastResult.Summary.MonthlyBalance.ToString("C")</div>
+                <div class="text-3xl font-bold">€@lastResult.Summary.MonthlyBalance.ToString("N2")</div>
             </div>
 
             <div class="bg-white rounded-xl border p-6 shadow-sm">
@@ -100,7 +100,7 @@
 
             <div class="bg-white rounded-xl border p-6 shadow-sm">
                 <p class="text-sm text-gray-500 uppercase tracking-wider mb-2">Projeção a 12 Meses</p>
-                <div class="text-3xl font-bold text-gray-900">@lastResult.Projections.BalanceAfter12Months.ToString("C")</div>
+                <div class="text-3xl font-bold text-gray-900">€@lastResult.Projections.BalanceAfter12Months.ToString("N2")</div>
             </div>
 
             <div class="bg-white rounded-xl border p-6 shadow-sm">
@@ -116,7 +116,7 @@
         </div>
     }
 
-    <!-- Tabs Layout -->
+    
     <div class="mb-6 border-b border-gray-200">
         <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="myTab" role="tablist">
             <li class="mr-2" role="presentation">
@@ -133,10 +133,10 @@
     </div>
 
     <div id="myTabContent">
-        <!-- Data Tab (Entries & Goals) -->
+        
         <div class="p-4 rounded-lg space-y-6" id="data" role="tabpanel">
             <div class="grid lg:grid-cols-3 gap-6">
-                <!-- Entries Table -->
+                
                 <div class="lg:col-span-2 bg-white rounded-xl border shadow-sm flex flex-col">
                     <div class="p-4 border-b flex justify-between items-center bg-gray-50/50 rounded-t-xl">
                         <h3 class="font-bold text-lg flex items-center gap-2">
@@ -164,10 +164,11 @@
                                         <th class="px-4 py-3 font-medium text-right">Valor</th>
                                         <th class="px-4 py-3 font-medium text-center">Mês</th>
                                         <th class="px-4 py-3 font-medium text-center">Recorrente</th>
+                                        <th class="px-4 py-3 font-medium text-right">Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var entry in scenario.Entries.OrderBy(e => e.Month))
+                                    @foreach (var entry in scenario.Entries.OrderBy(e => int.TryParse(e.Month, out var m) ? m : 0))
                                     {
                                         <tr class="border-b last:border-b-0 hover:bg-gray-50">
                                             <td class="px-4 py-3">
@@ -177,13 +178,26 @@
                                                 { <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-0.5 rounded">Despesa</span> }
                                             </td>
                                             <td class="px-4 py-3 text-gray-700">@(entry.Category?.Name ?? "Geral")</td>
-                                            <td class="px-4 py-3 font-bold text-right">@entry.Amount.ToString("C")</td>
+                                            <td class="px-4 py-3 font-bold text-right">€@entry.Amount.ToString("N2")</td>
                                             <td class="px-4 py-3 text-center text-gray-600">@entry.Month</td>
                                             <td class="px-4 py-3 text-center">
-                                                @if (entry.Recurrence != "None" && entry.Recurrence != "False")
+                                                @if (entry.Recurrence != "None" && entry.Recurrence != "False" && entry.Recurrence != "0")
                                                 { <i data-lucide="repeat" class="w-4 h-4 mx-auto text-primary" title="Sim"></i> }
                                                 else
                                                 { <span class="text-gray-400">—</span> }
+                                            </td>
+                                            <td class="px-4 py-3 text-right">
+                                                <div class="flex justify-end gap-2">
+                                                    <button onclick="openEditEntryModal(@entry.Id, @entry.TypeId, @entry.CategoryId, @entry.Amount.ToString().Replace(",", "."), '@entry.Month', @((entry.Recurrence != "None" && entry.Recurrence != "False" && entry.Recurrence != "0") ? "true" : "false"))" class="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Editar">
+                                                        <i data-lucide="edit-2" class="w-4 h-4"></i>
+                                                    </button>
+                                                    <form asp-action="DeleteEntry" method="post" onsubmit="return confirm('Tem a certeza que deseja remover este lançamento?')" class="inline">
+                                                        <input type="hidden" name="id" value="@entry.Id" />
+                                                        <button type="submit" class="p-1 text-red-600 hover:bg-red-50 rounded transition-colors" title="Remover">
+                                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </td>
                                         </tr>
                                     }
@@ -193,9 +207,9 @@
                     </div>
                 </div>
 
-                <!-- Goals & Engine Actions -->
+                
                 <div class="space-y-6">
-                    <!-- Goals -->
+                    
                     <div class="bg-white rounded-xl border shadow-sm">
                         <div class="p-4 border-b flex justify-between items-center bg-gray-50/50 rounded-t-xl">
                             <h3 class="font-bold text-lg flex items-center gap-2">
@@ -216,10 +230,18 @@
                                     @foreach (var obj in scenario.Objectives)
                                     {
                                         var analysis = lastResult?.ObjectivesAnalysis.FirstOrDefault(a => a.Description == obj.Description);
-                                        <li class="p-4 hover:bg-gray-50">
+                                        <li class="p-4 hover:bg-gray-50 group">
                                             <div class="flex justify-between items-center mb-1">
-                                                <span class="font-bold text-sm text-gray-900">@obj.Description</span>
-                                                <span class="font-bold text-sm text-green-600">@obj.TargetValue.ToString("C")</span>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="font-bold text-sm text-gray-900">@obj.Description</span>
+                                                    <form asp-action="DeleteObjective" method="post" onsubmit="return confirm('Deseja remover este objetivo?')" class="opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <input type="hidden" name="id" value="@obj.Id" />
+                                                        <button type="submit" class="text-red-400 hover:text-red-600">
+                                                            <i data-lucide="x-circle" class="w-4 h-4"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                                <span class="font-bold text-sm text-green-600">€@obj.TargetValue.ToString("N2")</span>
                                             </div>
                                             <div class="flex justify-between items-center text-xs">
                                                 <span class="text-gray-500">Em @obj.TargetMonths meses</span>
@@ -237,7 +259,7 @@
                         </div>
                     </div>
 
-                    <!-- Engine Trigger -->
+                    
                     <div class="bg-white rounded-xl border border-gray-200 shadow-sm text-center p-6">
                         <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-3">
                             <i data-lucide="cpu" class="w-6 h-6 text-primary"></i>
@@ -268,7 +290,7 @@
                 </div>
             </div>
 
-            <!-- History Table -->
+            
             <div class="bg-white rounded-xl border shadow-sm mt-6">
                 <div class="p-4 border-b bg-gray-50/50 rounded-t-xl">
                     <h3 class="font-bold text-lg flex items-center gap-2">
@@ -296,7 +318,7 @@
                                 {
                                     <tr class="border-b last:border-b-0 hover:bg-gray-50">
                                         <td class="px-6 py-4 text-gray-600">@history.ExecutionDate.ToString("g")</td>
-                                        <td class="px-6 py-4 font-bold text-gray-900">@history.FinalBalance.ToString("C")</td>
+                                        <td class="px-6 py-4 font-bold text-gray-900">€@history.FinalBalance.ToString("N2")</td>
                                         <td class="px-6 py-4">
                                             <span class="px-2 py-1 rounded text-xs font-bold @(history.EffortRate > 40 ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800")">
                                                 @history.EffortRate.ToString("F1")%
@@ -317,7 +339,7 @@
             </div>
         </div>
 
-        <!-- Dashboard Tab (Charts) -->
+        
         <div class="hidden p-4 rounded-lg" id="dashboard" role="tabpanel">
             @if (lastResult == null)
             {
@@ -359,7 +381,7 @@
     </div>
 </div>
 
-<!-- Modal: Add Entry -->
+
 <div id="addEntryModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
         <div class="px-6 py-4 border-b flex justify-between items-center">
@@ -372,7 +394,7 @@
     </div>
 </div>
 
-<!-- Modal: Add Objective -->
+
 <div id="addObjectiveModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
         <form asp-action="AddObjective" method="post">
@@ -405,7 +427,7 @@
     </div>
 </div>
 
-<!-- Modal: Credit Simulation -->
+
 <div id="creditSimModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
         <form asp-action="RunSimulation" method="post">
@@ -439,7 +461,7 @@
     </div>
 </div>
 
-<!-- Modal: Savings Simulation -->
+
 <div id="savingsSimModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
         <form asp-action="RunSimulation" method="post">
@@ -473,7 +495,7 @@
     </div>
 </div>
 
-<!-- Modal: Cash Flow Simulation -->
+
 <div id="cashFlowSimModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
         <form asp-action="RunSimulation" method="post">
@@ -515,7 +537,7 @@
     </div>
 </div>
 
-<!-- Modal: Edit Scenario -->
+
 <div id="editScenarioModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden">
         <form asp-action="UpdateScenario" method="post">
@@ -542,9 +564,87 @@
     </div>
 </div>
 
+
+<div id="editEntryModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
+        <form asp-action="EditEntry" method="post">
+            <input type="hidden" name="id" id="editEntryId" />
+            <div class="px-6 py-4 border-b flex justify-between items-center">
+                <h3 class="text-lg font-bold">Editar Lançamento Financeiro</h3>
+                <button type="button" class="text-gray-400 hover:text-gray-600" onclick="document.getElementById('editEntryModal').classList.add('hidden')"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Tipo</label>
+                        <select name="typeId" id="editEntryType" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required>
+                            @foreach (var type in Model.EntryTypes)
+                            {
+                                <option value="@type.Id">@type.Type</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Categoria</label>
+                        <select name="categoryId" id="editEntryCategory" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required>
+                            @foreach (var cat in Model.Categories)
+                            {
+                                <option value="@cat.Id">@cat.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Valor (€)</label>
+                        <input name="amount" id="editEntryAmount" type="number" step="0.01" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required />
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Mês Inicial</label>
+                        <select name="month" id="editEntryMonth" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required>
+                            <option value="1">Janeiro</option>
+                            <option value="2">Fevereiro</option>
+                            <option value="3">Março</option>
+                            <option value="4">Abril</option>
+                            <option value="5">Maio</option>
+                            <option value="6">Junho</option>
+                            <option value="7">Julho</option>
+                            <option value="8">Agosto</option>
+                            <option value="9">Setembro</option>
+                            <option value="10">Outubro</option>
+                            <option value="11">Novembro</option>
+                            <option value="12">Dezembro</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center pt-6">
+                        <input name="recurrence" id="editEntryRecurrence" type="checkbox" value="true" class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary" />
+                        <label for="editEntryRecurrence" class="ml-2 text-sm font-medium text-gray-700">Lançamento Recorrente</label>
+                        <input type="hidden" name="recurrence" value="false" />
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">
+                <button type="button" onclick="document.getElementById('editEntryModal').classList.add('hidden')" class="px-4 py-2 border rounded-md hover:bg-gray-100 font-medium text-gray-700">Cancelar</button>
+                <button type="submit" class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 font-medium">Salvar Alterações</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @section Scripts {
     <script>
-        // Modal logic
+        function openEditEntryModal(id, typeId, categoryId, amount, month, recurrence) {
+            document.getElementById('editEntryId').value = id;
+            document.getElementById('editEntryType').value = typeId;
+            document.getElementById('editEntryCategory').value = categoryId;
+            document.getElementById('editEntryAmount').value = amount;
+            document.getElementById('editEntryMonth').value = month;
+            document.getElementById('editEntryRecurrence').checked = recurrence;
+            
+            document.getElementById('editEntryModal').classList.remove('hidden');
+        }
+
+
         document.querySelectorAll('[data-modal-target]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const target = document.getElementById(btn.getAttribute('data-modal-target'));
@@ -552,7 +652,7 @@
             });
         });
 
-        // Tabs and Charts logic
+
         const tabs = document.querySelectorAll('[data-tabs-target]');
         const tabContents = document.querySelectorAll('[role="tabpanel"]');
         let chartsRendered = false;
@@ -581,12 +681,12 @@
         function renderCharts() {
             @if (lastResult != null) {
                 <text>
-                // Clean up existing Chart.js instances
+
                 Chart.helpers.each(Chart.instances, function(instance){
                     instance.destroy();
                 });
 
-                // 1. Income vs Expenses Pie Chart
+
                 new Chart(document.getElementById('chartIncomeExpenses'), {
                     type: 'doughnut',
                     data: {
@@ -600,7 +700,7 @@
                     options: { maintainAspectRatio: false, animation: false, plugins: { legend: { position: 'bottom' } } }
                 });
 
-                // 2. Projection Line Chart
+
                 const initial = @scenario.InitialBalance.ToString().Replace(",", ".");
                 const monthlyBalance = @lastResult.Summary.MonthlyBalance.ToString().Replace(",", ".");
                 const labels = ['Agora', '1m', '2m', '3m', '4m', '5m', '6m', '7m', '8m', '9m', '10m', '11m', '12m'];
@@ -629,7 +729,7 @@
                     }
                 });
 
-                // 3. Effort Rate Bar Chart
+
                 const effortRate = @lastResult.Summary.EffortRatePercentage.ToString().Replace(",", ".");
                 new Chart(document.getElementById('chartEffortRate'), {
                     type: 'bar',

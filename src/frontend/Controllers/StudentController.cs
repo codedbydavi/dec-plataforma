@@ -48,7 +48,7 @@ namespace Frontend.Controllers
 
             var scenarios = await _simulationService.GetMyScenariosAsync(userId);
 
-            // Load histories for the scenarios to get the latest calculation results
+
             foreach (var scenario in scenarios)
             {
                  scenario.Histories = await _simulationService.GetSimulationHistoryAsync(scenario.Id, userId);
@@ -264,6 +264,46 @@ namespace Frontend.Controllers
 
             return Redirect(Request.Headers["Referer"].ToString() ?? "/Student/Dashboard");
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditEntry(int id, int typeId, int categoryId, float amount, string month, bool recurrence)
+        {
+            int userId = GetUserId();
+            var entryType = _context.EntryTypes.Find(typeId);
+            var typeStr = entryType?.Type ?? "EXPENSE";
+
+            var success = await _simulationService.UpdateEntryAsync(
+                id, 
+                userId, 
+                typeStr,
+                categoryId, 
+                amount, 
+                month, 
+                recurrence ? "True" : "False");
+
+            if (success)
+                TempData["SuccessMessage"] = "Lançamento atualizado com sucesso!";
+            else
+                TempData["ErrorMessage"] = "Falha ao atualizar o lançamento.";
+
+            return Redirect(Request.Headers["Referer"].ToString() ?? "/Student/Dashboard");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteEntry(int id)
+        {
+            int userId = GetUserId();
+            var success = await _simulationService.DeleteEntryAsync(id, userId);
+
+            if (success)
+                TempData["SuccessMessage"] = "Lançamento removido com sucesso!";
+            else
+                TempData["ErrorMessage"] = "Falha ao remover o lançamento.";
+
+            return Redirect(Request.Headers["Referer"].ToString() ?? "/Student/Dashboard");
+        }
         
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -289,6 +329,21 @@ namespace Frontend.Controllers
                 TempData["ErrorMessage"] = "Failed to add objective.";
 
             return RedirectToAction("ScenarioDetails", new { id = model.ScenarioId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteObjective(int id)
+        {
+            int userId = GetUserId();
+            var success = await _simulationService.DeleteObjectiveAsync(id, userId);
+
+            if (success)
+                TempData["SuccessMessage"] = "Objetivo removido com sucesso!";
+            else
+                TempData["ErrorMessage"] = "Falha ao remover o objetivo.";
+
+            return Redirect(Request.Headers["Referer"].ToString() ?? "/Student/Dashboard");
         }
 
         [HttpPost]
