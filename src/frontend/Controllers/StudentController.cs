@@ -48,7 +48,7 @@ namespace Frontend.Controllers
 
             var scenarios = await _simulationService.GetMyScenariosAsync(userId);
 
-            // Load histories for the scenarios to get the latest calculation results
+
             foreach (var scenario in scenarios)
             {
                  scenario.Histories = await _simulationService.GetSimulationHistoryAsync(scenario.Id, userId);
@@ -267,12 +267,16 @@ namespace Frontend.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditEntry(int id, int categoryId, float amount, string month, bool recurrence)
+        public async Task<IActionResult> EditEntry(int id, int typeId, int categoryId, float amount, string month, bool recurrence)
         {
             int userId = GetUserId();
+            var entryType = _context.EntryTypes.Find(typeId);
+            var typeStr = entryType?.Type ?? "EXPENSE";
+
             var success = await _simulationService.UpdateEntryAsync(
                 id, 
                 userId, 
+                typeStr,
                 categoryId, 
                 amount, 
                 month, 

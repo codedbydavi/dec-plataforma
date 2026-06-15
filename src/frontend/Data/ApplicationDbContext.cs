@@ -12,7 +12,7 @@ namespace Frontend.Data
         {
         }
 
-        // Domain Entities
+
         public DbSet<Student> Students => Set<Student>();
         public DbSet<Professor> Professors => Set<Professor>();
         public DbSet<Classroom> Classrooms => Set<Classroom>();
@@ -26,7 +26,7 @@ namespace Frontend.Data
         public DbSet<SimulationHistory> SimulationHistories => Set<SimulationHistory>();
         public DbSet<ChallengeAssignment> ChallengeAssignments => Set<ChallengeAssignment>();
 
-        // Lookup Entities
+
         public DbSet<RoleLookup> RoleLookups => Set<RoleLookup>();
         public DbSet<UserStatus> UserStatuses => Set<UserStatus>();
         public DbSet<ClassStatus> ClassStatuses => Set<ClassStatus>();
@@ -38,7 +38,7 @@ namespace Frontend.Data
         {
             base.OnModelCreating(builder);
 
-            // Identity Table Mapping (Aligning with MER 'Users')
+
             builder.Entity<ApplicationUser>(entity => {
                 entity.ToTable("Users");
                 entity.HasDiscriminator<string>("UserType")
@@ -48,7 +48,7 @@ namespace Frontend.Data
             });
             builder.Entity<IdentityRole<int>>().ToTable("Roles_Identity");
 
-            // Custom Mappings to match MER.png exactly
+
             builder.Entity<Classroom>(entity => {
                 entity.ToTable("Classes");
                 entity.Property(e => e.MemberCode).HasColumnName("Member_code");
@@ -76,7 +76,7 @@ namespace Frontend.Data
                 entity.Property(e => e.TypeId).HasColumnName("Type_id");
                 entity.Property(e => e.CategoryId).HasColumnName("Category_id");
                 
-                // TPH for Entries
+
                 entity.HasDiscriminator<string>("EntryClass")
                     .HasValue<Income>("Income")
                     .HasValue<Expense>("Expense");
@@ -108,7 +108,7 @@ namespace Frontend.Data
                 entity.Property(e => e.ChallengeId).HasColumnName("Challenge_id");
             });
 
-            // Lookups
+
             builder.Entity<RoleLookup>().ToTable("Roles");
             builder.Entity<UserStatus>().ToTable("userStatus");
             builder.Entity<ClassStatus>().ToTable("classStatus");

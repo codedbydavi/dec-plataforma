@@ -2,7 +2,7 @@ using System;
 
 namespace Frontend.Models.Entities
 {
-    // Relationship / Join Entities
+
     public class Enrollment
     {
         public int Id { get; set; }
@@ -24,7 +24,7 @@ namespace Frontend.Models.Entities
         public float EffortRate { get; set; }
         public string ResultsJson { get; set; } = "{}";
 
-        // Evaluation fields (US_C015)
+
         public float? Score { get; set; }
         public string? Feedback { get; set; }
 
@@ -42,7 +42,7 @@ namespace Frontend.Models.Entities
         public virtual Classroom? Classroom { get; set; }
     }
 
-    // Lookup Entities (MER alignment)
+
     public class RoleLookup
     {
         public int Id { get; set; }

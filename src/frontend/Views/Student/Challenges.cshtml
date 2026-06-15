@@ -55,7 +55,7 @@
         </div>
     </div>
 
-    <!-- Tabs -->
+    
     <div class="mb-6 border-b border-gray-200">
         <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="myTab" role="tablist">
             <li class="mr-2" role="presentation">
@@ -72,7 +72,7 @@
     </div>
 
     <div id="myTabContent">
-        <!-- Active Challenges -->
+        
         <div class="p-4 rounded-lg space-y-4" id="active" role="tabpanel">
             @if (!activeChallenges.Any())
             {
@@ -111,7 +111,7 @@
                         </div>
                     </div>
 
-                    <!-- Submit Modal -->
+                    
                     <div id="submitModal-@challenge.Id" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
                         <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
                             <form action="/Student/SubmitChallenge" method="post">
@@ -147,7 +147,7 @@
             }
         </div>
 
-        <!-- Completed Challenges -->
+        
         <div class="hidden p-4 rounded-lg space-y-4" id="completed" role="tabpanel">
             @if (!completedChallenges.Any())
             {
@@ -205,7 +205,7 @@
 
 @section Scripts {
     <script>
-        // Modal functionality
+
         document.querySelectorAll('[data-modal-target]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const targetId = btn.getAttribute('data-modal-target');
@@ -216,7 +216,7 @@
             });
         });
 
-        // Tabs functionality
+
         const tabs = document.querySelectorAll('[data-tabs-target]');
         const tabContents = document.querySelectorAll('[role="tabpanel"]');
 

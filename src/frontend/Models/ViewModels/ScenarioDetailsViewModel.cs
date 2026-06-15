@@ -11,7 +11,7 @@ namespace Frontend.Models.ViewModels
         public CalculationResponseDto? LatestResult { get; set; }
         public DateTime? LastRunDate { get; set; }
 
-        // Form Models for modals
+
         public AddEntryViewModel AddEntry { get; set; } = new();
         public AddObjectiveViewModel AddObjective { get; set; } = new();
 

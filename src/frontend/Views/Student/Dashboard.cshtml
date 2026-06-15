@@ -38,7 +38,7 @@
         if (savingsProgress > 100) savingsProgress = 100;
         if (savingsProgress < 0) savingsProgress = 0;
 
-        // Group expenses by category
+
         var expensesByCategory = currentFamily.Entries
             .Where(e => e is Frontend.Models.Entities.Expense)
             .GroupBy(e => e.Category?.Name ?? "Outros")
@@ -118,7 +118,7 @@
             </div>
         }
 
-        <!-- Key Metrics -->
+        
         <div class="grid md:grid-cols-4 gap-4 mb-8">
             <div class="bg-white rounded-xl border p-6 shadow-sm">
                 <p class="text-sm text-gray-500 mb-2">Saldo Mensal</p>
@@ -154,7 +154,7 @@
             </div>
         </div>
 
-        <!-- Charts Row -->
+        
         <div class="grid md:grid-cols-2 gap-6 mb-8">
             <div class="bg-white rounded-xl border p-6 shadow-sm">
                 <h3 class="font-bold text-lg mb-1">Evolução Mensal (Base)</h3>
@@ -173,7 +173,7 @@
             </div>
         </div>
 
-        <!-- Challenges and Achievements -->
+        
         <div class="grid md:grid-cols-2 gap-6">
             <div class="bg-white rounded-xl border p-6 shadow-sm">
                 <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
@@ -232,7 +232,7 @@
             </div>
         </div>
 
-        <!-- Quick Actions -->
+        
         <div class="mt-8 flex flex-wrap gap-4">
             <a asp-action="ScenarioDetails" asp-route-id="@currentFamily.Id" class="px-4 py-2 bg-primary text-white rounded-md font-medium hover:bg-primary/90 shadow-sm transition-colors">
                 Gerir Cenário e Correr Simulação
@@ -244,7 +244,7 @@
     }
 </div>
 
-<!-- Modal Create Scenario -->
+
 <div id="createScenarioModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
         <form asp-action="CreateScenario" method="post">
@@ -272,7 +272,7 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Modal logic
+
             document.querySelectorAll('[data-modal-target]').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const target = document.getElementById(btn.getAttribute('data-modal-target'));
@@ -280,12 +280,12 @@
                 });
             });
 
-            // Clean up existing Chart.js instances to avoid infinite loading / canvas reuse issues
+
             Chart.helpers.each(Chart.instances, function(instance){
                 instance.destroy();
             });
 
-            // Charts logic
+
             try {
                 const monthlyChartCanvas = document.getElementById('monthlyChart');
                 if (monthlyChartCanvas) {
@@ -314,7 +314,7 @@
                         options: { 
                             responsive: true, 
                             maintainAspectRatio: false,
-                            animation: false // Disable animation for better performance
+                            animation: false 
                         }
                     });
                 }
@@ -341,7 +341,7 @@
                         options: { 
                             responsive: true, 
                             maintainAspectRatio: false,
-                            animation: false, // Disable animation
+                            animation: false, 
                             plugins: {
                                 legend: {
                                     position: 'bottom'

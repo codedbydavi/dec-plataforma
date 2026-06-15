@@ -2,10 +2,10 @@ using System;
 
 namespace Frontend.Models.Entities
 {
-    /// <summary>
-    /// Abstract base for educational activities.
-    /// Following the Abstraction and Polymorphism pillars.
-    /// </summary>
+
+
+
+
     public abstract class LearningActivity
     {
         private int _id;
@@ -45,7 +45,7 @@ namespace Frontend.Models.Entities
         {
         }
 
-        // Polymorphism: Derived classes can define how students are added
+
         public abstract void AddStudent(Student student);
         public abstract void RemoveStudent(Student student);
     }

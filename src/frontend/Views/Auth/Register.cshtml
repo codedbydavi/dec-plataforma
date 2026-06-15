@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - DEC – Dinheiro em Casa</title>
     <link rel="stylesheet" href="~/css/theme.css" asp-append-version="true" />
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https:
     <script>
         tailwind.config = {
             theme: {
@@ -72,32 +72,56 @@
                         <input asp-for="ConfirmPassword" type="password" class="flex h-10 w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="••••••••" required />
                         <span asp-validation-for="ConfirmPassword" class="text-red-600 text-xs"></span>
                     </div>
+<div class="space-y-2">
+    <label asp-for="Role" class="text-sm font-medium leading-none">Tipo de Conta</label>
+    <select asp-for="Role" id="roleSelect" class="flex h-10 w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+        <option value="Student">Aluno</option>
+        <option value="Professor">Professor</option>
+        <option value="Admin">Administrador</option>
+    </select>
+    <span asp-validation-for="Role" class="text-red-600 text-xs"></span>
+</div>
 
-                    <div class="space-y-2">
-                        <label asp-for="Role" class="text-sm font-medium leading-none">Tipo de Conta</label>
-                        <select asp-for="Role" class="flex h-10 w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-                            <option value="Student">Aluno</option>
-                            <option value="Professor">Professor</option>
-                            <option value="Admin">Administrador</option>
-                        </select>
-                        <span asp-validation-for="Role" class="text-red-600 text-xs"></span>
-                    </div>
+<div class="space-y-2 hidden" id="secretCodeDiv">
+    <label asp-for="SecretCode" class="text-sm font-medium leading-none">Código Institucional</label>
+    <input asp-for="SecretCode" type="password" class="flex h-10 w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="Código fornecido pelo ISTEC" />
+    <span asp-validation-for="SecretCode" class="text-red-600 text-xs"></span>
+</div>
 
-                    <button type="submit" class="w-full bg-primary text-white py-3 rounded-md font-medium hover:bg-primary/90 transition-colors mt-6">
-                        Criar Conta
-                    </button>
+<button type="submit" class="w-full bg-primary text-white py-3 rounded-md font-medium hover:bg-primary/90 transition-colors mt-6">
+    Criar Conta
+</button>
 
-                    <div class="text-sm text-center mt-4">
-                        Já tens conta? 
-                        <a asp-action="Login" class="text-primary hover:underline font-semibold">
-                            Entrar
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    
+<div class="text-sm text-center mt-4">
+    Já tens conta? 
+    <a asp-action="Login" class="text-primary hover:underline font-semibold">
+        Entrar
+    </a>
+</div>
+</form>
+</div>
+</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+var roleSelect = document.getElementById('roleSelect');
+var secretCodeDiv = document.getElementById('secretCodeDiv');
+
+function toggleSecretCode() {
+if (roleSelect.value === 'Professor' || roleSelect.value === 'Admin') {
+secretCodeDiv.classList.remove('hidden');
+} else {
+secretCodeDiv.classList.add('hidden');
+}
+}
+
+roleSelect.addEventListener('change', toggleSecretCode);
+toggleSecretCode(); 
+});
+</script>
+</body>
+</html>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 </body>

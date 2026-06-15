@@ -11,7 +11,7 @@ namespace Frontend.Models.ViewModels
         public Scenario? SelectedScenario { get; set; }
         public CalculationResponseDto? LatestResult { get; set; }
         
-        // Form Models for modals
+
         public JoinClassViewModel JoinClass { get; set; } = new();
         public CreateScenarioViewModel CreateScenario { get; set; } = new();
     }

@@ -6,7 +6,7 @@
 }
 
 <div class="max-w-7xl mx-auto p-6">
-    <!-- Breadcrumb -->
+    
     <nav class="flex mb-6 text-sm" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
@@ -40,7 +40,7 @@
     </div>
 
     <div class="grid lg:grid-cols-3 gap-8">
-        <!-- Students List -->
+        
         <div class="lg:col-span-2 space-y-6">
             <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
                 <div class="p-6 border-b flex items-center justify-between">
@@ -123,7 +123,7 @@
             </div>
         </div>
 
-        <!-- Challenges Sidebar -->
+        
         <div class="space-y-6">
             <div class="bg-white rounded-xl border shadow-sm p-6">
                 <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
@@ -155,7 +155,7 @@
     </div>
 </div>
 
-<!-- Modals for Evaluation -->
+
 @foreach (var enrollment in Model.Enrollments)
 {
     var latestScenario = enrollment.Student?.Scenarios.OrderByDescending(s => s.Id).FirstOrDefault();

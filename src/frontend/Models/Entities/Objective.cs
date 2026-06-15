@@ -1,8 +1,8 @@
 namespace Frontend.Models.Entities
 {
-    /// <summary>
-    /// Savings objective within a scenario.
-    /// </summary>
+
+
+
     public class Objective
     {
         private int _id;

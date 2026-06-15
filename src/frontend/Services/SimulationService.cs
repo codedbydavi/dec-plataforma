@@ -13,7 +13,7 @@ namespace Frontend.Services
         Task<Scenario> CreateScenarioAsync(int studentId, string familyName, float initialBalance);
         Task<bool> DeleteScenarioAsync(int scenarioId, int studentId);
         Task<bool> AddEntryAsync(int scenarioId, int studentId, string type, int categoryId, float amount, string month, string recurrence);
-        Task<bool> UpdateEntryAsync(int entryId, int studentId, int categoryId, float amount, string month, string recurrence);
+        Task<bool> UpdateEntryAsync(int entryId, int studentId, string type, int categoryId, float amount, string month, string recurrence);
         Task<bool> DeleteEntryAsync(int entryId, int studentId);
         Task<bool> AddObjectiveAsync(int scenarioId, int studentId, string description, float targetValue, int termMonths);
         Task<bool> DeleteObjectiveAsync(int objectiveId, int studentId);
@@ -118,13 +118,25 @@ namespace Frontend.Services
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<bool> UpdateEntryAsync(int entryId, int studentId, int categoryId, float amount, string month, string recurrence)
+        public async Task<bool> UpdateEntryAsync(int entryId, int studentId, string type, int categoryId, float amount, string month, string recurrence)
         {
             var entry = await _context.FinancialEntries
                 .Include(e => e.Scenario)
                 .FirstOrDefaultAsync(e => e.Id == entryId && e.Scenario!.StudentId == studentId);
 
             if (entry == null) return false;
+
+            var currentType = (entry is Income) ? "INCOME" : "EXPENSE";
+            
+            if (currentType != type.ToUpper())
+            {
+
+                var scenarioId = entry.ScenarioId;
+                _context.FinancialEntries.Remove(entry);
+                await _context.SaveChangesAsync();
+                
+                return await AddEntryAsync(scenarioId, studentId, type, categoryId, amount, month, recurrence);
+            }
 
             entry.CategoryId = categoryId;
             entry.Amount = amount;

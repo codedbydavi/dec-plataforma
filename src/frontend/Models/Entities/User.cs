@@ -4,10 +4,10 @@ using System.Collections.Generic;
 
 namespace Frontend.Models.Entities
 {
-    /// <summary>
-    /// Base class for all users, inheriting from IdentityUser with integer keys.
-    /// Following the Abstraction pillar.
-    /// </summary>
+
+
+
+
     public abstract class User : IdentityUser<int>
     {
         private string _fullName = string.Empty;
@@ -17,7 +17,7 @@ namespace Frontend.Models.Entities
         private DateTime? _birthDate;
         private string? _imgUrl;
 
-        // Encapsulation: Properties with validation or logic
+
         public string FullName
         {
             get => _fullName;
@@ -54,7 +54,7 @@ namespace Frontend.Models.Entities
             set => _imgUrl = value;
         }
 
-        // Navigation Properties
+
         public virtual UserStatus? UserStatus { get; set; }
         public virtual RoleLookup? Role { get; set; }
         public virtual Gender? Gender { get; set; }
@@ -64,14 +64,14 @@ namespace Frontend.Models.Entities
         }
     }
 
-    /// <summary>
-    /// Concrete implementation for ASP.NET Identity.
-    /// </summary>
+
+
+
     public class ApplicationUser : User { }
 
-    /// <summary>
-    /// Student specific user.
-    /// </summary>
+
+
+
     public class Student : ApplicationUser
     {
         private readonly List<Enrollment> _enrollments = new();
@@ -85,9 +85,9 @@ namespace Frontend.Models.Entities
         public void JoinActivity(LearningActivity activity) => activity.AddStudent(this);
     }
 
-    /// <summary>
-    /// Professor specific user.
-    /// </summary>
+
+
+
     public class Professor : ApplicationUser
     {
         private readonly List<Classroom> _classrooms = new();

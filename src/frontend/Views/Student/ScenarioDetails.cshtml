@@ -22,7 +22,7 @@
         </div>
     }
 
-    <!-- Header Section -->
+    
     <div class="flex items-center justify-between mb-6">
         <div>
             <nav class="flex text-sm text-gray-500 mb-2">
@@ -46,7 +46,7 @@
         </div>
     </div>
 
-    <!-- Active Simulations Alerts -->
+    
     @if (lastResult != null)
     {
         @if (lastResult.CreditSimulation != null)
@@ -81,7 +81,7 @@
             </div>
         }
 
-        <!-- Key Metrics Cards -->
+        
         <div class="grid md:grid-cols-4 gap-4 mb-8">
             <div class="bg-primary text-white rounded-xl p-6 shadow-sm">
                 <p class="text-sm text-white/80 uppercase tracking-wider mb-2">Saldo Mensal Real</p>
@@ -116,7 +116,7 @@
         </div>
     }
 
-    <!-- Tabs Layout -->
+    
     <div class="mb-6 border-b border-gray-200">
         <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="myTab" role="tablist">
             <li class="mr-2" role="presentation">
@@ -133,10 +133,10 @@
     </div>
 
     <div id="myTabContent">
-        <!-- Data Tab (Entries & Goals) -->
+        
         <div class="p-4 rounded-lg space-y-6" id="data" role="tabpanel">
             <div class="grid lg:grid-cols-3 gap-6">
-                <!-- Entries Table -->
+                
                 <div class="lg:col-span-2 bg-white rounded-xl border shadow-sm flex flex-col">
                     <div class="p-4 border-b flex justify-between items-center bg-gray-50/50 rounded-t-xl">
                         <h3 class="font-bold text-lg flex items-center gap-2">
@@ -188,7 +188,7 @@
                                             </td>
                                             <td class="px-4 py-3 text-right">
                                                 <div class="flex justify-end gap-2">
-                                                    <button onclick="openEditEntryModal(@entry.Id, @entry.CategoryId, @entry.Amount.ToString().Replace(",", "."), '@entry.Month', @((entry.Recurrence != "None" && entry.Recurrence != "False" && entry.Recurrence != "0") ? "true" : "false"))" class="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Editar">
+                                                    <button onclick="openEditEntryModal(@entry.Id, @entry.TypeId, @entry.CategoryId, @entry.Amount.ToString().Replace(",", "."), '@entry.Month', @((entry.Recurrence != "None" && entry.Recurrence != "False" && entry.Recurrence != "0") ? "true" : "false"))" class="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Editar">
                                                         <i data-lucide="edit-2" class="w-4 h-4"></i>
                                                     </button>
                                                     <form asp-action="DeleteEntry" method="post" onsubmit="return confirm('Tem a certeza que deseja remover este lançamento?')" class="inline">
@@ -207,9 +207,9 @@
                     </div>
                 </div>
 
-                <!-- Goals & Engine Actions -->
+                
                 <div class="space-y-6">
-                    <!-- Goals -->
+                    
                     <div class="bg-white rounded-xl border shadow-sm">
                         <div class="p-4 border-b flex justify-between items-center bg-gray-50/50 rounded-t-xl">
                             <h3 class="font-bold text-lg flex items-center gap-2">
@@ -259,7 +259,7 @@
                         </div>
                     </div>
 
-                    <!-- Engine Trigger -->
+                    
                     <div class="bg-white rounded-xl border border-gray-200 shadow-sm text-center p-6">
                         <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-3">
                             <i data-lucide="cpu" class="w-6 h-6 text-primary"></i>
@@ -290,7 +290,7 @@
                 </div>
             </div>
 
-            <!-- History Table -->
+            
             <div class="bg-white rounded-xl border shadow-sm mt-6">
                 <div class="p-4 border-b bg-gray-50/50 rounded-t-xl">
                     <h3 class="font-bold text-lg flex items-center gap-2">
@@ -339,7 +339,7 @@
             </div>
         </div>
 
-        <!-- Dashboard Tab (Charts) -->
+        
         <div class="hidden p-4 rounded-lg" id="dashboard" role="tabpanel">
             @if (lastResult == null)
             {
@@ -381,7 +381,7 @@
     </div>
 </div>
 
-<!-- Modal: Add Entry -->
+
 <div id="addEntryModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
         <div class="px-6 py-4 border-b flex justify-between items-center">
@@ -394,7 +394,7 @@
     </div>
 </div>
 
-<!-- Modal: Add Objective -->
+
 <div id="addObjectiveModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
         <form asp-action="AddObjective" method="post">
@@ -427,7 +427,7 @@
     </div>
 </div>
 
-<!-- Modal: Credit Simulation -->
+
 <div id="creditSimModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
         <form asp-action="RunSimulation" method="post">
@@ -461,7 +461,7 @@
     </div>
 </div>
 
-<!-- Modal: Savings Simulation -->
+
 <div id="savingsSimModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
         <form asp-action="RunSimulation" method="post">
@@ -495,7 +495,7 @@
     </div>
 </div>
 
-<!-- Modal: Cash Flow Simulation -->
+
 <div id="cashFlowSimModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
         <form asp-action="RunSimulation" method="post">
@@ -537,7 +537,7 @@
     </div>
 </div>
 
-<!-- Modal: Edit Scenario -->
+
 <div id="editScenarioModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden">
         <form asp-action="UpdateScenario" method="post">
@@ -564,7 +564,7 @@
     </div>
 </div>
 
-<!-- Modal: Edit Entry -->
+
 <div id="editEntryModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
         <form asp-action="EditEntry" method="post">
@@ -575,6 +575,15 @@
             </div>
             <div class="p-6 space-y-4">
                 <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Tipo</label>
+                        <select name="typeId" id="editEntryType" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required>
+                            @foreach (var type in Model.EntryTypes)
+                            {
+                                <option value="@type.Id">@type.Type</option>
+                            }
+                        </select>
+                    </div>
                     <div>
                         <label class="block text-sm font-medium mb-1">Categoria</label>
                         <select name="categoryId" id="editEntryCategory" class="w-full border rounded-md px-3 py-2 focus:ring-primary/50" required>
@@ -624,8 +633,9 @@
 
 @section Scripts {
     <script>
-        function openEditEntryModal(id, categoryId, amount, month, recurrence) {
+        function openEditEntryModal(id, typeId, categoryId, amount, month, recurrence) {
             document.getElementById('editEntryId').value = id;
+            document.getElementById('editEntryType').value = typeId;
             document.getElementById('editEntryCategory').value = categoryId;
             document.getElementById('editEntryAmount').value = amount;
             document.getElementById('editEntryMonth').value = month;
@@ -634,7 +644,7 @@
             document.getElementById('editEntryModal').classList.remove('hidden');
         }
 
-        // Modal logic
+
         document.querySelectorAll('[data-modal-target]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const target = document.getElementById(btn.getAttribute('data-modal-target'));
@@ -642,7 +652,7 @@
             });
         });
 
-        // Tabs and Charts logic
+
         const tabs = document.querySelectorAll('[data-tabs-target]');
         const tabContents = document.querySelectorAll('[role="tabpanel"]');
         let chartsRendered = false;
@@ -671,12 +681,12 @@
         function renderCharts() {
             @if (lastResult != null) {
                 <text>
-                // Clean up existing Chart.js instances
+
                 Chart.helpers.each(Chart.instances, function(instance){
                     instance.destroy();
                 });
 
-                // 1. Income vs Expenses Pie Chart
+
                 new Chart(document.getElementById('chartIncomeExpenses'), {
                     type: 'doughnut',
                     data: {
@@ -690,7 +700,7 @@
                     options: { maintainAspectRatio: false, animation: false, plugins: { legend: { position: 'bottom' } } }
                 });
 
-                // 2. Projection Line Chart
+
                 const initial = @scenario.InitialBalance.ToString().Replace(",", ".");
                 const monthlyBalance = @lastResult.Summary.MonthlyBalance.ToString().Replace(",", ".");
                 const labels = ['Agora', '1m', '2m', '3m', '4m', '5m', '6m', '7m', '8m', '9m', '10m', '11m', '12m'];
@@ -719,7 +729,7 @@
                     }
                 });
 
-                // 3. Effort Rate Bar Chart
+
                 const effortRate = @lastResult.Summary.EffortRatePercentage.ToString().Replace(",", ".");
                 new Chart(document.getElementById('chartEffortRate'), {
                     type: 'bar',

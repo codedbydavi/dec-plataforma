@@ -78,6 +78,15 @@ namespace Frontend.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
+            if (model.Role == "Professor" || model.Role == "Admin")
+            {
+                if (string.IsNullOrWhiteSpace(model.SecretCode) || model.SecretCode != "DEC2026")
+                {
+                    ModelState.AddModelError("SecretCode", "Código de acesso institucional inválido.");
+                    return View(model);
+                }
+            }
+
             ApplicationUser user;
             if (model.Role == "Admin")
             {
@@ -98,20 +107,20 @@ namespace Frontend.Controllers
             user.UserName = model.Username;
             user.Email = model.Email;
             user.FullName = model.FullName;
-            user.UserStatusId = 1; // Default: Active
-            user.GenderId = 1; // Default: Not Specified
+            user.UserStatusId = 1; 
+            user.GenderId = 1; 
 
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
             {
-                // Ensure role exists
+
                 if (!await _roleManager.RoleExistsAsync(model.Role))
                 {
                     await _roleManager.CreateAsync(new IdentityRole<int>(model.Role));
                 }
 
-                // Assign Identity Role
+
                 await _userManager.AddToRoleAsync(user, model.Role);
 
                 TempData["SuccessMessage"] = "Registration successful! You can now log in.";

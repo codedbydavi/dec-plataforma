@@ -4,7 +4,7 @@
 @{
     ViewData["Title"] = "Dashboard do Professor";
     
-    // Flatten students from classes
+
     var allStudents = Model.Classes.SelectMany(c => c.Enrollments.Select(e => e.Student)).Where(s => s != null).Distinct().ToList();
     var totalStudents = allStudents.Count;
     var totalChallenges = Model.GlobalChallenges.Count();
@@ -30,7 +30,7 @@
         </div>
     }
 
-    <!-- Summary Cards -->
+    
     <div class="grid md:grid-cols-4 gap-4 mb-8">
         <div class="bg-white rounded-xl border p-6 shadow-sm">
             <p class="text-sm text-gray-500 mb-2">Total de Alunos</p>
@@ -61,7 +61,7 @@
         </div>
     </div>
 
-    <!-- Charts -->
+    
     <div class="grid md:grid-cols-2 gap-6 mb-8">
         <div class="bg-white rounded-xl border p-6 shadow-sm">
             <h3 class="font-bold text-lg mb-1">Desempenho dos Alunos</h3>
@@ -76,7 +76,7 @@
         </div>
     </div>
 
-    <!-- Classes List (Added for visibility) -->
+    
     <div class="bg-white rounded-xl border shadow-sm overflow-hidden mb-8">
         <div class="p-6 border-b flex justify-between items-center">
             <div>
@@ -127,7 +127,7 @@
         </div>
     </div>
 
-    <!-- Students Table -->
+    
     <div class="bg-white rounded-xl border shadow-sm overflow-hidden mb-8">
         <div class="p-6 border-b flex justify-between items-center">
             <div>
@@ -174,7 +174,7 @@
                                         var avg = allScores.Any() ? allScores.Average() : 0;
                                         var colorClass = avg >= 15 ? "text-green-600" : (avg >= 10 ? "text-yellow-600" : "text-red-600");
                                         var barColor = avg >= 15 ? "bg-green-600" : (avg >= 10 ? "bg-yellow-600" : "bg-red-600");
-                                        var barWidth = (avg * 5); // Scale 0-20 to 0-100%
+                                        var barWidth = (avg * 5); 
                                     }
                                     <div class="flex flex-col items-center gap-1">
                                         <span class="font-bold @colorClass">@avg.ToString("F1")</span>
@@ -194,7 +194,7 @@
 
 <partial name="_CreateChallengeModal" model="Model.Classes" />
 
-<!-- Modal Create Class -->
+
 <div id="createClassModal" class="hidden fixed inset-0 bg-black/50 z-[100] flex items-center justify-center">
     <div class="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
         <form asp-action="CreateClass" method="post">
@@ -227,7 +227,7 @@
             });
         });
 
-        // Charts
+
         if (document.getElementById('performanceChart')) {
             const studentNames = @Html.Raw(Json.Serialize(Model.StudentNames));
             const studentScores = @Html.Raw(Json.Serialize(Model.StudentScores));

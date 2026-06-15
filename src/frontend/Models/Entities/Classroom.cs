@@ -3,10 +3,10 @@ using System.Linq;
 
 namespace Frontend.Models.Entities
 {
-    /// <summary>
-    /// Concrete implementation of a classroom.
-    /// Following the Inheritance pillar.
-    /// </summary>
+
+
+
+
     public class Classroom : LearningActivity
     {
         private int _memberCode;
@@ -32,12 +32,12 @@ namespace Frontend.Models.Entities
 
         public override void AddStudent(Student student)
         {
-            // Logic to handle enrollment
+
         }
 
         public override void RemoveStudent(Student student)
         {
-            // Logic to remove enrollment
+
         }
     }
 }
