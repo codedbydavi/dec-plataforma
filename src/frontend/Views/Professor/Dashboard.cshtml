@@ -8,10 +8,6 @@
     var allStudents = Model.Classes.SelectMany(c => c.Enrollments.Select(e => e.Student)).Where(s => s != null).Distinct().ToList();
     var totalStudents = allStudents.Count;
     var totalChallenges = Model.GlobalChallenges.Count();
-    
-    // For demo purposes matching the prototype visually
-    var avgCompletionRate = 85; 
-    var avgScore = 82;
 }
 
 <div class="max-w-7xl mx-auto p-6">
@@ -53,14 +49,14 @@
         <div class="bg-white rounded-xl border p-6 shadow-sm">
             <p class="text-sm text-gray-500 mb-2">Taxa Média de Conclusão</p>
             <div class="text-3xl font-bold flex items-center gap-2">
-                <i data-lucide="trending-up" class="w-6 h-6 text-green-500"></i> @avgCompletionRate%
+                <i data-lucide="trending-up" class="w-6 h-6 text-green-500"></i> @Model.GlobalAvgCompletionRate%
             </div>
         </div>
 
         <div class="bg-white rounded-xl border p-6 shadow-sm">
             <p class="text-sm text-gray-500 mb-2">Pontuação Média</p>
             <div class="text-3xl font-bold flex items-center gap-2">
-                <i data-lucide="award" class="w-6 h-6 text-yellow-500"></i> @avgScore
+                <i data-lucide="award" class="w-6 h-6 text-yellow-500"></i> @Model.GlobalAvgScore
             </div>
         </div>
     </div>

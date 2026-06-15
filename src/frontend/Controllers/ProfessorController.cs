@@ -75,6 +75,18 @@ namespace Frontend.Controllers
             viewModel.TotalEvaluated = allHistories.Count(h => h.Score.HasValue);
             viewModel.TotalPending = allHistories.Count(h => !h.Score.HasValue);
 
+            // KPI Calculations
+            var totalPossibleSubmissions = allEnrollments.Count * viewModel.GlobalChallenges.Count;
+            var totalActualSubmissions = allEnrollments.SelectMany(e => e.Student!.Scenarios).Count(s => s.ChallengeId.HasValue);
+            
+            viewModel.GlobalAvgCompletionRate = totalPossibleSubmissions > 0 
+                ? (int)Math.Round((double)totalActualSubmissions / totalPossibleSubmissions * 100) 
+                : 0;
+
+            viewModel.GlobalAvgScore = allHistories.Any(h => h.Score.HasValue)
+                ? (float)Math.Round(allHistories.Where(h => h.Score.HasValue).Average(h => h.Score!.Value), 1)
+                : 0;
+
             return View(viewModel);
         }
 

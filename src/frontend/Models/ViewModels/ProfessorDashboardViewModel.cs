@@ -15,6 +15,9 @@ namespace Frontend.Models.ViewModels
         public int TotalEvaluated { get; set; }
         public int TotalPending { get; set; }
 
+        public int GlobalAvgCompletionRate { get; set; }
+        public float GlobalAvgScore { get; set; }
+
         // Forms
         public CreateChallengeViewModel CreateChallenge { get; set; } = new();
         public AssignChallengeViewModel AssignChallenge { get; set; } = new();
