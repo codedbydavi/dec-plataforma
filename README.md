@@ -14,6 +14,10 @@ The system is structured around two main roles:
 *   **Students:** Create family scenarios, record financial entries, set savings goals, run complex mathematical simulations, and submit their work.
 *   **Professors:** Create classes, assign pedagogical challenges, monitor student progress, and evaluate submitted simulations with actionable feedback.
 
+Try the demo version at:
+<p align="center">
+  🔗<em>https://dec-plataforma.duckdns.org/</em>
+</p>
 ---
 
 ## ✨ Key Features
