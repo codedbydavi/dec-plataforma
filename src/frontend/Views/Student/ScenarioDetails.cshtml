@@ -191,7 +191,7 @@
                                                     <button onclick="openEditEntryModal(@entry.Id, @entry.TypeId, @entry.CategoryId, @entry.Amount.ToString().Replace(",", "."), '@entry.Month', @((entry.Recurrence != "None" && entry.Recurrence != "False" && entry.Recurrence != "0") ? "true" : "false"))" class="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Editar">
                                                         <i data-lucide="edit-2" class="w-4 h-4"></i>
                                                     </button>
-                                                    <form asp-action="DeleteEntry" method="post" onsubmit="return confirm('Tem a certeza que deseja remover este lançamento?')" class="inline">
+                                                    <form asp-action="DeleteEntry" method="post" onsubmit="event.preventDefault(); showConfirmModal(this, 'Tem a certeza que deseja remover este lançamento? Esta ação não pode ser desfeita.')" class="inline">
                                                         <input type="hidden" name="id" value="@entry.Id" />
                                                         <button type="submit" class="p-1 text-red-600 hover:bg-red-50 rounded transition-colors" title="Remover">
                                                             <i data-lucide="trash-2" class="w-4 h-4"></i>
@@ -234,7 +234,7 @@
                                             <div class="flex justify-between items-center mb-1">
                                                 <div class="flex items-center gap-2">
                                                     <span class="font-bold text-sm text-gray-900">@obj.Description</span>
-                                                    <form asp-action="DeleteObjective" method="post" onsubmit="return confirm('Deseja remover este objetivo?')" class="opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <form asp-action="DeleteObjective" method="post" onsubmit="event.preventDefault(); showConfirmModal(this, 'Deseja remover este objetivo?')" class="opacity-0 group-hover:opacity-100 transition-opacity">
                                                         <input type="hidden" name="id" value="@obj.Id" />
                                                         <button type="submit" class="text-red-400 hover:text-red-600">
                                                             <i data-lucide="x-circle" class="w-4 h-4"></i>
@@ -755,7 +755,48 @@
                     }
                 });
                 </text>
-            }
-        }
-    </script>
-}
+                }
+                }
+
+                let formToSubmit = null;
+
+                function showConfirmModal(formElement, message) {
+                formToSubmit = formElement;
+                if (message) {
+                document.getElementById('confirmDeleteMessage').textContent = message;
+                }
+                document.getElementById('confirmDeleteModal').classList.remove('hidden');
+                }
+
+                function closeConfirmDeleteModal() {
+                document.getElementById('confirmDeleteModal').classList.add('hidden');
+                formToSubmit = null;
+                }
+
+                document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+                if (formToSubmit) {
+                formToSubmit.submit();
+                }
+                });
+                </script>
+                }
+
+                <div id="confirmDeleteModal" class="hidden fixed inset-0 bg-black/50 z-[110] flex items-center justify-center p-4">
+                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200">
+                <div class="p-6 text-center">
+                <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 text-red-600">
+                <i data-lucide="trash-2" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Confirmar Remoção</h3>
+                <p id="confirmDeleteMessage" class="text-gray-500">Tens a certeza que desejas remover este item? Esta ação não pode ser desfeita.</p>
+                </div>
+                <div class="px-6 py-4 bg-gray-50 flex gap-3">
+                <button type="button" onclick="closeConfirmDeleteModal()" class="flex-1 px-4 py-2.5 border-2 border-gray-200 rounded-xl hover:bg-white font-bold text-gray-600 transition-all text-sm">
+                Cancelar
+                </button>
+                <button id="confirmDeleteBtn" type="button" class="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 font-bold shadow-lg shadow-red-200 transition-all active:scale-95 text-sm">
+                Remover
+                </button>
+                </div>
+                </div>
+                </div>

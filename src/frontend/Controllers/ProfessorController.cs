@@ -245,5 +245,38 @@ namespace Frontend.Controllers
             TempData["SuccessMessage"] = $"Class '{name}' created with code {newClass.MemberCode}.";
             return RedirectToAction("Dashboard");
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteClass(int id)
+        {
+            int userId = GetUserId();
+            var classroom = await _context.Classrooms
+                .Include(c => c.Enrollments)
+                .FirstOrDefaultAsync(c => c.Id == id && c.TeacherId == userId);
+
+            if (classroom == null)
+            {
+                TempData["ErrorMessage"] = "Turma não encontrada ou não tens permissão para a eliminar.";
+                return RedirectToAction("Dashboard");
+            }
+
+            if (classroom.Enrollments.Any())
+            {
+                _context.Enrollments.RemoveRange(classroom.Enrollments);
+            }
+
+            var assignments = await _context.ChallengeAssignments.Where(a => a.ClassroomId == id).ToListAsync();
+            if (assignments.Any())
+            {
+                _context.ChallengeAssignments.RemoveRange(assignments);
+            }
+
+            _context.Classrooms.Remove(classroom);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Turma '{classroom.Name}' eliminada com sucesso.";
+            return RedirectToAction("Dashboard");
+        }
     }
 }
