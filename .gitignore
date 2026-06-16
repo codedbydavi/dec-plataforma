@@ -3,6 +3,14 @@
 *.log
 .DS_Store
 
+# --- Imagens e Documentação de Arquitetura ---
+MER.png
+image.png
+classDiagram.png
+
+# --- Protótipo Frontend (Antigo) ---
+DEC Project - web_Prototype/**
+
 # --- Python (Django & Flask) ---
 __pycache__/
 *.py[cod]

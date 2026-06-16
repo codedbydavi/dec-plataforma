@@ -116,8 +116,14 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-center">@cls.Enrollments.Count</td>
-                                <td class="px-6 py-4 text-center">
-                                    <a asp-action="ClassDetails" asp-route-id="@cls.Id" class="text-primary hover:underline">Ver Detalhes</a>
+                                <td class="px-6 py-4 text-center flex items-center justify-center gap-3">
+                                    <a asp-action="ClassDetails" asp-route-id="@cls.Id" class="text-primary hover:underline font-medium">Ver Detalhes</a>
+                                    <form asp-action="DeleteClass" asp-route-id="@cls.Id" method="post" onsubmit="event.preventDefault(); showConfirmModal(this, 'Tem a certeza que deseja eliminar esta turma? Esta ação é irreversível e removerá todos os alunos e atribuições.')" class="inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="text-red-500 hover:text-red-700 transition-colors p-1" title="Eliminar Turma">
+                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         }
@@ -269,5 +275,46 @@
                 }
             });
         }
+
+        let formToSubmit = null;
+
+        function showConfirmModal(formElement, message) {
+            formToSubmit = formElement;
+            if (message) {
+                document.getElementById('confirmDeleteMessage').textContent = message;
+            }
+            document.getElementById('confirmDeleteModal').classList.remove('hidden');
+        }
+
+        function closeConfirmDeleteModal() {
+            document.getElementById('confirmDeleteModal').classList.add('hidden');
+            formToSubmit = null;
+        }
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+            if (formToSubmit) {
+                formToSubmit.submit();
+            }
+        });
     </script>
 }
+
+<div id="confirmDeleteModal" class="hidden fixed inset-0 bg-black/50 z-[110] flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200">
+        <div class="p-6 text-center">
+            <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 text-red-600">
+                <i data-lucide="trash-2" class="w-8 h-8"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Confirmar Remoção</h3>
+            <p id="confirmDeleteMessage" class="text-gray-500 text-sm">Tens a certeza que desejas remover esta turma? Esta ação não pode ser desfeita.</p>
+        </div>
+        <div class="px-6 py-4 bg-gray-50 flex gap-3">
+            <button type="button" onclick="closeConfirmDeleteModal()" class="flex-1 px-4 py-2.5 border-2 border-gray-200 rounded-xl hover:bg-white font-bold text-gray-600 transition-all text-sm">
+                Cancelar
+            </button>
+            <button id="confirmDeleteBtn" type="button" class="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 font-bold shadow-lg shadow-red-200 transition-all active:scale-95 text-sm">
+                Remover
+            </button>
+        </div>
+    </div>
+</div>

@@ -97,6 +97,69 @@ namespace Frontend.Controllers
             return View(viewModel);
         }
 
+        public async Task<IActionResult> Classes()
+        {
+            int userId = GetUserId();
+            if (userId == 0) return Unauthorized();
+
+            var enrollments = await _context.Enrollments
+                .Include(e => e.ClassGroup)
+                .ThenInclude(c => c!.Teacher)
+                .Where(e => e.StudentId == userId)
+                .ToListAsync();
+
+            var classes = enrollments.Select(e => e.ClassGroup).Where(c => c != null).Cast<Classroom>().ToList();
+            
+            return View(classes);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> JoinClass(string joinCode)
+        {
+            int userId = GetUserId();
+            if (userId == 0) return Unauthorized();
+
+            if (string.IsNullOrWhiteSpace(joinCode))
+            {
+                TempData["ErrorMessage"] = "Código de turma inválido.";
+                return RedirectToAction("Classes");
+            }
+
+            if (!int.TryParse(joinCode, out int codeInt))
+            {
+                TempData["ErrorMessage"] = "O código deve ser numérico.";
+                return RedirectToAction("Classes");
+            }
+
+            var classroom = await _context.Classrooms.FirstOrDefaultAsync(c => c.MemberCode == codeInt);
+            if (classroom == null)
+            {
+                TempData["ErrorMessage"] = "Turma não encontrada com o código fornecido.";
+                return RedirectToAction("Classes");
+            }
+
+            var isEnrolled = await _context.Enrollments.AnyAsync(e => e.ClassGroupId == classroom.Id && e.StudentId == userId);
+            if (isEnrolled)
+            {
+                TempData["ErrorMessage"] = "Já estás inscrito nesta turma.";
+                return RedirectToAction("Classes");
+            }
+
+            var enrollment = new Enrollment
+            {
+                ClassGroupId = classroom.Id,
+                StudentId = userId,
+                EnrolledAt = DateTime.UtcNow
+            };
+
+            _context.Enrollments.Add(enrollment);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Inscrição na turma '{classroom.Name}' realizada com sucesso!";
+            return RedirectToAction("Classes");
+        }
+
         public async Task<IActionResult> Family()
         {
             int userId = GetUserId();
